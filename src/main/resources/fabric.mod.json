@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
-  "id": "acmoduletemplate",
+  "id": "advancedchathud",
   "version": "${version}",
-  "name": "AdvancedChatModuleTemplate",
-  "description": "A template for an AdvancedChat Module",
+  "name": "AdvancedChatHUD",
+  "description": "A chat HUD overhaul with chat tabs",
   "authors": [
     "DarkKronicle"
   ],
   "contact": {
-    "sources": "https://github.com/DarkKronicle/AdvancedChat",
+    "sources": "https://github.com/DarkKronicle/AdvancedChatHUD",
     "discord": "https://discord.gg/WnaE3uZxDA"
   },
   "license": "MPL-v2",
-  "icon": "assets/acmoduletemplate/icon.png",
+  "icon": "assets/advancedchathud/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "io.github.darkkronicle.acmoduletemplate.ACModuleTemplate"
+      "io.github.darkkronicle.advancedchathud.AdvancedChatHud"
     ]
   },
   "mixins": [
-    "acmoduletemplate.mixins.json"
+    "advancedchathud.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.8.9+build.204",
