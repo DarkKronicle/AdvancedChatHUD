@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "acmoduletemplate",
+  "version": "${version}",
+  "name": "AdvancedChatModuleTemplate",
+  "description": "A template for an AdvancedChat Module",
+  "authors": [
+    "DarkKronicle"
+  ],
+  "contact": {
+    "sources": "https://github.com/DarkKronicle/AdvancedChat",
+    "discord": "https://discord.gg/WnaE3uZxDA"
+  },
+  "license": "MPL-v2",
+  "icon": "assets/acmoduletemplate/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.darkkronicle.acmoduletemplate.ACModuleTemplate"
+    ]
+  },
+  "mixins": [
+    "acmoduletemplate.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.8.9+build.204",
+    "fabric": "*",
+    "minecraft": ">=1.17.0",
+    "malilib": ">=0.10.0-dev.20",
+    "advancedchatcore": ">=1.0.0"
+  },
+  "custom": {
+    "acmodule": true,
+    "modmenu": {
+      "parent": {
+        "id": "advancedchatcore"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "io.github.darkkronicle.acmoduletemplate.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
