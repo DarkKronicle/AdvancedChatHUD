@@ -3,6 +3,7 @@
   "package": "io.github.darkkronicle.advancedchathud.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MixinChatHud"
   ],
   "client": [
   ],

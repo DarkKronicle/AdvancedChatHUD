@@ -1,28 +1,86 @@
 package io.github.darkkronicle.advancedchathud;
 
 import fi.dy.masa.malilib.config.ConfigManager;
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.util.StringUtils;
-import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
+import io.github.darkkronicle.advancedchatcore.chat.ChatScreenSectionHolder;
 import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfigHandler;
+import io.github.darkkronicle.advancedchatcore.interfaces.IChatMessageProcessor;
+import io.github.darkkronicle.advancedchathud.config.GuiTabManager;
+import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
+import io.github.darkkronicle.advancedchathud.gui.HudSection;
+import io.github.darkkronicle.advancedchathud.gui.WindowManager;
+import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Screen;
 
 @Environment(EnvType.CLIENT)
 public class HudInitHandler implements IInitializationHandler {
 
     @Override
     public void registerModHandlers() {
-        ConfigManager.getInstance().registerConfigHandler(AdvancedChatHud.MOD_ID, new HudConfigStorage());
-        GuiConfigHandler.getInstance().addGuiSection(GuiConfigHandler.createGuiConfigSection(
-                StringUtils.translate("advancedchathud.tab.general"), HudConfigStorage.General.OPTIONS
-        ));
+        ConfigManager
+            .getInstance()
+            .registerConfigHandler(
+                AdvancedChatHud.MOD_ID,
+                new HudConfigStorage()
+            );
+        GuiConfigHandler
+            .getInstance()
+            .addGuiSection(
+                GuiConfigHandler.createGuiConfigSection(
+                    StringUtils.translate("advancedchathud.tab.general"),
+                    HudConfigStorage.General.OPTIONS
+                )
+            );
+        GuiConfigHandler
+            .getInstance()
+            .addGuiSection(
+                new GuiConfigHandler.Tab() {
+                    @Override
+                    public String getName() {
+                        return StringUtils.translate(
+                            "advancedchathud.tab.tabs"
+                        );
+                    }
 
-        // Register on new message
-        ChatHistory.getInstance().addOnMessage(chatMessage -> System.out.println("Chat message happened!"));
+                    @Override
+                    public Screen getScreen(
+                        List<GuiConfigHandler.TabButton> buttons
+                    ) {
+                        return new GuiTabManager(buttons);
+                    }
+                }
+            );
+        AdvancedChatHud.MAIN_CHAT_TAB = new MainChatTab();
+
         // Register on the clear
-        ChatHistory.getInstance().addOnClear(() -> System.out.println(HudConfigStorage.General.STRING_STUFF.config.getStringValue()));
+        ChatScreenSectionHolder
+            .getInstance()
+            .addSectionSupplier(HudSection::new);
+        ChatHistory
+            .getInstance()
+            .addOnClear(() -> WindowManager.getInstance().clear());
+        ChatHistory
+            .getInstance()
+            .addOnClear(() -> HudChatMessageHolder.getInstance().clear());
+        ChatHistory
+            .getInstance()
+            .addOnUpdate((message, type) -> {
+                if (type == IChatMessageProcessor.UpdateType.ADDED) {
+                    HudChatMessageHolder
+                        .getInstance()
+                        .addMessage(new HudChatMessage(message));
+                } else if (type == IChatMessageProcessor.UpdateType.REMOVE) {
+                    HudChatMessageHolder.getInstance().remove(message);
+                }
+            });
+        RenderEventHandler
+            .getInstance()
+            .registerGameOverlayRenderer(WindowManager.getInstance());
     }
-
 }
