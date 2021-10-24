@@ -5,6 +5,7 @@ import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import java.util.ArrayList;
+import java.util.UUID;
 import lombok.Getter;
 import net.minecraft.text.Text;
 
@@ -26,7 +27,8 @@ public class MainChatTab extends AbstractChatTab {
             HudConfigStorage.MAIN_TAB.getMainColor().config.getSimpleColor(),
             HudConfigStorage.MAIN_TAB.getBorderColor().config.getSimpleColor(),
             HudConfigStorage.MAIN_TAB.getInnerColor().config.getSimpleColor(),
-            HudConfigStorage.MAIN_TAB.getShowUnread().config.getBooleanValue()
+            HudConfigStorage.MAIN_TAB.getShowUnread().config.getBooleanValue(),
+            HudConfigStorage.MAIN_TAB.getUuid()
         );
         setUpTabs();
     }
@@ -42,6 +44,7 @@ public class MainChatTab extends AbstractChatTab {
             HudConfigStorage.MAIN_TAB.getBorderColor().config.getSimpleColor();
         this.showUnread =
             HudConfigStorage.MAIN_TAB.getShowUnread().config.getBooleanValue();
+        this.uuid = HudConfigStorage.MAIN_TAB.getUuid();
     }
 
     @Override
@@ -72,5 +75,15 @@ public class MainChatTab extends AbstractChatTab {
             }
             message.setTabs(tabs);
         }
+        this.refreshOptions();
+    }
+
+    public AbstractChatTab fromUUID(UUID uuid) {
+        for (AbstractChatTab tab : allChatTabs) {
+            if (tab.getUuid().equals(uuid)) {
+                return tab;
+            }
+        }
+        return null;
     }
 }

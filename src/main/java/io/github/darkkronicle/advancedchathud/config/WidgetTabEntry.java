@@ -26,6 +26,7 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
     private final List<String> hoverLines;
     private final int buttonStartX;
     private final ChatTab tab;
+    private boolean main = true;
 
     public WidgetTabEntry(
         int x,
@@ -46,7 +47,11 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
         y += 1;
         int pos = x + width - 2;
 
-        pos -= addButton(pos, y, ButtonListener.Type.REMOVE);
+        if (listIndex != 0) {
+            main = false;
+            // If it's 0 it's the main tab
+            pos -= addButton(pos, y, ButtonListener.Type.REMOVE);
+        }
         pos -= addButton(pos, y, ButtonListener.Type.CONFIGURE);
 
         buttonStartX = pos;
@@ -163,7 +168,11 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
             }
             if (type == Type.CONFIGURE) {
                 GuiBase.openGui(
-                    new GuiTabEditor(parent.parent.getParent(), parent.tab)
+                    new GuiTabEditor(
+                        parent.parent.getParent(),
+                        parent.tab,
+                        parent.main
+                    )
                 );
             }
         }
@@ -179,7 +188,7 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
             }
 
             private static String translate(String key) {
-                return "advancedchat.config.tabmenu." + key;
+                return "advancedchathud.config.tabmenu." + key;
             }
 
             public String getDisplayName() {

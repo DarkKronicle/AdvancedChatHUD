@@ -2,7 +2,10 @@ package io.github.darkkronicle.advancedchathud.config;
 
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -43,6 +46,10 @@ public class WidgetListTabs extends WidgetListBase<ChatTab, WidgetTabEntry> {
 
     @Override
     protected Collection<ChatTab> getAllEntries() {
-        return HudConfigStorage.TABS;
+        ArrayList<ChatTab> tabs = new ArrayList<>(
+            Collections.singleton(HudConfigStorage.MAIN_TAB)
+        );
+        tabs.addAll(HudConfigStorage.TABS);
+        return tabs;
     }
 }

@@ -1,8 +1,11 @@
 package io.github.darkkronicle.advancedchathud.gui;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
@@ -30,6 +33,49 @@ public class WindowManager implements IRenderer {
 
     private WindowManager() {
         client = MinecraftClient.getInstance();
+    }
+
+    public void reset() {
+        windows.clear();
+    }
+
+    public void loadFromJson(JsonArray array) {
+        reset();
+        if (array == null || array.size() == 0) {
+            ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
+            base.setSelected(true);
+            windows.add(base);
+            return;
+        }
+        ChatWindow.ChatWindowSerializer serializer = new ChatWindow.ChatWindowSerializer();
+        for (JsonElement e : array) {
+            if (!e.isJsonObject()) {
+                continue;
+            }
+            ChatWindow w;
+            try {
+                w = serializer.load(e.getAsJsonObject());
+                if (w == null) {
+                    continue;
+                }
+            } catch (Exception err) {
+                AdvancedChatHud.LOGGER.error(
+                    "Error while loading in ChatWindow ",
+                    err
+                );
+                continue;
+            }
+            windows.add(w);
+        }
+    }
+
+    public JsonArray saveJson() {
+        JsonArray array = new JsonArray();
+        ChatWindow.ChatWindowSerializer serializer = new ChatWindow.ChatWindowSerializer();
+        for (ChatWindow w : windows) {
+            array.add(serializer.save(w));
+        }
+        return array;
     }
 
     @Override

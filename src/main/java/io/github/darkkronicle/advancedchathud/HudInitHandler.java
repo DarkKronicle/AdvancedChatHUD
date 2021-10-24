@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.util.StringUtils;
+import io.github.darkkronicle.advancedchatcore.AdvancedChatCore;
 import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
 import io.github.darkkronicle.advancedchatcore.chat.ChatScreenSectionHolder;
 import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfigHandler;
@@ -23,6 +24,7 @@ public class HudInitHandler implements IInitializationHandler {
 
     @Override
     public void registerModHandlers() {
+        AdvancedChatCore.FORWARD_TO_HUD = false;
         ConfigManager
             .getInstance()
             .registerConfigHandler(
@@ -70,15 +72,7 @@ public class HudInitHandler implements IInitializationHandler {
             .addOnClear(() -> HudChatMessageHolder.getInstance().clear());
         ChatHistory
             .getInstance()
-            .addOnUpdate((message, type) -> {
-                if (type == IChatMessageProcessor.UpdateType.ADDED) {
-                    HudChatMessageHolder
-                        .getInstance()
-                        .addMessage(new HudChatMessage(message));
-                } else if (type == IChatMessageProcessor.UpdateType.REMOVE) {
-                    HudChatMessageHolder.getInstance().remove(message);
-                }
-            });
+            .addOnUpdate(HudChatMessageHolder.getInstance());
         RenderEventHandler
             .getInstance()
             .registerGameOverlayRenderer(WindowManager.getInstance());

@@ -1,6 +1,7 @@
 package io.github.darkkronicle.advancedchathud.tabs;
 
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import java.util.UUID;
 import lombok.Data;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,6 +20,7 @@ public abstract class AbstractChatTab {
     protected ColorUtil.SimpleColor mainColor;
     protected ColorUtil.SimpleColor borderColor;
     protected ColorUtil.SimpleColor innerColor;
+    protected UUID uuid;
     private int unread = 0;
     protected boolean showUnread;
 
@@ -28,7 +30,8 @@ public abstract class AbstractChatTab {
         ColorUtil.SimpleColor mainColor,
         ColorUtil.SimpleColor borderColor,
         ColorUtil.SimpleColor innerColor,
-        boolean showUnread
+        boolean showUnread,
+        UUID uuid
     ) {
         this.name = name;
         this.abreviation = abreviation;
@@ -36,6 +39,7 @@ public abstract class AbstractChatTab {
         this.showUnread = showUnread;
         this.innerColor = innerColor;
         this.borderColor = borderColor;
+        this.uuid = uuid;
     }
 
     public void addNewUnread() {

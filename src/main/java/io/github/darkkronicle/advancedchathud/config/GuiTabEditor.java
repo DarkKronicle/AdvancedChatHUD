@@ -6,6 +6,8 @@ import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
@@ -16,16 +18,22 @@ import net.minecraft.client.gui.screen.Screen;
 public class GuiTabEditor extends GuiConfigsBase {
 
     private final ChatTab tab;
+    private final boolean main;
 
     public GuiTabEditor(Screen parent, ChatTab tab) {
+        this(parent, tab, false);
+    }
+
+    public GuiTabEditor(Screen parent, ChatTab tab, boolean main) {
         super(
             10,
             50,
             AdvancedChatHud.MOD_ID,
-            null,
+            parent,
             tab.getName().config.getStringValue()
         );
         this.tab = tab;
+        this.main = main;
         this.setParent(parent);
     }
 
@@ -70,7 +78,13 @@ public class GuiTabEditor extends GuiConfigsBase {
     @Override
     public List<ConfigOptionWrapper> getConfigs() {
         ArrayList<IConfigBase> config = new ArrayList<>();
-        for (ConfigStorage.SaveableConfig<? extends IConfigBase> s : tab.getOptions()) {
+        List<ConfigStorage.SaveableConfig<? extends IConfigBase>> options;
+        if (main) {
+            options = tab.getMainEditableOptions();
+        } else {
+            options = tab.getOptions();
+        }
+        for (ConfigStorage.SaveableConfig<? extends IConfigBase> s : options) {
             config.add(s.config);
         }
 
@@ -96,6 +110,30 @@ public class GuiTabEditor extends GuiConfigsBase {
 
     public void back() {
         closeGui(true);
+    }
+
+    @Override
+    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers) {
+        // Override so that on escape stuff still gets saved
+        if (this.activeKeybindButton != null) {
+            this.activeKeybindButton.onKeyPressed(keyCode);
+            return true;
+        } else {
+            if (this.getListWidget().onKeyTyped(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+
+            if (
+                keyCode == KeyCodes.KEY_ESCAPE &&
+                this.parentScreen != GuiUtils.getCurrentScreen()
+            ) {
+                // Make sure to save
+                closeGui(true);
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public static class ButtonListener implements IButtonActionListener {

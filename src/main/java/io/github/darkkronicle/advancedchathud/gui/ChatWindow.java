@@ -1,11 +1,12 @@
 package io.github.darkkronicle.advancedchathud.gui;
 
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
+import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
 import io.github.darkkronicle.advancedchatcore.util.EasingMethod;
 import io.github.darkkronicle.advancedchatcore.util.FluidText;
@@ -18,6 +19,7 @@ import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.EnvType;
@@ -51,6 +53,8 @@ public class ChatWindow {
 
     private final MinecraftClient client;
 
+    @Setter
+    @Getter
     private HudConfigStorage.Visibility visibility = (HudConfigStorage.Visibility) HudConfigStorage.General.VISIBILITY.config.getOptionListValue();
 
     private List<ChatMessage> lines;
@@ -737,5 +741,59 @@ public class ChatWindow {
 
     public void clearLines() {
         this.lines.clear();
+    }
+
+    public static class ChatWindowSerializer implements IJsonSave<ChatWindow> {
+
+        @Override
+        public ChatWindow load(JsonObject obj) {
+            if (!obj.has("tabuuid")) {
+                return null;
+            }
+            String uuidEl = obj.get("tabuuid").getAsString();
+            UUID uuid = UUID.fromString(uuidEl);
+            AbstractChatTab tab = AdvancedChatHud.MAIN_CHAT_TAB.fromUUID(uuid);
+            if (tab == null) {
+                AdvancedChatHud.LOGGER.warn(
+                    "Tab with UUID " + uuidEl + " could not be found!"
+                );
+                return null;
+            }
+            ChatWindow window = new ChatWindow(tab);
+            window.setSelected(obj.get("selected").getAsBoolean());
+            window.setPosition(
+                obj.get("x").getAsInt(),
+                obj.get("y").getAsInt()
+            );
+            window.setVisibility(
+                HudConfigStorage.Visibility.fromVisibilityString(
+                    obj.get("visibility").getAsString()
+                )
+            );
+            window.setDimensions(
+                obj.get("width").getAsInt(),
+                obj.get("height").getAsInt()
+            );
+            return window;
+        }
+
+        @Override
+        public JsonObject save(ChatWindow chatWindow) {
+            JsonObject obj = new JsonObject();
+            obj.addProperty("x", chatWindow.getX());
+            obj.addProperty("y", chatWindow.getY());
+            obj.addProperty("width", chatWindow.getWidth());
+            obj.addProperty("height", chatWindow.getHeight());
+            obj.addProperty(
+                "visibility",
+                chatWindow.getVisibility().getStringValue()
+            );
+            obj.addProperty(
+                "tabuuid",
+                chatWindow.getTab().getUuid().toString()
+            );
+            obj.addProperty("selected", chatWindow.isSelected());
+            return obj;
+        }
     }
 }

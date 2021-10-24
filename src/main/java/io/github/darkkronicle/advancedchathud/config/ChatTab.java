@@ -12,8 +12,10 @@ import io.github.darkkronicle.advancedchatcore.config.options.ConfigSimpleColor;
 import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
 import io.github.darkkronicle.advancedchatcore.util.FindType;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Data;
@@ -27,6 +29,8 @@ public class ChatTab {
     private static String translate(String key) {
         return StringUtils.translate("advancedchathud.config.tab." + key);
     }
+
+    private UUID uuid = UUID.randomUUID();
 
     private ConfigStorage.SaveableConfig<ConfigString> name = ConfigStorage.SaveableConfig.fromConfig(
         "name",
@@ -127,13 +131,26 @@ public class ChatTab {
         showUnread
     );
 
+    /**
+     * Options that the main tab can use
+     */
+    private final ImmutableList<ConfigStorage.SaveableConfig<?>> mainEditableOptions = ImmutableList.of(
+        name,
+        startingMessage,
+        abbreviation,
+        mainColor,
+        borderColor,
+        innerColor,
+        showUnread
+    );
+
     public FindType getFind() {
         return (FindType) findType.config.getOptionListValue();
     }
 
     public List<String> getWidgetHoverLines() {
         String translated = StringUtils.translate(
-            "advancedchat.config.filterdescription"
+            "advancedchathud.config.tabdescription"
         );
         ArrayList<String> hover = new ArrayList<>();
         for (String s : translated.split("\n")) {
@@ -181,6 +198,18 @@ public class ChatTab {
                     option.setValueFromJsonElement(obj.get(conf.key));
                 }
             }
+            if (obj.has("uuid")) {
+                try {
+                    t.setUuid(UUID.fromString(obj.get("uuid").getAsString()));
+                } catch (Exception e) {
+                    // Failed, but a new one will happen
+                    AdvancedChatHud.LOGGER.warn(
+                        "Tab " +
+                        t.getName().config.getStringValue() +
+                        " did not have a UUID. New one will be generated."
+                    );
+                }
+            }
             return t;
         }
 
@@ -190,6 +219,7 @@ public class ChatTab {
             for (ConfigStorage.SaveableConfig<?> option : tab.getOptions()) {
                 obj.add(option.key, option.config.getAsJsonElement());
             }
+            obj.addProperty("uuid", tab.getUuid().toString());
             return obj;
         }
     }

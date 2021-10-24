@@ -20,6 +20,7 @@ import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.config.options.ConfigSimpleColor;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
+import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -348,6 +349,7 @@ public class HudConfigStorage implements IConfigHandler {
                 JsonElement tab = root.get("maintab");
                 if (tab.isJsonObject()) {
                     MAIN_TAB = tabJson.load(tab.getAsJsonObject());
+                    AdvancedChatHud.MAIN_CHAT_TAB.refreshOptions();
                 }
                 JsonElement tabs = root.get("tabs");
                 TABS.clear();
@@ -358,6 +360,17 @@ public class HudConfigStorage implements IConfigHandler {
                         }
                     }
                 }
+                AdvancedChatHud.MAIN_CHAT_TAB.setUpTabs();
+
+                JsonElement windows = root.get("windows");
+                if (windows != null && windows.isJsonArray()) {
+                    WindowManager
+                        .getInstance()
+                        .loadFromJson(windows.getAsJsonArray());
+                } else {
+                    WindowManager.getInstance().loadFromJson(null);
+                }
+
                 ConfigStorage.readOptions(
                     root,
                     General.NAME,
@@ -397,6 +410,7 @@ public class HudConfigStorage implements IConfigHandler {
                 tabs.add(tabJson.save(tab));
             }
             root.add("tabs", tabs);
+            root.add("windows", WindowManager.getInstance().saveJson());
             root.add("config_version", new JsonPrimitive(CONFIG_VERSION));
 
             ConfigStorage.writeJsonToFile(
@@ -424,7 +438,7 @@ public class HudConfigStorage implements IConfigHandler {
 
         private static String translate(String key) {
             return StringUtils.translate(
-                "advancedchat.config.hudlinetype." + key
+                "advancedchathud.config.hudlinetype." + key
             );
         }
 
