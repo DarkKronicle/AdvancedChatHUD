@@ -10,11 +10,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class HudSection extends AdvancedChatScreenSection {

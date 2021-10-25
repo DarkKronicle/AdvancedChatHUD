@@ -223,4 +223,11 @@ public class ChatTab {
             return obj;
         }
     }
+
+    public static ChatTab getMainOptions() {
+        ChatTab tab = new ChatTab();
+        tab.getName().config.setValueFromString("Main");
+        tab.getAbbreviation().config.setValueFromString("Main");
+        return tab;
+    }
 }

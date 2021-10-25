@@ -36,7 +36,7 @@ public class HudConfigStorage implements IConfigHandler {
         AdvancedChatHud.MOD_ID + ".json";
     private static final int CONFIG_VERSION = 1;
     public static final List<ChatTab> TABS = new ArrayList<>();
-    public static ChatTab MAIN_TAB = new ChatTab();
+    public static ChatTab MAIN_TAB = ChatTab.getMainOptions();
 
     public static class General {
 
@@ -224,17 +224,6 @@ public class HudConfigStorage implements IConfigHandler {
             )
         );
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> TAB_SIDE_CHARS = ConfigStorage.SaveableConfig.fromConfig(
-            "tabSideChars",
-            new ConfigInteger(
-                translate("tabsidechars"),
-                3,
-                1,
-                10,
-                translate("info.tabsidechars")
-            )
-        );
-
         public static final ConfigStorage.SaveableConfig<ConfigOptionList> HUD_LINE_TYPE = ConfigStorage.SaveableConfig.fromConfig(
             "hudLineType",
             new ConfigOptionList(
@@ -270,15 +259,6 @@ public class HudConfigStorage implements IConfigHandler {
                 20,
                 1000,
                 translate("info.storedlines")
-            )
-        );
-
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> PERSISTENT_TEXT = ConfigStorage.SaveableConfig.fromConfig(
-            "persistentText",
-            new ConfigBoolean(
-                translate("persistenttext"),
-                false,
-                translate("info.persistenttext")
             )
         );
 
@@ -319,12 +299,10 @@ public class HudConfigStorage implements IConfigHandler {
             FADE_START,
             FADE_TYPE,
             EMPTY_TEXT_COLOR,
-            TAB_SIDE_CHARS,
             HUD_LINE_TYPE,
             ALTERNATE_LINES,
             SHOW_TIME,
             STORED_LINES,
-            PERSISTENT_TEXT,
             MORE_TEXT,
             SEND_TO_CURRENT_TAB
         );

@@ -18,6 +18,7 @@ import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -69,6 +70,11 @@ public class ChatWindow {
     private static final Identifier X_ICON = new Identifier(
         AdvancedChatHud.MOD_ID,
         "textures/gui/chatwindow/x_icon.png"
+    );
+
+    private static final Identifier RESIZE_ICON = new Identifier(
+        AdvancedChatHud.MOD_ID,
+        "textures/gui/chatwindow/resize_icon.png"
     );
 
     public ChatWindow(AbstractChatTab tab) {
@@ -136,6 +142,42 @@ public class ChatWindow {
         }
     }
 
+    private static void drawRect(
+        MatrixStack stack,
+        int x,
+        int y,
+        int width,
+        int height,
+        int color
+    ) {
+        DrawableHelper.fill(stack, x, y, x + width, y + height, color);
+    }
+
+    private static void fill(
+        MatrixStack stack,
+        int x,
+        int y,
+        int x2,
+        int y2,
+        int color
+    ) {
+        DrawableHelper.fill(stack, x, y, x2, y2, color);
+    }
+
+    private static void drawOutline(
+        MatrixStack stack,
+        int x,
+        int y,
+        int width,
+        int height,
+        int color
+    ) {
+        drawRect(stack, x, y, 1, height, color);
+        drawRect(stack, x + width - 1, y, 1, height, color);
+        drawRect(stack, x + 1, y, width - 2, 1, color);
+        drawRect(stack, x + 1, y + height - 1, width - 2, 1, color);
+    }
+
     public void resetScroll() {
         this.scrolledLines = 0;
     }
@@ -168,8 +210,7 @@ public class ChatWindow {
             getLeftX() +
             (int) Math.ceil(
                 HudConfigStorage.General.LEFT_PAD.config.getIntegerValue() +
-                headOffset() /
-                getScale()
+                headOffset()
             )
         );
     }
@@ -306,7 +347,8 @@ public class ChatWindow {
             if (isSelected()) {
                 tab.resetUnread();
             }
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 leftX,
                 getActualY(0) - scaledHeight - 1,
                 scaledWidth,
@@ -317,14 +359,16 @@ public class ChatWindow {
             int newY = getScaledHeight() + scaledBar;
             String label = tab.getAbreviation();
             int labelWidth = StringUtils.getStringWidth(label) + 8;
-            RenderUtils.drawRect(
+            drawRect(
+                matrixStack,
                 leftX,
                 getActualY(newY),
                 labelWidth,
                 scaledBar,
                 tab.getMainColor().color()
             );
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 leftX,
                 getActualY(newY),
                 labelWidth,
@@ -339,7 +383,8 @@ public class ChatWindow {
                 getActualY(newY - 3),
                 ColorUtil.WHITE.color()
             );
-            RenderUtils.drawRect(
+            drawRect(
+                matrixStack,
                 leftX + labelWidth,
                 getActualY(newY),
                 getScaledWidth() - labelWidth,
@@ -348,7 +393,8 @@ public class ChatWindow {
                     ? tab.getMainColor().color()
                     : tab.getInnerColor().color()
             );
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 leftX + labelWidth,
                 getActualY(newY),
                 getScaledWidth() - labelWidth,
@@ -356,21 +402,24 @@ public class ChatWindow {
                 tab.getBorderColor().color()
             );
 
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 rightX - scaledBar,
                 getActualY(newY),
                 scaledBar,
                 scaledBar,
                 tab.getBorderColor().color()
             );
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 rightX - scaledBar * 2 + 1,
                 getActualY(newY),
                 scaledBar,
                 scaledBar,
                 tab.getBorderColor().color()
             );
-            RenderUtils.drawOutline(
+            drawOutline(
+                matrixStack,
                 rightX - scaledBar * 3 + 2,
                 getActualY(newY),
                 scaledBar,
@@ -378,8 +427,26 @@ public class ChatWindow {
                 tab.getBorderColor().color()
             );
 
+            // Close
             RenderUtils.color(1, 1, 1, 1);
             RenderUtils.bindTexture(X_ICON);
+            DrawableHelper.drawTexture(
+                matrixStack,
+                rightX - scaledBar + 1,
+                getActualY(newY - 1),
+                scaledBar - 2,
+                scaledBar - 2,
+                0,
+                0,
+                32,
+                32,
+                32,
+                32
+            );
+
+            // Resize
+            RenderUtils.color(1, 1, 1, 1);
+            RenderUtils.bindTexture(RESIZE_ICON);
             DrawableHelper.drawTexture(
                 matrixStack,
                 rightX - scaledBar * 2 + 2,
@@ -394,6 +461,7 @@ public class ChatWindow {
                 32
             );
 
+            // Visibility
             RenderUtils.bindTexture(visibility.getTexture());
             DrawableHelper.drawTexture(
                 matrixStack,
@@ -408,10 +476,24 @@ public class ChatWindow {
                 32,
                 32
             );
+
+            double mouseX = client.mouse.getX() / 2;
+            double mouseY = client.mouse.getY() / 2;
+            if (isMouseOverVisibility(mouseX, mouseY)) {
+                DrawableHelper.drawStringWithShadow(
+                    matrixStack,
+                    client.textRenderer,
+                    visibility.getDisplayName(),
+                    (int) (mouseX / getScale() + 4),
+                    (int) (mouseY / getScale() - 16),
+                    ColorUtil.WHITE.color()
+                );
+            }
         }
 
         if (chatFocused) {
-            drawRect(
+            fill(
+                matrixStack,
                 leftX,
                 getActualY(y.getValue()),
                 rightX,
@@ -421,7 +503,8 @@ public class ChatWindow {
             // Scroll bar
             float add = (float) (scrolledLines) / (lineCount + 1);
             int scrollHeight = (int) (add * getScaledHeight());
-            RenderUtils.drawRect(
+            drawRect(
+                matrixStack,
                 getScaledWidth() + leftX - 1,
                 getActualY(scrollHeight + 10),
                 1,
@@ -532,7 +615,8 @@ public class ChatWindow {
         }
 
         // Draw background
-        RenderUtils.drawRect(
+        drawRect(
+            matrixStack,
             x,
             getActualY(y),
             backgroundWidth,
@@ -656,20 +740,6 @@ public class ChatWindow {
         return null;
     }
 
-    private static void drawRect(int x1, int y1, int x2, int y2, int color) {
-        if (y1 > y2) {
-            int med = y2;
-            y2 = y1;
-            y1 = med;
-        }
-        if (x1 > x2) {
-            int med = x2;
-            x2 = x1;
-            x1 = med;
-        }
-        RenderUtils.drawRect(x1, y1, x2 - x1, y2 - y1, color);
-    }
-
     public boolean isMouseOverDragBar(double mouseX, double mouseY) {
         return (
             isMouseOver(mouseX, mouseY) &&
@@ -680,15 +750,18 @@ public class ChatWindow {
 
     public boolean onMouseClicked(double mouseX, double mouseY, int button) {
         boolean onButtons =
-            isMouseOverDragBar(mouseX - (getScaledBarHeight() * 2), mouseY) &&
+            isMouseOverDragBar(mouseX - (getScaledBarHeight() * 3), mouseY) &&
             mouseX >= x + width - getScaledBarHeight() * 3;
         if (!onButtons) {
             return false;
         }
         int x = width - (int) (mouseX - this.x);
-        if (x >= 13 && x <= 26) {
+        // Visibility | Resize | Close
+        if (x <= getScaledBarHeight()) {
+            // Close
             WindowManager.getInstance().deleteWindow(this);
-        } else if (x >= 26) {
+        } else if (x >= getScaledBarHeight() * 2) {
+            // Visibility
             visibility = visibility.cycle(true);
         }
         this.client.getSoundManager()
@@ -704,7 +777,17 @@ public class ChatWindow {
     public boolean isMouseOverResize(double mouseX, double mouseY) {
         return (
             isMouseOver(mouseX, mouseY) &&
-            mouseX >= x + width - (getScaledBarHeight()) &&
+            mouseX >= x + width - (getScaledBarHeight() * 2) &&
+            mouseX <= x + width - (getScaledBarHeight()) &&
+            mouseY <= y - height
+        );
+    }
+
+    public boolean isMouseOverVisibility(double mouseX, double mouseY) {
+        return (
+            isMouseOver(mouseX, mouseY) &&
+            mouseX >= x + width - (getScaledBarHeight() * 3) &&
+            mouseX <= x + width - (getScaledBarHeight() * 2) &&
             mouseY <= y - height
         );
     }
