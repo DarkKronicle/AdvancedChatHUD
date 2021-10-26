@@ -4,6 +4,9 @@ import io.github.darkkronicle.advancedchatcore.util.FindType;
 import io.github.darkkronicle.advancedchatcore.util.FluidText;
 import io.github.darkkronicle.advancedchatcore.util.SearchUtils;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
+import io.github.darkkronicle.advancedchathud.config.Match;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import net.minecraft.text.Text;
 
@@ -17,10 +20,7 @@ public class CustomChatTab extends AbstractChatTab {
     private String name;
 
     @Getter
-    private FindType findType;
-
-    @Getter
-    private String findString;
+    private List<Match> matches;
 
     @Getter
     private boolean forward;
@@ -42,8 +42,7 @@ public class CustomChatTab extends AbstractChatTab {
             storage.getUuid()
         );
         this.storage = storage;
-        this.findType = storage.getFind();
-        this.findString = storage.getFindString().config.getStringValue();
+        this.matches = new ArrayList<>(storage.getMatches());
         this.forward = storage.getForward().config.getBooleanValue();
         this.startingMessage =
             storage.getStartingMessage().config.getStringValue();
@@ -52,6 +51,12 @@ public class CustomChatTab extends AbstractChatTab {
     @Override
     public boolean shouldAdd(Text text) {
         FluidText newText = new FluidText(text);
-        return SearchUtils.isMatch(newText.getString(), findString, findType);
+        String search = newText.getString();
+        for (Match m : matches) {
+            if (SearchUtils.isMatch(search, m.getPattern(), m.getFindType())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

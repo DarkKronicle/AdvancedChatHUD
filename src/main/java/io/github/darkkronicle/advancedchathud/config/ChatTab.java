@@ -1,6 +1,8 @@
 package io.github.darkkronicle.advancedchathud.config;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
@@ -14,6 +16,7 @@ import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
 import io.github.darkkronicle.advancedchatcore.util.FindType;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -41,21 +44,9 @@ public class ChatTab {
         )
     );
 
-    private ConfigStorage.SaveableConfig<ConfigString> findString = ConfigStorage.SaveableConfig.fromConfig(
-        "findString",
-        new ConfigString(
-            translate("findstring"),
-            "Divert this message!",
-            translate("info.findstring")
-        )
-    );
-
-    private ConfigStorage.SaveableConfig<ConfigOptionList> findType = ConfigStorage.SaveableConfig.fromConfig(
-        "findType",
-        new ConfigOptionList(
-            translate("findtype"),
-            FindType.LITERAL,
-            translate("info.findtype")
+    private List<Match> matches = new ArrayList<>(
+        Collections.singleton(
+            new Match("I will match to text!", FindType.LITERAL)
         )
     );
 
@@ -120,8 +111,6 @@ public class ChatTab {
 
     private final ImmutableList<ConfigStorage.SaveableConfig<?>> options = ImmutableList.of(
         name,
-        findString,
-        findType,
         startingMessage,
         forward,
         abbreviation,
@@ -145,7 +134,7 @@ public class ChatTab {
     );
 
     public FindType getFind() {
-        return (FindType) findType.config.getOptionListValue();
+        return matches.get(0).getFindType();
     }
 
     public List<String> getWidgetHoverLines() {
@@ -174,9 +163,7 @@ public class ChatTab {
                     )
                     .replaceAll(
                         Pattern.quote("<find>"),
-                        Matcher.quoteReplacement(
-                            findString.config.getStringValue()
-                        )
+                        Matcher.quoteReplacement(matches.get(0).getPattern())
                     )
                     .replaceAll(
                         Pattern.quote("<findtype>"),
@@ -198,6 +185,19 @@ public class ChatTab {
                     option.setValueFromJsonElement(obj.get(conf.key));
                 }
             }
+            Match.MatchSerializer serializer = new Match.MatchSerializer();
+            JsonElement findArr = obj.get("match");
+            if (findArr != null && findArr.isJsonArray()) {
+                t.getMatches().clear();
+                for (JsonElement o : findArr.getAsJsonArray()) {
+                    if (o.isJsonObject()) {
+                        Match match = serializer.load(o.getAsJsonObject());
+                        if (match != null) {
+                            t.getMatches().add(match);
+                        }
+                    }
+                }
+            }
             if (obj.has("uuid")) {
                 try {
                     t.setUuid(UUID.fromString(obj.get("uuid").getAsString()));
@@ -215,10 +215,21 @@ public class ChatTab {
 
         @Override
         public JsonObject save(ChatTab tab) {
+            Match.MatchSerializer serializer = new Match.MatchSerializer();
             JsonObject obj = new JsonObject();
             for (ConfigStorage.SaveableConfig<?> option : tab.getOptions()) {
                 obj.add(option.key, option.config.getAsJsonElement());
             }
+            JsonArray find = new JsonArray();
+            if (tab.getMatches().size() == 0) {
+                tab
+                    .getMatches()
+                    .add(new Match("I will match to text!", FindType.LITERAL));
+            }
+            for (Match m : tab.getMatches()) {
+                find.add(serializer.save(m));
+            }
+            obj.add("match", find);
             obj.addProperty("uuid", tab.getUuid().toString());
             return obj;
         }

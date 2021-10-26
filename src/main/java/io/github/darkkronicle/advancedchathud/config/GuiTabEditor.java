@@ -60,6 +60,23 @@ public class GuiTabEditor extends GuiConfigsBase {
             );
         topx += back.getWidth() + 2;
 
+        if (!main) {
+            String matchesText = ButtonListener.Type.MATCHES.getDisplayName();
+            int matchesWidth = StringUtils.getStringWidth(matchesText) + 10;
+            ButtonGeneric match = new ButtonGeneric(
+                topx + matchesWidth,
+                y,
+                matchesWidth,
+                true,
+                matchesText
+            );
+            this.addButton(
+                    match,
+                    new ButtonListener(ButtonListener.Type.MATCHES, this)
+                );
+            topx += match.getWidth() + 2;
+        }
+
         String exportText = ButtonListener.Type.EXPORT.getDisplayName();
         int exportWidth = StringUtils.getStringWidth(exportText) + 10;
         ButtonGeneric export = new ButtonGeneric(
@@ -156,17 +173,21 @@ public class GuiTabEditor extends GuiConfigsBase {
             } else if (this.type == ButtonListener.Type.EXPORT) {
                 parent.save();
                 GuiBase.openGui(SharingScreen.fromTab(parent.tab, parent));
+            } else if (this.type == Type.MATCHES) {
+                parent.save();
+                GuiBase.openGui(new MatchesEditor(parent, parent.tab));
             }
         }
 
         public enum Type {
             BACK("back"),
-            EXPORT("export");
+            EXPORT("export"),
+            MATCHES("matches");
 
             private final String translation;
 
             private static String translate(String key) {
-                return "advancedchat.gui.button." + key;
+                return "advancedchathud.gui.button." + key;
             }
 
             Type(String key) {
