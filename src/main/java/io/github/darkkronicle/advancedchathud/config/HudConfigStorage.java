@@ -262,24 +262,6 @@ public class HudConfigStorage implements IConfigHandler {
             )
         );
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> MORE_TEXT = ConfigStorage.SaveableConfig.fromConfig(
-            "moreText",
-            new ConfigBoolean(
-                translate("moretext"),
-                false,
-                translate("info.moretext")
-            )
-        );
-
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> SEND_TO_CURRENT_TAB = ConfigStorage.SaveableConfig.fromConfig(
-            "sendToCurrentTab",
-            new ConfigBoolean(
-                translate("sendtocurrenttab"),
-                false,
-                translate("info.sendtocurrenttab")
-            )
-        );
-
         public static final ImmutableList<ConfigStorage.SaveableConfig<? extends IConfigBase>> OPTIONS = ImmutableList.of(
             CHAT_HEADS,
             WIDTH,
@@ -302,9 +284,7 @@ public class HudConfigStorage implements IConfigHandler {
             HUD_LINE_TYPE,
             ALTERNATE_LINES,
             SHOW_TIME,
-            STORED_LINES,
-            MORE_TEXT,
-            SEND_TO_CURRENT_TAB
+            STORED_LINES
         );
     }
 

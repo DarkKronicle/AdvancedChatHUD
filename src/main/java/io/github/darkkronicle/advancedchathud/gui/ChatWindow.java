@@ -100,26 +100,28 @@ public class ChatWindow {
             .getInstance()
             .getMessages();
         for (int i = messages.size() - 1; i >= 0; i--) {
-            addMessage(messages.get(i));
+            addMessage(messages.get(i), false, false);
         }
     }
 
     public void addMessage(HudChatMessage message) {
-        this.addMessage(message, false, false);
+        this.addMessage(message, false, true);
     }
 
     public void addMessage(
         HudChatMessage message,
         boolean force,
-        boolean updateCreation
+        boolean setTicks
     ) {
         if (force || message.getTabs().contains(tab)) {
             ChatMessage newMessage = message
                 .getMessage()
                 .shallowClone(getPaddedWidth());
-            newMessage.setCreationTick(
-                MinecraftClient.getInstance().inGameHud.getTicks()
-            );
+            if (setTicks) {
+                newMessage.setCreationTick(
+                    MinecraftClient.getInstance().inGameHud.getTicks()
+                );
+            }
             this.lines.add(0, newMessage);
             if (scrolledLines > 0) {
                 scrolledLines++;
@@ -131,10 +133,19 @@ public class ChatWindow {
         }
     }
 
+    public int getTotalLines() {
+        int count = 0;
+        for (ChatMessage line : lines) {
+            count += line.getLineCount();
+        }
+        return count;
+    }
+
     public void scroll(double amount) {
         this.scrolledLines = (int) ((double) this.scrolledLines + amount);
-        if (this.scrolledLines > lines.size()) {
-            this.scrolledLines = lines.size();
+        int totalLines = getTotalLines();
+        if (this.scrolledLines > totalLines) {
+            this.scrolledLines = totalLines;
         }
 
         if (this.scrolledLines <= 0) {
@@ -265,12 +276,13 @@ public class ChatWindow {
         }
 
         int lineCount = lines.size();
+        int totalLines = getTotalLines();
 
         boolean chatFocused =
             visibility == HudConfigStorage.Visibility.ALWAYS || focused;
 
-        if (scrolledLines > lineCount) {
-            scrolledLines = lineCount;
+        if (scrolledLines > totalLines) {
+            scrolledLines = totalLines;
         }
 
         matrixStack.push();
@@ -501,7 +513,7 @@ public class ChatWindow {
                 tab.getInnerColor().color()
             );
             // Scroll bar
-            float add = (float) (scrolledLines) / (lineCount + 1);
+            float add = (float) (scrolledLines) / (totalLines + 1);
             int scrollHeight = (int) (add * getScaledHeight());
             drawRect(
                 matrixStack,
