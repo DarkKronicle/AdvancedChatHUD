@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import fi.dy.masa.malilib.gui.GuiListBase;
@@ -9,8 +16,7 @@ import io.github.darkkronicle.advancedchatcore.util.FindType;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import net.minecraft.client.gui.screen.Screen;
 
-public class MatchesEditor
-    extends GuiListBase<Match, WidgetMatchEntry, WidgetListMatches> {
+public class MatchesEditor extends GuiListBase<Match, WidgetMatchEntry, WidgetListMatches> {
 
     private final ChatTab tab;
 
@@ -32,25 +38,13 @@ public class MatchesEditor
 
     protected MatchesEditor(Screen parent, ChatTab tab) {
         super(10, 60);
-        this.title =
-            StringUtils.translate("advancedchathud.config.match.screen.name");
+        this.title = StringUtils.translate("advancedchathud.config.match.screen.name");
         this.tab = tab;
         this.setParent(parent);
     }
 
-    protected int addButton(
-        int x,
-        int y,
-        ButtonListener.Type type,
-        boolean rightAlign
-    ) {
-        ButtonGeneric button = new ButtonGeneric(
-            x,
-            y,
-            -1,
-            rightAlign,
-            type.getDisplayName()
-        );
+    protected int addButton(int x, int y, ButtonListener.Type type, boolean rightAlign) {
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, rightAlign, type.getDisplayName());
         this.addButton(button, new ButtonListener(type, this));
 
         return button.getWidth();
@@ -59,14 +53,7 @@ public class MatchesEditor
     @Override
     protected WidgetListMatches createListWidget(int listX, int listY) {
         return new WidgetListMatches(
-            listX,
-            listY,
-            this.getBrowserWidth(),
-            this.getBrowserHeight(),
-            null,
-            tab,
-            this
-        );
+                listX, listY, this.getBrowserWidth(), this.getBrowserHeight(), null, tab, this);
     }
 
     @Override
@@ -80,9 +67,7 @@ public class MatchesEditor
     }
 
     public void addMatch() {
-        tab
-            .getMatches()
-            .add(new Match("I will match to text!", FindType.LITERAL));
+        tab.getMatches().add(new Match("I will match to text!", FindType.LITERAL));
         getListWidget().refreshEntries();
     }
 
@@ -101,10 +86,7 @@ public class MatchesEditor
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             if (this.type == ButtonListener.Type.ADD_MATCH) {
                 this.gui.addMatch();
             } else if (this.type == ButtonListener.Type.BACK) {

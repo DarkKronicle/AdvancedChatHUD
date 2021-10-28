@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.tabs;
 
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
@@ -7,9 +14,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 
-/**
- * Base ChatTab that allows for custom chat tabs in AdvancedChatHud.
- */
+/** Base ChatTab that allows for custom chat tabs in AdvancedChatHud. */
 @Environment(EnvType.CLIENT)
 @Data
 public abstract class AbstractChatTab {
@@ -25,14 +30,13 @@ public abstract class AbstractChatTab {
     protected boolean showUnread;
 
     public AbstractChatTab(
-        String name,
-        String abreviation,
-        ColorUtil.SimpleColor mainColor,
-        ColorUtil.SimpleColor borderColor,
-        ColorUtil.SimpleColor innerColor,
-        boolean showUnread,
-        UUID uuid
-    ) {
+            String name,
+            String abreviation,
+            ColorUtil.SimpleColor mainColor,
+            ColorUtil.SimpleColor borderColor,
+            ColorUtil.SimpleColor innerColor,
+            boolean showUnread,
+            UUID uuid) {
         this.name = name;
         this.abreviation = abreviation;
         this.mainColor = mainColor;

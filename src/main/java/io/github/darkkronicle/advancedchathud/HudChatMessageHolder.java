@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud;
 
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
@@ -13,8 +20,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class HudChatMessageHolder implements IChatMessageProcessor {
 
-    @Getter
-    private final List<HudChatMessage> messages = new ArrayList<>();
+    @Getter private final List<HudChatMessage> messages = new ArrayList<>();
 
     private static final HudChatMessageHolder INSTANCE = new HudChatMessageHolder();
 
@@ -41,10 +47,7 @@ public class HudChatMessageHolder implements IChatMessageProcessor {
     public void addMessage(HudChatMessage message) {
         messages.add(0, message);
         WindowManager.getInstance().onNewMessage(message);
-        while (
-            messages.size() >
-            HudConfigStorage.General.STORED_LINES.config.getIntegerValue()
-        ) {
+        while (messages.size() > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
             messages.remove(messages.size() - 1);
         }
     }

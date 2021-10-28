@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.mixin;
 
 import io.github.darkkronicle.advancedchathud.gui.WindowManager;
@@ -17,11 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinChatHud {
 
     @Inject(at = @At("HEAD"), method = "getText", cancellable = true)
-    private void getTextAt(
-        double X,
-        double Y,
-        CallbackInfoReturnable<Style> ci
-    ) {
+    private void getTextAt(double X, double Y, CallbackInfoReturnable<Style> ci) {
         ci.setReturnValue(WindowManager.getInstance().getText(X, Y));
     }
 

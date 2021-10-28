@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -16,8 +23,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 
 /*
-    This class is based heavily off of https://github.com/maruohon/minihud/blob/d565d39c68bdcd3ed1e1cf2007491e03d9659f34/src/main/java/fi/dy/masa/minihud/gui/widgets/WidgetShapeEntry.java#L19 which is off the GNU LGPL
- */
+   This class is based heavily off of https://github.com/maruohon/minihud/blob/d565d39c68bdcd3ed1e1cf2007491e03d9659f34/src/main/java/fi/dy/masa/minihud/gui/widgets/WidgetShapeEntry.java#L19 which is off the GNU LGPL
+*/
 @Environment(EnvType.CLIENT)
 public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
 
@@ -29,15 +36,14 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
     private boolean main = true;
 
     public WidgetTabEntry(
-        int x,
-        int y,
-        int width,
-        int height,
-        boolean isOdd,
-        ChatTab tab,
-        int listIndex,
-        WidgetListTabs parent
-    ) {
+            int x,
+            int y,
+            int width,
+            int height,
+            boolean isOdd,
+            ChatTab tab,
+            int listIndex,
+            WidgetListTabs parent) {
         super(x, y, width, height, tab, listIndex);
         this.parent = parent;
         this.isOdd = isOdd;
@@ -58,61 +64,33 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
     }
 
     protected int addButton(int x, int y, ButtonListener.Type type) {
-        ButtonGeneric button = new ButtonGeneric(
-            x,
-            y,
-            -1,
-            true,
-            type.getDisplayName()
-        );
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, true, type.getDisplayName());
         this.addButton(button, new ButtonListener(type, this));
 
         return button.getWidth() + 1;
     }
 
     @Override
-    public void render(
-        int mouseX,
-        int mouseY,
-        boolean selected,
-        MatrixStack matrixStack
-    ) {
+    public void render(int mouseX, int mouseY, boolean selected, MatrixStack matrixStack) {
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY)) {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(150).color()
-            );
+                    this.x,
+                    this.y,
+                    this.width,
+                    this.height,
+                    ColorUtil.WHITE.withAlpha(150).color());
         } else if (this.isOdd) {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(70).color()
-            );
+                    this.x, this.y, this.width, this.height, ColorUtil.WHITE.withAlpha(70).color());
         } else {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(50).color()
-            );
+                    this.x, this.y, this.width, this.height, ColorUtil.WHITE.withAlpha(50).color());
         }
         String name = this.tab.getName().config.getStringValue();
-        this.drawString(
-                this.x + 4,
-                this.y + 7,
-                ColorUtil.WHITE.color(),
-                name,
-                matrixStack
-            );
+        this.drawString(this.x + 4, this.y + 7, ColorUtil.WHITE.color(), name, matrixStack);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         RenderSystem.disableBlend();
@@ -124,25 +102,14 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
 
     @Override
     public void postRenderHovered(
-        int mouseX,
-        int mouseY,
-        boolean selected,
-        MatrixStack matrixStack
-    ) {
+            int mouseX, int mouseY, boolean selected, MatrixStack matrixStack) {
         super.postRenderHovered(mouseX, mouseY, selected, matrixStack);
 
-        if (
-            mouseX >= this.x &&
-            mouseX < this.buttonStartX &&
-            mouseY >= this.y &&
-            mouseY <= this.y + this.height
-        ) {
-            RenderUtils.drawHoverText(
-                mouseX,
-                mouseY,
-                this.hoverLines,
-                matrixStack
-            );
+        if (mouseX >= this.x
+                && mouseX < this.buttonStartX
+                && mouseY >= this.y
+                && mouseY <= this.y + this.height) {
+            RenderUtils.drawHoverText(mouseX, mouseY, this.hoverLines, matrixStack);
         }
     }
 
@@ -157,10 +124,7 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             if (type == Type.REMOVE) {
                 HudConfigStorage.TABS.remove(parent.tab);
                 parent.parent.refreshEntries();
@@ -168,12 +132,7 @@ public class WidgetTabEntry extends WidgetListEntryBase<ChatTab> {
             }
             if (type == Type.CONFIGURE) {
                 GuiBase.openGui(
-                    new GuiTabEditor(
-                        parent.parent.getParent(),
-                        parent.tab,
-                        parent.main
-                    )
-                );
+                        new GuiTabEditor(parent.parent.getParent(), parent.tab, parent.main));
             }
         }
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import com.google.gson.Gson;
@@ -13,9 +20,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import net.minecraft.client.gui.screen.Screen;
 
-/**
- * Screen for importing and exporting {@link ChatTab}.
- */
+/** Screen for importing and exporting {@link ChatTab}. */
 public class SharingScreen extends GuiBase {
 
     private final String starting;
@@ -28,9 +33,7 @@ public class SharingScreen extends GuiBase {
         this.starting = starting;
     }
 
-    /**
-     * Creates a SharingScreen from a tab
-     */
+    /** Creates a SharingScreen from a tab */
     public static SharingScreen fromTab(ChatTab tab, Screen parent) {
         ChatTab.ChatTabJsonSave tabJsonSave = new ChatTab.ChatTabJsonSave();
         return new SharingScreen(GSON.toJson(tabJsonSave.save(tab)), parent);
@@ -56,8 +59,7 @@ public class SharingScreen extends GuiBase {
         int tabWidth = StringUtils.getStringWidth(tabName) + 10;
         this.addButton(
                 new ButtonGeneric(x, y, tabWidth, 20, tabName),
-                new ButtonListener(ButtonListener.Type.IMPORT_TAB, this)
-            );
+                new ButtonListener(ButtonListener.Type.IMPORT_TAB, this));
     }
 
     private static class ButtonListener implements IButtonActionListener {
@@ -89,42 +91,35 @@ public class SharingScreen extends GuiBase {
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             try {
                 if (parent.text.getText().equals("")) {
                     throw new NullPointerException("Message can't be blank!");
                 }
                 if (type == Type.IMPORT_TAB) {
                     ChatTab.ChatTabJsonSave tabSave = new ChatTab.ChatTabJsonSave();
-                    ChatTab tab = tabSave.load(
-                        new JsonParser()
-                            .parse(parent.text.getText())
-                            .getAsJsonObject()
-                    );
+                    ChatTab tab =
+                            tabSave.load(
+                                    new JsonParser()
+                                            .parse(parent.text.getText())
+                                            .getAsJsonObject());
                     if (tab == null) {
                         throw new NullPointerException("Filter is null!");
                     }
                     HudConfigStorage.TABS.add(tab);
                     AdvancedChatHud.MAIN_CHAT_TAB.setUpTabs();
                     parent.addGuiMessage(
-                        Message.MessageType.SUCCESS,
-                        5000,
-                        StringUtils.translate(
-                            "advancedchat.gui.message.successful"
-                        )
-                    );
+                            Message.MessageType.SUCCESS,
+                            5000,
+                            StringUtils.translate("advancedchat.gui.message.successful"));
                 }
             } catch (Exception e) {
                 parent.addGuiMessage(
-                    Message.MessageType.ERROR,
-                    10000,
-                    StringUtils.translate("advancedchat.gui.message.error") +
-                    ": " +
-                    e.getMessage()
-                );
+                        Message.MessageType.ERROR,
+                        10000,
+                        StringUtils.translate("advancedchat.gui.message.error")
+                                + ": "
+                                + e.getMessage());
             }
         }
     }

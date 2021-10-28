@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -26,22 +33,21 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
     private final WidgetListMatches parent;
     private final boolean isOdd;
     private TextFieldWrapper<GuiTextFieldGeneric> name;
-    private ConfigOptionList findType = new ConfigOptionList(
-        "advancedchathud.config.match.findtype",
-        FindType.LITERAL,
-        "advancedchathud.config.match.info.findtype"
-    );
+    private ConfigOptionList findType =
+            new ConfigOptionList(
+                    "advancedchathud.config.match.findtype",
+                    FindType.LITERAL,
+                    "advancedchathud.config.match.info.findtype");
 
     public WidgetMatchEntry(
-        int x,
-        int y,
-        int width,
-        int height,
-        boolean isOdd,
-        Match entry,
-        int listIndex,
-        WidgetListMatches parent
-    ) {
+            int x,
+            int y,
+            int width,
+            int height,
+            boolean isOdd,
+            Match entry,
+            int listIndex,
+            WidgetListMatches parent) {
         super(x, y, width, height, entry, listIndex);
         this.isOdd = isOdd;
         this.parent = parent;
@@ -57,38 +63,29 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
         int replaceWidth = 100;
         int nameWidth = width - replaceWidth - removeWidth;
         this.findType.setOptionListValue(entry.getFindType());
-        ConfigButtonOptionList findType = new ConfigButtonOptionList(
-            pos - replaceWidth,
-            y,
-            replaceWidth,
-            20,
-            this.findType
-        );
+        ConfigButtonOptionList findType =
+                new ConfigButtonOptionList(pos - replaceWidth, y, replaceWidth, 20, this.findType);
         this.addButton(
                 findType,
                 (button, mouseButton) -> {
-                    entry.setFindType(
-                        (FindType) this.findType.getOptionListValue()
-                    );
-                }
-            );
+                    entry.setFindType((FindType) this.findType.getOptionListValue());
+                });
 
         pos -= replaceWidth + 1;
-        GuiTextFieldGeneric nameField = new GuiTextFieldGeneric(
-            pos - nameWidth,
-            y,
-            nameWidth,
-            20,
-            MinecraftClient.getInstance().textRenderer
-        );
+        GuiTextFieldGeneric nameField =
+                new GuiTextFieldGeneric(
+                        pos - nameWidth,
+                        y,
+                        nameWidth,
+                        20,
+                        MinecraftClient.getInstance().textRenderer);
         nameField.setMaxLength(64000);
         nameField.setText(entry.getPattern());
         name = new TextFieldWrapper<>(nameField, new SaveListener(this));
         parent.addTextField(name);
     }
 
-    private static class SaveListener
-        implements ITextFieldListener<GuiTextFieldGeneric> {
+    private static class SaveListener implements ITextFieldListener<GuiTextFieldGeneric> {
 
         private final WidgetMatchEntry parent;
 
@@ -104,13 +101,7 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
     }
 
     protected int addButton(int x, int y, ButtonListener.Type type) {
-        ButtonGeneric button = new ButtonGeneric(
-            x,
-            y,
-            -1,
-            true,
-            type.getDisplayName()
-        );
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, true, type.getDisplayName());
         this.addButton(button, new ButtonListener(type, this));
 
         return button.getWidth() + 1;
@@ -134,11 +125,7 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
     }
 
     @Override
-    protected boolean onMouseClickedImpl(
-        int mouseX,
-        int mouseY,
-        int mouseButton
-    ) {
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton) {
         if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton)) {
             return true;
         }
@@ -146,27 +133,21 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
         boolean ret = false;
 
         if (this.name != null) {
-            ret =
-                this.name.getTextField()
-                    .mouseClicked(mouseX, mouseY, mouseButton);
+            ret = this.name.getTextField().mouseClicked(mouseX, mouseY, mouseButton);
         }
 
         if (!this.subWidgets.isEmpty()) {
             for (WidgetBase widget : this.subWidgets) {
                 ret |=
-                    widget.isMouseOver(mouseX, mouseY) &&
-                    widget.onMouseClicked(mouseX, mouseY, mouseButton);
+                        widget.isMouseOver(mouseX, mouseY)
+                                && widget.onMouseClicked(mouseX, mouseY, mouseButton);
             }
         }
 
         return ret;
     }
 
-    protected void drawTextFields(
-        int mouseX,
-        int mouseY,
-        MatrixStack matrixStack
-    ) {
+    protected void drawTextFields(int mouseX, int mouseY, MatrixStack matrixStack) {
         if (this.name != null) {
             this.name.getTextField().render(matrixStack, mouseX, mouseY, 0f);
         }
@@ -177,19 +158,13 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
         private final ButtonListener.Type type;
         private final WidgetMatchEntry parent;
 
-        public ButtonListener(
-            ButtonListener.Type type,
-            WidgetMatchEntry parent
-        ) {
+        public ButtonListener(ButtonListener.Type type, WidgetMatchEntry parent) {
             this.parent = parent;
             this.type = type;
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             if (type == ButtonListener.Type.REMOVE) {
                 parent.parent.tab.getMatches().remove(parent.entry);
                 parent.parent.refreshEntries();
@@ -216,39 +191,23 @@ public class WidgetMatchEntry extends WidgetListEntryBase<Match> {
     }
 
     @Override
-    public void render(
-        int mouseX,
-        int mouseY,
-        boolean selected,
-        MatrixStack matrixStack
-    ) {
+    public void render(int mouseX, int mouseY, boolean selected, MatrixStack matrixStack) {
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY)) {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(150).color()
-            );
+                    this.x,
+                    this.y,
+                    this.width,
+                    this.height,
+                    ColorUtil.WHITE.withAlpha(150).color());
         } else if (this.isOdd) {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(70).color()
-            );
+                    this.x, this.y, this.width, this.height, ColorUtil.WHITE.withAlpha(70).color());
         } else {
             RenderUtils.drawRect(
-                this.x,
-                this.y,
-                this.width,
-                this.height,
-                ColorUtil.WHITE.withAlpha(50).color()
-            );
+                    this.x, this.y, this.width, this.height, ColorUtil.WHITE.withAlpha(50).color());
         }
 
         RenderUtils.color(1f, 1f, 1f, 1f);

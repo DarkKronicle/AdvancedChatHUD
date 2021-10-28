@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.gui;
 
 import com.google.gson.JsonObject;
@@ -18,7 +25,6 @@ import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -40,48 +46,38 @@ public class ChatWindow {
 
     private int scrolledLines = 0;
 
-    @Getter
-    private int y;
+    @Getter private int y;
 
-    @Getter
-    private int x;
+    @Getter private int x;
 
-    @Getter
-    private int width;
+    @Getter private int width;
 
-    @Getter
-    private int height;
+    @Getter private int height;
 
     private final MinecraftClient client;
 
-    @Setter
-    @Getter
-    private HudConfigStorage.Visibility visibility = (HudConfigStorage.Visibility) HudConfigStorage.General.VISIBILITY.config.getOptionListValue();
+    @Setter @Getter
+    private HudConfigStorage.Visibility visibility =
+            (HudConfigStorage.Visibility)
+                    HudConfigStorage.General.VISIBILITY.config.getOptionListValue();
 
     private List<ChatMessage> lines;
 
-    @Getter
-    @Setter
-    private boolean selected;
+    @Getter @Setter private boolean selected;
 
-    @Getter
-    private AbstractChatTab tab;
+    @Getter private AbstractChatTab tab;
 
-    private static final Identifier X_ICON = new Identifier(
-        AdvancedChatHud.MOD_ID,
-        "textures/gui/chatwindow/x_icon.png"
-    );
+    private static final Identifier X_ICON =
+            new Identifier(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/x_icon.png");
 
-    private static final Identifier RESIZE_ICON = new Identifier(
-        AdvancedChatHud.MOD_ID,
-        "textures/gui/chatwindow/resize_icon.png"
-    );
+    private static final Identifier RESIZE_ICON =
+            new Identifier(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/resize_icon.png");
 
     public ChatWindow(AbstractChatTab tab) {
         this.client = MinecraftClient.getInstance();
         this.y =
-            client.getWindow().getScaledHeight() -
-            HudConfigStorage.General.Y.config.getIntegerValue();
+                client.getWindow().getScaledHeight()
+                        - HudConfigStorage.General.Y.config.getIntegerValue();
         this.x = HudConfigStorage.General.X.config.getIntegerValue();
         this.width = HudConfigStorage.General.WIDTH.config.getIntegerValue();
         this.height = HudConfigStorage.General.HEIGHT.config.getIntegerValue();
@@ -96,9 +92,7 @@ public class ChatWindow {
     public void setTab(AbstractChatTab tab) {
         this.tab = tab;
         this.lines = new ArrayList<>();
-        List<HudChatMessage> messages = HudChatMessageHolder
-            .getInstance()
-            .getMessages();
+        List<HudChatMessage> messages = HudChatMessageHolder.getInstance().getMessages();
         for (int i = messages.size() - 1; i >= 0; i--) {
             addMessage(messages.get(i), false, false);
         }
@@ -108,25 +102,18 @@ public class ChatWindow {
         this.addMessage(message, false, true);
     }
 
-    public void addMessage(
-        HudChatMessage message,
-        boolean force,
-        boolean setTicks
-    ) {
+    public void addMessage(HudChatMessage message, boolean force, boolean setTicks) {
         if (force || message.getTabs().contains(tab)) {
-            ChatMessage newMessage = message
-                .getMessage()
-                .shallowClone(getPaddedWidth());
+            ChatMessage newMessage = message.getMessage().shallowClone(getPaddedWidth());
             if (setTicks) {
-                newMessage.setCreationTick(
-                    MinecraftClient.getInstance().inGameHud.getTicks()
-                );
+                newMessage.setCreationTick(MinecraftClient.getInstance().inGameHud.getTicks());
             }
             this.lines.add(0, newMessage);
             if (scrolledLines > 0) {
                 scrolledLines++;
             }
-            int visibleMessagesMaxSize = HudConfigStorage.General.STORED_LINES.config.getIntegerValue();
+            int visibleMessagesMaxSize =
+                    HudConfigStorage.General.STORED_LINES.config.getIntegerValue();
             while (this.lines.size() > visibleMessagesMaxSize) {
                 this.lines.remove(this.lines.size() - 1);
             }
@@ -154,35 +141,16 @@ public class ChatWindow {
     }
 
     private static void drawRect(
-        MatrixStack stack,
-        int x,
-        int y,
-        int width,
-        int height,
-        int color
-    ) {
+            MatrixStack stack, int x, int y, int width, int height, int color) {
         DrawableHelper.fill(stack, x, y, x + width, y + height, color);
     }
 
-    private static void fill(
-        MatrixStack stack,
-        int x,
-        int y,
-        int x2,
-        int y2,
-        int color
-    ) {
+    private static void fill(MatrixStack stack, int x, int y, int x2, int y2, int color) {
         DrawableHelper.fill(stack, x, y, x2, y2, color);
     }
 
     private static void drawOutline(
-        MatrixStack stack,
-        int x,
-        int y,
-        int width,
-        int height,
-        int color
-    ) {
+            MatrixStack stack, int x, int y, int width, int height, int color) {
         drawRect(stack, x, y, 1, height, color);
         drawRect(stack, x + width - 1, y, 1, height, color);
         drawRect(stack, x + 1, y, width - 2, 1, color);
@@ -194,18 +162,14 @@ public class ChatWindow {
     }
 
     public int getPaddedWidth() {
-        return (
-            getScaledWidth() -
-            HudConfigStorage.General.LEFT_PAD.config.getIntegerValue() -
-            HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue() -
-            headOffset()
-        );
+        return (getScaledWidth()
+                - HudConfigStorage.General.LEFT_PAD.config.getIntegerValue()
+                - HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue()
+                - headOffset());
     }
 
     private int headOffset() {
-        return HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue()
-            ? 10
-            : 0;
+        return HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue() ? 10 : 0;
     }
 
     private int getActualY(int y) {
@@ -217,13 +181,11 @@ public class ChatWindow {
     }
 
     private int getPaddedLeftX() {
-        return (
-            getLeftX() +
-            (int) Math.ceil(
-                HudConfigStorage.General.LEFT_PAD.config.getIntegerValue() +
-                headOffset()
-            )
-        );
+        return (getLeftX()
+                + (int)
+                        Math.ceil(
+                                HudConfigStorage.General.LEFT_PAD.config.getIntegerValue()
+                                        + headOffset()));
     }
 
     private double getScale() {
@@ -235,10 +197,7 @@ public class ChatWindow {
     }
 
     private int getPaddedRightX() {
-        return (
-            getRightX() -
-            HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue()
-        );
+        return (getRightX() - HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue());
     }
 
     public int getActualHeight() {
@@ -262,12 +221,10 @@ public class ChatWindow {
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return (
-            x <= mouseX &&
-            x + width >= mouseX &&
-            y >= mouseY &&
-            y - getActualHeight() <= mouseY
-        );
+        return (x <= mouseX
+                && x + width >= mouseX
+                && y >= mouseY
+                && y - getActualHeight() <= mouseY);
     }
 
     public void render(MatrixStack matrixStack, int ticks, boolean focused) {
@@ -278,8 +235,7 @@ public class ChatWindow {
         int lineCount = lines.size();
         int totalLines = getTotalLines();
 
-        boolean chatFocused =
-            visibility == HudConfigStorage.Visibility.ALWAYS || focused;
+        boolean chatFocused = visibility == HudConfigStorage.Visibility.ALWAYS || focused;
 
         if (scrolledLines > totalLines) {
             scrolledLines = totalLines;
@@ -296,11 +252,11 @@ public class ChatWindow {
         int padLX = getPaddedLeftX();
         int rightX = getRightX();
         int padRX = getPaddedRightX();
-        LimitedInteger y = new LimitedInteger(
-            getScaledHeight() -
-            HudConfigStorage.General.TOP_PAD.config.getIntegerValue(),
-            HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue()
-        );
+        LimitedInteger y =
+                new LimitedInteger(
+                        getScaledHeight()
+                                - HudConfigStorage.General.TOP_PAD.config.getIntegerValue(),
+                        HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
 
         for (int j = 0; j < this.lines.size(); j++) {
             ChatMessage message = this.lines.get(j);
@@ -311,42 +267,35 @@ public class ChatWindow {
                 if (lines < scrolledLines) {
                     continue;
                 }
-                if (
-                    !y.incrementIfPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
-                    )
-                ) {
+                if (!y.incrementIfPossible(
+                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
                 }
                 ChatMessage.AdvancedChatLine line = message.getLines().get(i);
                 drawLine(
-                    matrixStack,
-                    line,
-                    leftX,
-                    y.getValue(),
-                    padLX,
-                    padRX,
-                    lineIndex,
-                    j,
-                    renderedLines,
-                    chatFocused,
-                    ticks
-                );
+                        matrixStack,
+                        line,
+                        leftX,
+                        y.getValue(),
+                        padLX,
+                        padRX,
+                        lineIndex,
+                        j,
+                        renderedLines,
+                        chatFocused,
+                        ticks);
                 renderedLines++;
             }
             if (lines >= scrolledLines) {
                 if (lines == lineCount) {
                     break;
                 }
-                if (
-                    !y.isPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() +
-                        HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue()
-                    ) ||
-                    !y.incrementIfPossible(
-                        HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue()
-                    )
-                ) {
+                if (!y.isPossible(
+                                HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
+                                        + HudConfigStorage.General.MESSAGE_SPACE.config
+                                                .getIntegerValue())
+                        || !y.incrementIfPossible(
+                                HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
                     break;
                 }
             }
@@ -360,206 +309,185 @@ public class ChatWindow {
                 tab.resetUnread();
             }
             drawOutline(
-                matrixStack,
-                leftX,
-                getActualY(0) - scaledHeight - 1,
-                scaledWidth,
-                scaledHeight + 1,
-                tab.getBorderColor().color()
-            );
+                    matrixStack,
+                    leftX,
+                    getActualY(0) - scaledHeight - 1,
+                    scaledWidth,
+                    scaledHeight + 1,
+                    tab.getBorderColor().color());
             int scaledBar = getBarHeight();
             int newY = getScaledHeight() + scaledBar;
             String label = tab.getAbreviation();
             int labelWidth = StringUtils.getStringWidth(label) + 8;
             drawRect(
-                matrixStack,
-                leftX,
-                getActualY(newY),
-                labelWidth,
-                scaledBar,
-                tab.getMainColor().color()
-            );
+                    matrixStack,
+                    leftX,
+                    getActualY(newY),
+                    labelWidth,
+                    scaledBar,
+                    tab.getMainColor().color());
             drawOutline(
-                matrixStack,
-                leftX,
-                getActualY(newY),
-                labelWidth,
-                scaledBar,
-                tab.getBorderColor().withAlpha(180).color()
-            );
+                    matrixStack,
+                    leftX,
+                    getActualY(newY),
+                    labelWidth,
+                    scaledBar,
+                    tab.getBorderColor().withAlpha(180).color());
             DrawableHelper.drawCenteredText(
-                matrixStack,
-                MinecraftClient.getInstance().textRenderer,
-                tab.getAbreviation(),
-                leftX + (labelWidth) / 2,
-                getActualY(newY - 3),
-                ColorUtil.WHITE.color()
-            );
+                    matrixStack,
+                    MinecraftClient.getInstance().textRenderer,
+                    tab.getAbreviation(),
+                    leftX + (labelWidth) / 2,
+                    getActualY(newY - 3),
+                    ColorUtil.WHITE.color());
             drawRect(
-                matrixStack,
-                leftX + labelWidth,
-                getActualY(newY),
-                getScaledWidth() - labelWidth,
-                scaledBar,
-                selected
-                    ? tab.getMainColor().color()
-                    : tab.getInnerColor().color()
-            );
+                    matrixStack,
+                    leftX + labelWidth,
+                    getActualY(newY),
+                    getScaledWidth() - labelWidth,
+                    scaledBar,
+                    selected ? tab.getMainColor().color() : tab.getInnerColor().color());
             drawOutline(
-                matrixStack,
-                leftX + labelWidth,
-                getActualY(newY),
-                getScaledWidth() - labelWidth,
-                scaledBar,
-                tab.getBorderColor().color()
-            );
+                    matrixStack,
+                    leftX + labelWidth,
+                    getActualY(newY),
+                    getScaledWidth() - labelWidth,
+                    scaledBar,
+                    tab.getBorderColor().color());
 
             drawOutline(
-                matrixStack,
-                rightX - scaledBar,
-                getActualY(newY),
-                scaledBar,
-                scaledBar,
-                tab.getBorderColor().color()
-            );
+                    matrixStack,
+                    rightX - scaledBar,
+                    getActualY(newY),
+                    scaledBar,
+                    scaledBar,
+                    tab.getBorderColor().color());
             drawOutline(
-                matrixStack,
-                rightX - scaledBar * 2 + 1,
-                getActualY(newY),
-                scaledBar,
-                scaledBar,
-                tab.getBorderColor().color()
-            );
+                    matrixStack,
+                    rightX - scaledBar * 2 + 1,
+                    getActualY(newY),
+                    scaledBar,
+                    scaledBar,
+                    tab.getBorderColor().color());
             drawOutline(
-                matrixStack,
-                rightX - scaledBar * 3 + 2,
-                getActualY(newY),
-                scaledBar,
-                scaledBar,
-                tab.getBorderColor().color()
-            );
+                    matrixStack,
+                    rightX - scaledBar * 3 + 2,
+                    getActualY(newY),
+                    scaledBar,
+                    scaledBar,
+                    tab.getBorderColor().color());
 
             // Close
             RenderUtils.color(1, 1, 1, 1);
             RenderUtils.bindTexture(X_ICON);
             DrawableHelper.drawTexture(
-                matrixStack,
-                rightX - scaledBar + 1,
-                getActualY(newY - 1),
-                scaledBar - 2,
-                scaledBar - 2,
-                0,
-                0,
-                32,
-                32,
-                32,
-                32
-            );
+                    matrixStack,
+                    rightX - scaledBar + 1,
+                    getActualY(newY - 1),
+                    scaledBar - 2,
+                    scaledBar - 2,
+                    0,
+                    0,
+                    32,
+                    32,
+                    32,
+                    32);
 
             // Resize
             RenderUtils.color(1, 1, 1, 1);
             RenderUtils.bindTexture(RESIZE_ICON);
             DrawableHelper.drawTexture(
-                matrixStack,
-                rightX - scaledBar * 2 + 2,
-                getActualY(newY - 1),
-                scaledBar - 2,
-                scaledBar - 2,
-                0,
-                0,
-                32,
-                32,
-                32,
-                32
-            );
+                    matrixStack,
+                    rightX - scaledBar * 2 + 2,
+                    getActualY(newY - 1),
+                    scaledBar - 2,
+                    scaledBar - 2,
+                    0,
+                    0,
+                    32,
+                    32,
+                    32,
+                    32);
 
             // Visibility
             RenderUtils.bindTexture(visibility.getTexture());
             DrawableHelper.drawTexture(
-                matrixStack,
-                rightX - scaledBar * 3 + 3,
-                getActualY(newY - 1),
-                scaledBar - 2,
-                scaledBar - 2,
-                0,
-                0,
-                32,
-                32,
-                32,
-                32
-            );
+                    matrixStack,
+                    rightX - scaledBar * 3 + 3,
+                    getActualY(newY - 1),
+                    scaledBar - 2,
+                    scaledBar - 2,
+                    0,
+                    0,
+                    32,
+                    32,
+                    32,
+                    32);
 
             double mouseX = client.mouse.getX() / 2;
             double mouseY = client.mouse.getY() / 2;
             if (isMouseOverVisibility(mouseX, mouseY)) {
                 DrawableHelper.drawStringWithShadow(
-                    matrixStack,
-                    client.textRenderer,
-                    visibility.getDisplayName(),
-                    (int) (mouseX / getScale() + 4),
-                    (int) (mouseY / getScale() - 16),
-                    ColorUtil.WHITE.color()
-                );
+                        matrixStack,
+                        client.textRenderer,
+                        visibility.getDisplayName(),
+                        (int) (mouseX / getScale() + 4),
+                        (int) (mouseY / getScale() - 16),
+                        ColorUtil.WHITE.color());
             }
         }
 
         if (chatFocused) {
             fill(
-                matrixStack,
-                leftX,
-                getActualY(y.getValue()),
-                rightX,
-                getActualY(getScaledHeight()),
-                tab.getInnerColor().color()
-            );
+                    matrixStack,
+                    leftX,
+                    getActualY(y.getValue()),
+                    rightX,
+                    getActualY(getScaledHeight()),
+                    tab.getInnerColor().color());
             // Scroll bar
             float add = (float) (scrolledLines) / (totalLines + 1);
             int scrollHeight = (int) (add * getScaledHeight());
             drawRect(
-                matrixStack,
-                getScaledWidth() + leftX - 1,
-                getActualY(scrollHeight + 10),
-                1,
-                10,
-                ColorUtil.WHITE.color()
-            );
+                    matrixStack,
+                    getScaledWidth() + leftX - 1,
+                    getActualY(scrollHeight + 10),
+                    1,
+                    10,
+                    ColorUtil.WHITE.color());
         }
         matrixStack.pop();
     }
 
     private void drawLine(
-        MatrixStack matrixStack,
-        ChatMessage.AdvancedChatLine line,
-        int x,
-        int y,
-        int pLX,
-        int pRX,
-        int lineIndex,
-        int messageIndex,
-        int renderedLines,
-        boolean focused,
-        int ticks
-    ) {
+            MatrixStack matrixStack,
+            ChatMessage.AdvancedChatLine line,
+            int x,
+            int y,
+            int pLX,
+            int pRX,
+            int lineIndex,
+            int messageIndex,
+            int renderedLines,
+            boolean focused,
+            int ticks) {
         int height = HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
         if (renderedLines == 0) {
             if (focused) {
-                height +=
-                    HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue();
+                height += HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue();
             }
         } else if (lineIndex == 0) {
-            height +=
-                HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
+            height += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
             // Start of a line
         }
         ColorUtil.SimpleColor background = line.getParent().getBackground();
-        ColorUtil.SimpleColor text = HudConfigStorage.General.EMPTY_TEXT_COLOR.config.getSimpleColor();
+        ColorUtil.SimpleColor text =
+                HudConfigStorage.General.EMPTY_TEXT_COLOR.config.getSimpleColor();
         if (background == null) {
             background = tab.getInnerColor();
         }
-        if (
-            messageIndex % 2 == 0 &&
-            HudConfigStorage.General.ALTERNATE_LINES.config.getBooleanValue()
-        ) {
+        if (messageIndex % 2 == 0
+                && HudConfigStorage.General.ALTERNATE_LINES.config.getBooleanValue()) {
             if (background.alpha() <= 215) {
                 background = background.withAlpha(background.alpha() + 40);
             } else {
@@ -570,20 +498,21 @@ public class ChatWindow {
         if (!focused) {
             // Find fade percentage
             int fadeStart = HudConfigStorage.General.FADE_START.config.getIntegerValue();
-            int fadeStop =
-                fadeStart +
-                HudConfigStorage.General.FADE_TIME.config.getIntegerValue();
+            int fadeStop = fadeStart + HudConfigStorage.General.FADE_TIME.config.getIntegerValue();
             int timeAlive = ticks - line.getParent().getCreationTick();
-            float percent = (float) Math.min(
-                1,
-                (double) (timeAlive - fadeStart) /
-                (double) (fadeStop - fadeStart)
-            );
+            float percent =
+                    (float)
+                            Math.min(
+                                    1,
+                                    (double) (timeAlive - fadeStart)
+                                            / (double) (fadeStop - fadeStart));
             applied =
-                1 -
-                (float) (
-                    (EasingMethod) HudConfigStorage.General.FADE_TYPE.config.getOptionListValue()
-                ).apply(percent);
+                    1
+                            - (float)
+                                    ((EasingMethod)
+                                                    HudConfigStorage.General.FADE_TYPE.config
+                                                            .getOptionListValue())
+                                            .apply(percent);
             applied = Math.max(0, applied);
             if (applied <= 0) {
                 return;
@@ -602,85 +531,37 @@ public class ChatWindow {
             Style style = Style.EMPTY;
             TextColor color = TextColor.fromRgb(ColorUtil.GRAY.color());
             style = style.withColor(color);
-            toPrint
-                .getRawTexts()
-                .add(
-                    new RawText(
-                        " (" + (line.getParent().getStacks() + 1) + ")",
-                        style
-                    )
-                );
+            toPrint.getRawTexts()
+                    .add(new RawText(" (" + (line.getParent().getStacks() + 1) + ")", style));
             render = toPrint;
         }
 
         int backgroundWidth;
 
-        if (
-            !focused &&
-            HudConfigStorage.General.HUD_LINE_TYPE.config.getOptionListValue() ==
-            HudConfigStorage.HudLineType.COMPACT
-        ) {
-            backgroundWidth =
-                client.textRenderer.getWidth(render) + 4 + headOffset();
+        if (!focused
+                && HudConfigStorage.General.HUD_LINE_TYPE.config.getOptionListValue()
+                        == HudConfigStorage.HudLineType.COMPACT) {
+            backgroundWidth = client.textRenderer.getWidth(render) + 4 + headOffset();
         } else {
             backgroundWidth = getScaledWidth();
         }
 
         // Draw background
-        drawRect(
-            matrixStack,
-            x,
-            getActualY(y),
-            backgroundWidth,
-            height,
-            background.color()
-        );
-        if (
-            lineIndex == line.getParent().getLineCount() - 1 &&
-            line.getParent().getOwner() != null &&
-            HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue()
-        ) {
+        drawRect(matrixStack, x, getActualY(y), backgroundWidth, height, background.color());
+        if (lineIndex == line.getParent().getLineCount() - 1
+                && line.getParent().getOwner() != null
+                && HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue()) {
             RenderSystem.setShaderColor(1, 1, 1, applied);
-            RenderSystem.setShaderTexture(
-                0,
-                line.getParent().getOwner().getTexture()
-            );
+            RenderSystem.setShaderTexture(0, line.getParent().getOwner().getTexture());
             DrawableHelper.drawTexture(
-                matrixStack,
-                pLX - 10,
-                getActualY(y),
-                8,
-                8,
-                8,
-                8,
-                8,
-                8,
-                64,
-                64
-            );
+                    matrixStack, pLX - 10, getActualY(y), 8, 8, 8, 8, 8, 8, 64, 64);
             DrawableHelper.drawTexture(
-                matrixStack,
-                pLX - 10,
-                getActualY(y),
-                8,
-                8,
-                40,
-                8,
-                8,
-                8,
-                64,
-                64
-            );
+                    matrixStack, pLX - 10, getActualY(y), 8, 8, 40, 8, 8, 8, 64, 64);
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
         client.textRenderer.drawWithShadow(
-            matrixStack,
-            render.asOrderedText(),
-            pLX,
-            getActualY(y) + 1,
-            text.color()
-        );
+                matrixStack, render.asOrderedText(), pLX, getActualY(y) + 1, text.color());
     }
 
     public Style getText(double mouseX, double mouseY) {
@@ -701,10 +582,10 @@ public class ChatWindow {
 
         int lines = 0;
         int lineCount = this.lines.size();
-        LimitedInteger y = new LimitedInteger(
-            getScaledHeight(),
-            HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue()
-        );
+        LimitedInteger y =
+                new LimitedInteger(
+                        getScaledHeight(),
+                        HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
         for (ChatMessage message : this.lines) {
             // To get the proper index of reversed
             for (int i = message.getLineCount() - 1; i >= 0; i--) {
@@ -712,39 +593,32 @@ public class ChatWindow {
                 if (lines < scrolledLines) {
                     continue;
                 }
-                if (
-                    !y.incrementIfPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
-                    )
-                ) {
+                if (!y.incrementIfPossible(
+                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
                 }
-                if (
-                    trueY <= y.getValue() &&
-                    trueY >=
-                    y.getValue() -
-                    HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
-                ) {
-                    ChatMessage.AdvancedChatLine line = message
-                        .getLines()
-                        .get(i);
-                    return this.client.textRenderer.getTextHandler()
-                        .getStyleAt(line.getText(), (int) trueX);
+                if (trueY <= y.getValue()
+                        && trueY
+                                >= y.getValue()
+                                        - HudConfigStorage.General.LINE_SPACE.config
+                                                .getIntegerValue()) {
+                    ChatMessage.AdvancedChatLine line = message.getLines().get(i);
+                    return this.client
+                            .textRenderer
+                            .getTextHandler()
+                            .getStyleAt(line.getText(), (int) trueX);
                 }
             }
             if (lines >= scrolledLines) {
                 if (lines == lineCount) {
                     break;
                 }
-                if (
-                    !y.isPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() +
-                        HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue()
-                    ) ||
-                    !y.incrementIfPossible(
-                        HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue()
-                    )
-                ) {
+                if (!y.isPossible(
+                                HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
+                                        + HudConfigStorage.General.MESSAGE_SPACE.config
+                                                .getIntegerValue())
+                        || !y.incrementIfPossible(
+                                HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
                     break;
                 }
             }
@@ -753,17 +627,15 @@ public class ChatWindow {
     }
 
     public boolean isMouseOverDragBar(double mouseX, double mouseY) {
-        return (
-            isMouseOver(mouseX, mouseY) &&
-            mouseX <= x + width - (getScaledBarHeight() * 3) &&
-            mouseY <= y - height
-        );
+        return (isMouseOver(mouseX, mouseY)
+                && mouseX <= x + width - (getScaledBarHeight() * 3)
+                && mouseY <= y - height);
     }
 
     public boolean onMouseClicked(double mouseX, double mouseY, int button) {
         boolean onButtons =
-            isMouseOverDragBar(mouseX - (getScaledBarHeight() * 3), mouseY) &&
-            mouseX >= x + width - getScaledBarHeight() * 3;
+                isMouseOverDragBar(mouseX - (getScaledBarHeight() * 3), mouseY)
+                        && mouseX >= x + width - getScaledBarHeight() * 3;
         if (!onButtons) {
             return false;
         }
@@ -776,32 +648,24 @@ public class ChatWindow {
             // Visibility
             visibility = visibility.cycle(true);
         }
-        this.client.getSoundManager()
-            .play(
-                PositionedSoundInstance.master(
-                    SoundEvents.UI_BUTTON_CLICK,
-                    1.0F
-                )
-            );
+        this.client
+                .getSoundManager()
+                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         return true;
     }
 
     public boolean isMouseOverResize(double mouseX, double mouseY) {
-        return (
-            isMouseOver(mouseX, mouseY) &&
-            mouseX >= x + width - (getScaledBarHeight() * 2) &&
-            mouseX <= x + width - (getScaledBarHeight()) &&
-            mouseY <= y - height
-        );
+        return (isMouseOver(mouseX, mouseY)
+                && mouseX >= x + width - (getScaledBarHeight() * 2)
+                && mouseX <= x + width - (getScaledBarHeight())
+                && mouseY <= y - height);
     }
 
     public boolean isMouseOverVisibility(double mouseX, double mouseY) {
-        return (
-            isMouseOver(mouseX, mouseY) &&
-            mouseX >= x + width - (getScaledBarHeight() * 3) &&
-            mouseX <= x + width - (getScaledBarHeight() * 2) &&
-            mouseY <= y - height
-        );
+        return (isMouseOver(mouseX, mouseY)
+                && mouseX >= x + width - (getScaledBarHeight() * 3)
+                && mouseX <= x + width - (getScaledBarHeight() * 2)
+                && mouseY <= y - height);
     }
 
     public void setDimensions(int width, int height) {
@@ -816,9 +680,7 @@ public class ChatWindow {
         ChatMessage toRemove = null;
         for (ChatMessage line : lines) {
             if (message.getMessage().isSimilar(line)) {
-                if (
-                    !ConfigStorage.General.CHAT_STACK_UPDATE.config.getBooleanValue()
-                ) {
+                if (!ConfigStorage.General.CHAT_STACK_UPDATE.config.getBooleanValue()) {
                     // Just update the message and don't resend it
                     line.setStacks(message.getMessage().getStacks());
                     return;
@@ -849,26 +711,16 @@ public class ChatWindow {
             UUID uuid = UUID.fromString(uuidEl);
             AbstractChatTab tab = AdvancedChatHud.MAIN_CHAT_TAB.fromUUID(uuid);
             if (tab == null) {
-                AdvancedChatHud.LOGGER.warn(
-                    "Tab with UUID " + uuidEl + " could not be found!"
-                );
+                AdvancedChatHud.LOGGER.warn("Tab with UUID " + uuidEl + " could not be found!");
                 return null;
             }
             ChatWindow window = new ChatWindow(tab);
             window.setSelected(obj.get("selected").getAsBoolean());
-            window.setPosition(
-                obj.get("x").getAsInt(),
-                obj.get("y").getAsInt()
-            );
+            window.setPosition(obj.get("x").getAsInt(), obj.get("y").getAsInt());
             window.setVisibility(
-                HudConfigStorage.Visibility.fromVisibilityString(
-                    obj.get("visibility").getAsString()
-                )
-            );
-            window.setDimensions(
-                obj.get("width").getAsInt(),
-                obj.get("height").getAsInt()
-            );
+                    HudConfigStorage.Visibility.fromVisibilityString(
+                            obj.get("visibility").getAsString()));
+            window.setDimensions(obj.get("width").getAsInt(), obj.get("height").getAsInt());
             return window;
         }
 
@@ -879,14 +731,8 @@ public class ChatWindow {
             obj.addProperty("y", chatWindow.getY());
             obj.addProperty("width", chatWindow.getWidth());
             obj.addProperty("height", chatWindow.getHeight());
-            obj.addProperty(
-                "visibility",
-                chatWindow.getVisibility().getStringValue()
-            );
-            obj.addProperty(
-                "tabuuid",
-                chatWindow.getTab().getUuid().toString()
-            );
+            obj.addProperty("visibility", chatWindow.getVisibility().getStringValue());
+            obj.addProperty("tabuuid", chatWindow.getTab().getUuid().toString());
             obj.addProperty("selected", chatWindow.isSelected());
             return obj;
         }

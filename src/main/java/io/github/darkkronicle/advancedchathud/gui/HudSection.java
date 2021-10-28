@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.gui;
 
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
@@ -22,10 +29,7 @@ public class HudSection extends AdvancedChatScreenSection {
         ColorUtil.SimpleColor baseColor;
         ChatWindow sel = WindowManager.getInstance().getSelected();
         if (sel == null) {
-            baseColor =
-                HudConfigStorage.MAIN_TAB
-                    .getInnerColor()
-                    .config.getSimpleColor();
+            baseColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.getSimpleColor();
         } else {
             baseColor = sel.getTab().getInnerColor();
         }
@@ -36,10 +40,7 @@ public class HudSection extends AdvancedChatScreenSection {
     public void initGui() {
         int x = 2;
         int space = 2;
-        int y =
-            MinecraftClient.getInstance().getWindow().getScaledHeight() -
-            15 -
-            11;
+        int y = MinecraftClient.getInstance().getWindow().getScaledHeight() - 15 - 11;
         for (AbstractChatTab tab : AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs()) {
             TabButton button = TabButton.fromTab(tab, x, y);
             getScreen().addButton(button, null);
@@ -49,33 +50,18 @@ public class HudSection extends AdvancedChatScreenSection {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return WindowManager
-            .getInstance()
-            .mouseClicked(getScreen(), mouseX, mouseY, button);
+        return WindowManager.getInstance().mouseClicked(getScreen(), mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(
-        double mouseX,
-        double mouseY,
-        int mouseButton
-    ) {
-        return WindowManager
-            .getInstance()
-            .mouseReleased(mouseX, mouseY, mouseButton);
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+        return WindowManager.getInstance().mouseReleased(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public boolean mouseDragged(
-        double mouseX,
-        double mouseY,
-        int button,
-        double deltaX,
-        double deltaY
-    ) {
-        return WindowManager
-            .getInstance()
-            .mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+            double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return WindowManager.getInstance().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override

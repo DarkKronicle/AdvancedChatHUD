@@ -1,10 +1,16 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.gui;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
-import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
@@ -59,10 +65,7 @@ public class WindowManager implements IRenderer {
                     continue;
                 }
             } catch (Exception err) {
-                AdvancedChatHud.LOGGER.error(
-                    "Error while loading in ChatWindow ",
-                    err
-                );
+                AdvancedChatHud.LOGGER.error("Error while loading in ChatWindow ", err);
                 continue;
             }
             windows.add(w);
@@ -81,13 +84,7 @@ public class WindowManager implements IRenderer {
     @Override
     public void onRenderGameOverlayPost(MatrixStack matrixStack) {
         for (int i = windows.size() - 1; i >= 0; i--) {
-            windows
-                .get(i)
-                .render(
-                    matrixStack,
-                    client.inGameHud.getTicks(),
-                    isChatFocused()
-                );
+            windows.get(i).render(matrixStack, client.inGameHud.getTicks(), isChatFocused());
         }
     }
 
@@ -143,12 +140,7 @@ public class WindowManager implements IRenderer {
         windows.addFirst(window);
     }
 
-    public boolean mouseClicked(
-        Screen screen,
-        double mouseX,
-        double mouseY,
-        int button
-    ) {
+    public boolean mouseClicked(Screen screen, double mouseX, double mouseY, int button) {
         ChatWindow over = null;
         for (ChatWindow w : windows) {
             if (w.isMouseOver(mouseX, mouseY)) {
@@ -184,20 +176,11 @@ public class WindowManager implements IRenderer {
     }
 
     public boolean mouseDragged(
-        double mouseX,
-        double mouseY,
-        int button,
-        double deltaX,
-        double deltaY
-    ) {
+            double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (drag != null && !resize) {
             int x = Math.max((int) mouseX - dragX, 0);
             int y = Math.max((int) mouseY - dragY, drag.getActualHeight());
-            x =
-                Math.min(
-                    x,
-                    client.getWindow().getScaledWidth() - drag.getWidth()
-                );
+            x = Math.min(x, client.getWindow().getScaledWidth() - drag.getWidth());
             y = Math.min(y, client.getWindow().getScaledHeight());
             drag.setPosition(x, y);
             return true;
@@ -210,11 +193,7 @@ public class WindowManager implements IRenderer {
         return false;
     }
 
-    public boolean mouseReleased(
-        double mouseX,
-        double mouseY,
-        int mouseButton
-    ) {
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
         if (drag != null) {
             drag = null;
             return true;

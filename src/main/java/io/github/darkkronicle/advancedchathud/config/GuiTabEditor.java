@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import fi.dy.masa.malilib.config.IConfigBase;
@@ -25,13 +32,7 @@ public class GuiTabEditor extends GuiConfigsBase {
     }
 
     public GuiTabEditor(Screen parent, ChatTab tab, boolean main) {
-        super(
-            10,
-            50,
-            AdvancedChatHud.MOD_ID,
-            parent,
-            tab.getName().config.getStringValue()
-        );
+        super(10, 50, AdvancedChatHud.MOD_ID, parent, tab.getName().config.getStringValue());
         this.tab = tab;
         this.main = main;
         this.setParent(parent);
@@ -47,49 +48,24 @@ public class GuiTabEditor extends GuiConfigsBase {
         String backText = ButtonListener.Type.BACK.getDisplayName();
         int backWidth = StringUtils.getStringWidth(backText) + 10;
         int topx = x;
-        ButtonGeneric back = new ButtonGeneric(
-            x + backWidth,
-            y,
-            backWidth,
-            true,
-            backText
-        );
-        this.addButton(
-                back,
-                new ButtonListener(ButtonListener.Type.BACK, this)
-            );
+        ButtonGeneric back = new ButtonGeneric(x + backWidth, y, backWidth, true, backText);
+        this.addButton(back, new ButtonListener(ButtonListener.Type.BACK, this));
         topx += back.getWidth() + 2;
 
         if (!main) {
             String matchesText = ButtonListener.Type.MATCHES.getDisplayName();
             int matchesWidth = StringUtils.getStringWidth(matchesText) + 10;
-            ButtonGeneric match = new ButtonGeneric(
-                topx + matchesWidth,
-                y,
-                matchesWidth,
-                true,
-                matchesText
-            );
-            this.addButton(
-                    match,
-                    new ButtonListener(ButtonListener.Type.MATCHES, this)
-                );
+            ButtonGeneric match =
+                    new ButtonGeneric(topx + matchesWidth, y, matchesWidth, true, matchesText);
+            this.addButton(match, new ButtonListener(ButtonListener.Type.MATCHES, this));
             topx += match.getWidth() + 2;
         }
 
         String exportText = ButtonListener.Type.EXPORT.getDisplayName();
         int exportWidth = StringUtils.getStringWidth(exportText) + 10;
-        ButtonGeneric export = new ButtonGeneric(
-            topx + exportWidth,
-            y,
-            exportWidth,
-            true,
-            exportText
-        );
-        this.addButton(
-                export,
-                new ButtonListener(ButtonListener.Type.EXPORT, this)
-            );
+        ButtonGeneric export =
+                new ButtonGeneric(topx + exportWidth, y, exportWidth, true, exportText);
+        this.addButton(export, new ButtonListener(ButtonListener.Type.EXPORT, this));
     }
 
     @Override
@@ -140,10 +116,8 @@ public class GuiTabEditor extends GuiConfigsBase {
                 return true;
             }
 
-            if (
-                keyCode == KeyCodes.KEY_ESCAPE &&
-                this.parentScreen != GuiUtils.getCurrentScreen()
-            ) {
+            if (keyCode == KeyCodes.KEY_ESCAPE
+                    && this.parentScreen != GuiUtils.getCurrentScreen()) {
                 // Make sure to save
                 closeGui(true);
                 return true;
@@ -164,10 +138,7 @@ public class GuiTabEditor extends GuiConfigsBase {
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             if (this.type == ButtonListener.Type.BACK) {
                 parent.back();
             } else if (this.type == ButtonListener.Type.EXPORT) {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -11,9 +18,8 @@ import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfigHandler;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class GuiTabManager
-    extends GuiListBase<ChatTab, WidgetTabEntry, WidgetListTabs>
-    implements ISelectionListener<ChatTab> {
+public class GuiTabManager extends GuiListBase<ChatTab, WidgetTabEntry, WidgetListTabs>
+        implements ISelectionListener<ChatTab> {
 
     private List<GuiConfigHandler.TabButton> tabButtons;
 
@@ -26,13 +32,7 @@ public class GuiTabManager
     @Override
     protected WidgetListTabs createListWidget(int listX, int listY) {
         return new WidgetListTabs(
-            listX,
-            listY,
-            this.getBrowserWidth(),
-            this.getBrowserHeight(),
-            null,
-            this
-        );
+                listX, listY, this.getBrowserWidth(), this.getBrowserHeight(), null, this);
     }
 
     @Override
@@ -68,21 +68,12 @@ public class GuiTabManager
     }
 
     private int createButton(GuiConfigHandler.TabButton button, int y) {
-        this.addButton(
-                button.getButton(),
-                new ButtonListenerConfigTabs(button)
-            );
+        this.addButton(button.getButton(), new ButtonListenerConfigTabs(button));
         return button.getButton().getY();
     }
 
     protected int addButton(int x, int y, ButtonListener.Type type) {
-        ButtonGeneric button = new ButtonGeneric(
-            x,
-            y,
-            -1,
-            true,
-            type.getDisplayName()
-        );
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, true, type.getDisplayName());
         this.addButton(button, new ButtonListener(type, this));
 
         return button.getWidth();
@@ -99,10 +90,7 @@ public class GuiTabManager
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             if (this.type == ButtonListener.Type.ADD_TAB) {
                 HudConfigStorage.TABS.add(new ChatTab());
                 this.gui.getListWidget().refreshEntries();
@@ -139,8 +127,7 @@ public class GuiTabManager
     @Override
     public void onSelectionChange(@Nullable ChatTab entry) {}
 
-    private static class ButtonListenerConfigTabs
-        implements IButtonActionListener {
+    private static class ButtonListenerConfigTabs implements IButtonActionListener {
 
         private final GuiConfigHandler.TabButton tabButton;
 
@@ -149,16 +136,10 @@ public class GuiTabManager
         }
 
         @Override
-        public void actionPerformedWithButton(
-            ButtonBase button,
-            int mouseButton
-        ) {
-            GuiConfigHandler.getInstance().activeTab =
-                this.tabButton.getTab().getName();
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
+            GuiConfigHandler.getInstance().activeTab = this.tabButton.getTab().getName();
             GuiBase.openGui(
-                this.tabButton.getTab()
-                    .getScreen(GuiConfigHandler.getInstance().getButtons())
-            );
+                    this.tabButton.getTab().getScreen(GuiConfigHandler.getInstance().getButtons()));
         }
     }
 }

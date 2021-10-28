@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud;
 
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
@@ -13,12 +20,9 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class HudChatMessage {
 
-    @Setter
-    @Getter
-    private List<AbstractChatTab> tabs;
+    @Setter @Getter private List<AbstractChatTab> tabs;
 
-    @Getter
-    private final ChatMessage message;
+    @Getter private final ChatMessage message;
 
     public HudChatMessage(ChatMessage message) {
         this(message, new ArrayList<>());

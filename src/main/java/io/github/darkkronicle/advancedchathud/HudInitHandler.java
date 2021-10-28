@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud;
 
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -8,7 +15,6 @@ import io.github.darkkronicle.advancedchatcore.AdvancedChatCore;
 import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
 import io.github.darkkronicle.advancedchatcore.chat.ChatScreenSectionHolder;
 import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfigHandler;
-import io.github.darkkronicle.advancedchatcore.interfaces.IChatMessageProcessor;
 import io.github.darkkronicle.advancedchathud.config.GuiTabManager;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.gui.HudSection;
@@ -25,56 +31,33 @@ public class HudInitHandler implements IInitializationHandler {
     @Override
     public void registerModHandlers() {
         AdvancedChatCore.FORWARD_TO_HUD = false;
-        ConfigManager
-            .getInstance()
-            .registerConfigHandler(
-                AdvancedChatHud.MOD_ID,
-                new HudConfigStorage()
-            );
-        GuiConfigHandler
-            .getInstance()
-            .addGuiSection(
-                GuiConfigHandler.createGuiConfigSection(
-                    StringUtils.translate("advancedchathud.tab.general"),
-                    HudConfigStorage.General.OPTIONS
-                )
-            );
-        GuiConfigHandler
-            .getInstance()
-            .addGuiSection(
-                new GuiConfigHandler.Tab() {
-                    @Override
-                    public String getName() {
-                        return StringUtils.translate(
-                            "advancedchathud.tab.tabs"
-                        );
-                    }
+        ConfigManager.getInstance()
+                .registerConfigHandler(AdvancedChatHud.MOD_ID, new HudConfigStorage());
+        GuiConfigHandler.getInstance()
+                .addGuiSection(
+                        GuiConfigHandler.createGuiConfigSection(
+                                StringUtils.translate("advancedchathud.tab.general"),
+                                HudConfigStorage.General.OPTIONS));
+        GuiConfigHandler.getInstance()
+                .addGuiSection(
+                        new GuiConfigHandler.Tab() {
+                            @Override
+                            public String getName() {
+                                return StringUtils.translate("advancedchathud.tab.tabs");
+                            }
 
-                    @Override
-                    public Screen getScreen(
-                        List<GuiConfigHandler.TabButton> buttons
-                    ) {
-                        return new GuiTabManager(buttons);
-                    }
-                }
-            );
+                            @Override
+                            public Screen getScreen(List<GuiConfigHandler.TabButton> buttons) {
+                                return new GuiTabManager(buttons);
+                            }
+                        });
         AdvancedChatHud.MAIN_CHAT_TAB = new MainChatTab();
 
         // Register on the clear
-        ChatScreenSectionHolder
-            .getInstance()
-            .addSectionSupplier(HudSection::new);
-        ChatHistory
-            .getInstance()
-            .addOnClear(() -> WindowManager.getInstance().clear());
-        ChatHistory
-            .getInstance()
-            .addOnClear(() -> HudChatMessageHolder.getInstance().clear());
-        ChatHistory
-            .getInstance()
-            .addOnUpdate(HudChatMessageHolder.getInstance());
-        RenderEventHandler
-            .getInstance()
-            .registerGameOverlayRenderer(WindowManager.getInstance());
+        ChatScreenSectionHolder.getInstance().addSectionSupplier(HudSection::new);
+        ChatHistory.getInstance().addOnClear(() -> WindowManager.getInstance().clear());
+        ChatHistory.getInstance().addOnClear(() -> HudChatMessageHolder.getInstance().clear());
+        ChatHistory.getInstance().addOnUpdate(HudChatMessageHolder.getInstance());
+        RenderEventHandler.getInstance().registerGameOverlayRenderer(WindowManager.getInstance());
     }
 }

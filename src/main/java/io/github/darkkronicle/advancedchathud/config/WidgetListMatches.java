@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.config;
 
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -52,14 +59,13 @@ public class WidgetListMatches extends WidgetListBase<Match, WidgetMatchEntry> {
     }
 
     public WidgetListMatches(
-        int x,
-        int y,
-        int width,
-        int height,
-        ISelectionListener<Match> selectionListener,
-        ChatTab parent,
-        Screen screen
-    ) {
+            int x,
+            int y,
+            int width,
+            int height,
+            ISelectionListener<Match> selectionListener,
+            ChatTab parent,
+            Screen screen) {
         super(x, y, width, height, selectionListener);
         this.browserEntryHeight = 22;
         this.tab = parent;
@@ -68,22 +74,16 @@ public class WidgetListMatches extends WidgetListBase<Match, WidgetMatchEntry> {
 
     @Override
     protected WidgetMatchEntry createListEntryWidget(
-        int x,
-        int y,
-        int listIndex,
-        boolean isOdd,
-        Match entry
-    ) {
+            int x, int y, int listIndex, boolean isOdd, Match entry) {
         return new WidgetMatchEntry(
-            x,
-            y,
-            this.browserEntryWidth,
-            this.getBrowserEntryHeightFor(entry),
-            isOdd,
-            entry,
-            listIndex,
-            this
-        );
+                x,
+                y,
+                this.browserEntryWidth,
+                this.getBrowserEntryHeightFor(entry),
+                isOdd,
+                entry,
+                listIndex,
+                this);
     }
 
     @Override

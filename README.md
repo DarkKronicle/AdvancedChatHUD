@@ -44,6 +44,12 @@ Many features to completely change the way how to message in Minecraft.
 - Show amount of unread messages
 - Easily export and share tabs with others
 
+## Development
+
+To develop, all dependencies should automatically be processed through gradle. To ensure code consistency the hook pre-commit.sh can be used. To install the pre-commit hook run:
+
+`ln -s ../../pre-commit.sh .git/hooks/pre-commit`
+
 ## Credits n' more
 
 Code & Mastermind: DarkKronicle
