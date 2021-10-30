@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
 import net.fabricmc.api.EnvType;
@@ -202,6 +203,7 @@ public class WindowManager implements IRenderer {
     }
 
     public void onTabButton(AbstractChatTab tab) {
+        IChatHud.getInstance().setTab(tab);
         for (ChatWindow w : windows) {
             if (w.isSelected()) {
                 w.setTab(tab);
@@ -237,12 +239,14 @@ public class WindowManager implements IRenderer {
     }
 
     public void onNewMessage(HudChatMessage message) {
+        IChatHud.getInstance().addMessage(message);
         for (ChatWindow w : windows) {
             w.addMessage(message);
         }
     }
 
     public void clear() {
+        IChatHud.getInstance().clear(false);
         for (ChatWindow w : windows) {
             w.clearLines();
         }
