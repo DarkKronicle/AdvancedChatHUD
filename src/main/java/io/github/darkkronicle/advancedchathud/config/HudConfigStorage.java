@@ -51,6 +51,12 @@ public class HudConfigStorage implements IConfigHandler {
             return StringUtils.translate("advancedchathud.config.general." + key);
         }
 
+        public static final ConfigStorage.SaveableConfig<ConfigBoolean> VANILLA_HUD =
+                ConfigStorage.SaveableConfig.fromConfig(
+                        "vanillHud",
+                        new ConfigBoolean(
+                                translate("vanillahud"), false, translate("info.vanillahud")));
+
         public static final ConfigStorage.SaveableConfig<ConfigBoolean> CHAT_HEADS =
                 ConfigStorage.SaveableConfig.fromConfig(
                         "chatHeads",
@@ -202,6 +208,7 @@ public class HudConfigStorage implements IConfigHandler {
         public static final ImmutableList<ConfigStorage.SaveableConfig<? extends IConfigBase>>
                 OPTIONS =
                         ImmutableList.of(
+                                VANILLA_HUD,
                                 CHAT_HEADS,
                                 WIDTH,
                                 HEIGHT,

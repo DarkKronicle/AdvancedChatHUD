@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2021 DarkKronicle, Pablo
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
@@ -48,7 +49,18 @@ public class WindowManager implements IRenderer {
 
     public void loadFromJson(JsonArray array) {
         reset();
-        if (array == null || array.size() == 0) return;
+        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            if (array == null || array.size() == 0) {
+                ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
+                base.setSelected(true);
+                windows.add(base);
+                return;
+            }
+        } else {
+            if (array == null || array.size() == 0) {
+                return;
+            }
+        }
         ChatWindow.ChatWindowSerializer serializer = new ChatWindow.ChatWindowSerializer();
         for (JsonElement e : array) {
             if (!e.isJsonObject()) {
@@ -100,7 +112,7 @@ public class WindowManager implements IRenderer {
 
     public boolean scroll(double amount, double mouseX, double mouseY) {
         for (ChatWindow w : windows) {
-            if (w.isSelected() && w.isMouseOver(mouseX, mouseY)) {
+            if (w.isSelected() || w.isMouseOver(mouseX, mouseY)) {
                 w.scroll(amount);
                 return true;
             }

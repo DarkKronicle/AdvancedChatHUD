@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2021 DarkKronicle, Pablo
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,8 +9,11 @@ package io.github.darkkronicle.advancedchathud.itf;
 
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
+@Environment(EnvType.CLIENT)
 public interface IChatHud {
 
     AbstractChatTab getTab();
