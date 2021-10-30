@@ -40,12 +40,13 @@ public class HudSection extends AdvancedChatScreenSection {
     public void initGui() {
         int x = 2;
         int space = 2;
-        int y = MinecraftClient.getInstance().getWindow().getScaledHeight() - 15 - 11;
+        int y = MinecraftClient.getInstance().getWindow().getScaledHeight() - 31;
         for (AbstractChatTab tab : AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs()) {
             TabButton button = TabButton.fromTab(tab, x, y);
             getScreen().addButton(button, null);
             x += button.getWidth() + space;
         }
+        getScreen().addButton(new NewWindowButton(x, y), null);
     }
 
     @Override
@@ -76,7 +77,6 @@ public class HudSection extends AdvancedChatScreenSection {
         if (!Screen.hasShiftDown()) {
             amount *= 7.0D;
         }
-        WindowManager.getInstance().scroll(amount, mouseX, mouseY);
-        return true;
+        return WindowManager.getInstance().scroll(amount, mouseX, mouseY);
     }
 }
