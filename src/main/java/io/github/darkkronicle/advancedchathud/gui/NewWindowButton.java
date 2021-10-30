@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 DarkKronicle
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.github.darkkronicle.advancedchathud.gui;
 
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -41,7 +48,6 @@ public class NewWindowButton extends CleanButton {
                 y + (int) Math.floor((float) height / 2),
                 width - (PADDING * 2),
                 ColorUtil.WHITE.color());
-
     }
 
     @Override
@@ -52,5 +58,4 @@ public class NewWindowButton extends CleanButton {
         WindowManager.getInstance().onTabAddButton(IChatHud.getInstance().getTab());
         return true;
     }
-
 }

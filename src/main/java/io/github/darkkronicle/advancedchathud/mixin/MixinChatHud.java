@@ -13,6 +13,8 @@ import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import java.util.Iterator;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,9 +27,6 @@ import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.Iterator;
-import java.util.List;
 
 @Mixin(value = ChatHud.class, priority = 1050)
 @Environment(EnvType.CLIENT)
@@ -42,33 +41,42 @@ public abstract class MixinChatHud implements IChatHud {
 
     private AbstractChatTab tab;
 
+    @Shadow
+    public abstract void reset();
 
-    @Shadow public abstract void reset();
+    @Shadow
+    public abstract int getWidth();
 
-    @Shadow public abstract int getWidth();
+    @Shadow
+    public abstract double getChatScale();
 
-    @Shadow public abstract double getChatScale();
+    @Shadow
+    protected abstract boolean isChatFocused();
 
-    @Shadow protected abstract boolean isChatFocused();
+    @Shadow
+    public abstract void scroll(double amount);
 
-    @Shadow public abstract void scroll(double amount);
-
-    @Shadow public abstract void clear(boolean clearHistory);
+    @Shadow
+    public abstract void clear(boolean clearHistory);
 
     @Override
     public void addMessage(HudChatMessage hudMsg) {
         if (tab == null || !hudMsg.getTabs().contains(tab)) return;
         tab.resetUnread();
 
-        int width = MathHelper.floor((double)this.getWidth() / this.getChatScale());
+        int width = MathHelper.floor((double) this.getWidth() / this.getChatScale());
 
         ChatMessage msg = hudMsg.getMessage();
 
-        List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(msg.getDisplayText(), width, this.client.textRenderer);
+        List<OrderedText> list =
+                ChatMessages.breakRenderedChatMessageLines(
+                        msg.getDisplayText(), width, this.client.textRenderer);
 
         OrderedText orderedText;
-        for (Iterator<OrderedText> text = list.iterator(); text.hasNext();
-             this.visibleMessages.add(0, new ChatHudLine<>(msg.getCreationTick(), orderedText, msg.getId()))) {
+        for (Iterator<OrderedText> text = list.iterator();
+                text.hasNext();
+                this.visibleMessages.add(
+                        0, new ChatHudLine<>(msg.getCreationTick(), orderedText, msg.getId()))) {
             orderedText = text.next();
             if (this.isChatFocused() && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
@@ -76,12 +84,15 @@ public abstract class MixinChatHud implements IChatHud {
             }
         }
 
-        while (this.visibleMessages.size() > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
+        while (this.visibleMessages.size()
+                > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
 
-        this.messages.add(0, new ChatHudLine<>(msg.getCreationTick(), msg.getDisplayText(), msg.getId()));
-        while (this.messages.size() > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
+        this.messages.add(
+                0, new ChatHudLine<>(msg.getCreationTick(), msg.getDisplayText(), msg.getId()));
+        while (this.messages.size()
+                > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
             this.messages.remove(this.messages.size() - 1);
         }
     }
@@ -101,5 +112,4 @@ public abstract class MixinChatHud implements IChatHud {
         }
         this.reset();
     }
-
 }

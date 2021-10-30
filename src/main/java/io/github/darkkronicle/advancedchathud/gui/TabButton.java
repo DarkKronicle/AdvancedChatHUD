@@ -50,11 +50,16 @@ public class TabButton extends CleanButton {
 
         RenderUtils.drawRect(x, y, width, height, color.color());
 
-        drawStringWithShadow(x + PADDING, y + PADDING, selected ? WHITE : GRAY, displayString, matrixStack);
+        drawStringWithShadow(
+                x + PADDING, y + PADDING, selected ? WHITE : GRAY, displayString, matrixStack);
         if (tab.isShowUnread() && tab.getUnread() > 0) {
             String unread = TextUtil.toSuperscript(Math.min(tab.getUnread(), 99));
-            drawCenteredString(x + width - ((UNREAD_WIDTH + PADDING) / 2) - 1,
-                    y + PADDING, RED, unread, matrixStack);
+            drawCenteredString(
+                    x + width - ((UNREAD_WIDTH + PADDING) / 2) - 1,
+                    y + PADDING,
+                    RED,
+                    unread,
+                    matrixStack);
         }
     }
 
