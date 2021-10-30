@@ -49,6 +49,7 @@ Many features to completely change the way how to message in Minecraft.
 ![Multiple Tabs](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/all.png)
 ![Color and Always On](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/color_always.png)
 ![Stripe and Always On](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/stripe_always.png)
+
 https://user-images.githubusercontent.com/38167691/139516997-975ba447-6a67-4525-8d6f-2d9c1b58a84d.mp4
 
 
