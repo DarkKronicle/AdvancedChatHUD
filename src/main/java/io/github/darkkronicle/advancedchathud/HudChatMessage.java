@@ -26,30 +26,25 @@ public class HudChatMessage {
 
     public HudChatMessage(ChatMessage message) {
         this(message, new ArrayList<>());
-        ArrayList<AbstractChatTab> added = new ArrayList<>();
+
         boolean forward = true;
         if (AdvancedChatHud.MAIN_CHAT_TAB.getCustomChatTabs().size() > 0) {
             for (CustomChatTab tab : AdvancedChatHud.MAIN_CHAT_TAB.getCustomChatTabs()) {
                 if (!tab.shouldAdd(message.getOriginalText())) {
                     continue;
                 }
-                if (added.contains(tab)) {
+                if (tabs.contains(tab)) {
                     continue;
                 }
-                added.add(tab);
+                tabs.add(tab);
                 if (!tab.isForward()) {
                     forward = false;
                     break;
                 }
             }
         }
-        if (forward) {
-            added.add(AdvancedChatHud.MAIN_CHAT_TAB);
-        }
-        for (AbstractChatTab tab : added) {
-            tab.addNewUnread();
-        }
-        setTabs(added);
+        if (forward) tabs.add(AdvancedChatHud.MAIN_CHAT_TAB);
+        for (AbstractChatTab tab : tabs) tab.addNewUnread();
     }
 
     public HudChatMessage(ChatMessage message, List<AbstractChatTab> tabs) {

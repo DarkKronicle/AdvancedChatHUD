@@ -11,7 +11,9 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.gui.CleanButton;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import io.github.darkkronicle.advancedchathud.util.TextUtil;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
@@ -19,6 +21,12 @@ import net.minecraft.sound.SoundEvents;
 public class TabButton extends CleanButton {
 
     private final AbstractChatTab tab;
+    private static final int PADDING = 3;
+    private static final int UNREAD_WIDTH = 9; // reserve 9px for unread
+
+    private static final int WHITE = 0xFF_FF_FF_FF;
+    private static final int GRAY = 0xFF_AA_AA_AA;
+    private static final int RED = 0xFF_FF_55_55;
 
     private TabButton(AbstractChatTab tab, int x, int y, int width, int height) {
         super(x, y, width, height, tab.getMainColor(), tab.getAbreviation());
@@ -26,7 +34,7 @@ public class TabButton extends CleanButton {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, MatrixStack matrixStack) {
+    public void render(int mouseX, int mouseY, boolean unused, MatrixStack matrixStack) {
         int relMX = mouseX - x;
         int relMY = mouseY - y;
         hovered = relMX >= 0 && relMX <= width && relMY >= 0 && relMY <= height;
@@ -34,49 +42,19 @@ public class TabButton extends CleanButton {
         if (hovered) {
             color = ColorUtil.WHITE.withAlpha(color.alpha());
         }
-        ColorUtil.SimpleColor plusBack = ColorUtil.BLACK.withAlpha(100);
-        boolean plusHovered = hovered && relMX >= width - height;
-        if (plusHovered) {
-            plusBack = ColorUtil.WHITE.withAlpha(plusBack.alpha());
-        }
-        RenderUtils.drawRect(x, y, width - height, height, color.color());
-        RenderUtils.drawOutline(
-                x, y, width - height + 1, height, ColorUtil.BLACK.withAlpha(180).color());
-        RenderUtils.drawRect(x + width - height, y, height, height, plusBack.color());
-        ColorUtil.SimpleColor crossColor = ColorUtil.WHITE.withAlpha(plusBack.alpha());
-        RenderUtils.drawVerticalLine(
-                x + width - (int) Math.floor((float) height / 2) - 1,
-                y + 1,
-                height - 2,
-                crossColor.color());
-        RenderUtils.drawHorizontalLine(
-                x + width - height + 1,
-                y + (int) Math.floor((float) height / 2),
-                height - 2,
-                crossColor.color());
-        RenderUtils.drawOutline(
-                x + width - height, y, height, height, ColorUtil.BLACK.withAlpha(180).color());
 
-        int center = tab.isShowUnread() ? ((width - 20 - height) / 2) : ((width - height) / 2);
-        drawCenteredString(
-                x + center,
-                (y + (height / 2) - 3),
-                ColorUtil.WHITE.color(),
-                displayString,
-                matrixStack);
+        boolean selected = IChatHud.getInstance().getTab() == tab;
+        if (!selected) {
+            color = color.withAlpha(color.alpha() / 2);
+        }
+
+        RenderUtils.drawRect(x, y, width, height, color.color());
+
+        drawStringWithShadow(x + PADDING, y + PADDING, selected ? WHITE : GRAY, displayString, matrixStack);
         if (tab.isShowUnread() && tab.getUnread() > 0) {
-            String unread;
-            if (tab.getUnread() <= 99) {
-                unread = tab.getUnread() + "";
-            } else {
-                unread = "99+";
-            }
-            drawString(
-                    x + width - height - 16,
-                    (y + (height / 2) - 3),
-                    ColorUtil.WHITE.color(),
-                    unread,
-                    matrixStack);
+            String unread = TextUtil.toSuperscript(Math.min(tab.getUnread(), 99));
+            drawCenteredString(x + width - ((UNREAD_WIDTH + PADDING) / 2) - 1,
+                    y + PADDING, RED, unread, matrixStack);
         }
     }
 
@@ -85,21 +63,13 @@ public class TabButton extends CleanButton {
         this.mc
                 .getSoundManager()
                 .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-        if (mouseX - x >= width - height) {
-            // Plus button
-            WindowManager.getInstance().onTabAddButton(tab);
-        } else {
-            WindowManager.getInstance().onTabButton(tab);
-        }
+        WindowManager.getInstance().onTabButton(tab);
         return true;
     }
 
     public static TabButton fromTab(AbstractChatTab tab, int x, int y) {
-        int width = StringUtils.getStringWidth(tab.getAbreviation()) + 19;
-        // TODO here something
-        if (tab.isShowUnread()) {
-            width += 16;
-        }
-        return new TabButton(tab, x, y, width, 11);
+        int width = StringUtils.getStringWidth(tab.getAbreviation()) + PADDING * 2;
+        if (tab.isShowUnread()) width += UNREAD_WIDTH;
+        return new TabButton(tab, x, y, width, PADDING + 9 + PADDING);
     }
 }

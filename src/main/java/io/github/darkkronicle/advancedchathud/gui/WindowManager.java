@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
 import net.fabricmc.api.EnvType;
@@ -47,12 +48,7 @@ public class WindowManager implements IRenderer {
 
     public void loadFromJson(JsonArray array) {
         reset();
-        if (array == null || array.size() == 0) {
-            ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
-            base.setSelected(true);
-            windows.add(base);
-            return;
-        }
+        if (array == null || array.size() == 0) return;
         ChatWindow.ChatWindowSerializer serializer = new ChatWindow.ChatWindowSerializer();
         for (JsonElement e : array) {
             if (!e.isJsonObject()) {
@@ -102,12 +98,14 @@ public class WindowManager implements IRenderer {
         }
     }
 
-    public void scroll(double amount, double mouseX, double mouseY) {
+    public boolean scroll(double amount, double mouseX, double mouseY) {
         for (ChatWindow w : windows) {
-            if (w.isSelected() || w.isMouseOver(mouseX, mouseY)) {
+            if (w.isSelected() && w.isMouseOver(mouseX, mouseY)) {
                 w.scroll(amount);
+                return true;
             }
         }
+        return false;
     }
 
     public Style getText(double mouseX, double mouseY) {
@@ -202,6 +200,7 @@ public class WindowManager implements IRenderer {
     }
 
     public void onTabButton(AbstractChatTab tab) {
+        IChatHud.getInstance().setTab(tab);
         for (ChatWindow w : windows) {
             if (w.isSelected()) {
                 w.setTab(tab);
@@ -237,12 +236,14 @@ public class WindowManager implements IRenderer {
     }
 
     public void onNewMessage(HudChatMessage message) {
+        IChatHud.getInstance().addMessage(message);
         for (ChatWindow w : windows) {
             w.addMessage(message);
         }
     }
 
     public void clear() {
+        IChatHud.getInstance().clear(false);
         for (ChatWindow w : windows) {
             w.clearLines();
         }
