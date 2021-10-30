@@ -44,9 +44,12 @@ Many features to completely change the way how to message in Minecraft.
 - Show amount of unread messages
 - Easily export and share tabs with others
 
-## Screenshots
+## Images
 
-
+![Multiple Tabs](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/all.png)
+![Color and Always On](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/color_always.png)
+![Stripe and Always On](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/stripe_always.png)
+![Drag and Resize](https://raw.githubusercontent.com/DarkKronicle/AdvancedChatHUD/main/screenshots/drag_and_resize.mp4)
 
 ## Development
 
