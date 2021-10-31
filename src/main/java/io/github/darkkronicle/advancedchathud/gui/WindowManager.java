@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle, Pablo
+ * Copyright (C) 2021 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,14 +102,6 @@ public class WindowManager implements IRenderer {
         }
     }
 
-    public void scroll(double amount) {
-        for (ChatWindow w : windows) {
-            if (w.isSelected()) {
-                w.scroll(amount);
-            }
-        }
-    }
-
     public boolean scroll(double amount, double mouseX, double mouseY) {
         for (ChatWindow w : windows) {
             if (w.isSelected() || w.isMouseOver(mouseX, mouseY)) {
@@ -142,6 +134,12 @@ public class WindowManager implements IRenderer {
         return null;
     }
 
+    public void unSelect() {
+        for (ChatWindow w : windows) {
+            w.setSelected(false);
+        }
+    }
+
     public void setSelected(ChatWindow window) {
         for (ChatWindow w : windows) {
             w.setSelected(window.equals(w));
@@ -159,6 +157,10 @@ public class WindowManager implements IRenderer {
             }
         }
         if (over == null) {
+            if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()
+                    && overVanillaHud(mouseX, mouseY)) {
+                unSelect();
+            }
             return false;
         }
         if (button == 0) {
@@ -183,6 +185,10 @@ public class WindowManager implements IRenderer {
             }
         }
         return true;
+    }
+
+    private boolean overVanillaHud(double mouseX, double mouseY) {
+        return IChatHud.getInstance().isOver(mouseX, mouseY);
     }
 
     public boolean mouseDragged(
@@ -212,12 +218,14 @@ public class WindowManager implements IRenderer {
     }
 
     public void onTabButton(AbstractChatTab tab) {
-        IChatHud.getInstance().setTab(tab);
         for (ChatWindow w : windows) {
             if (w.isSelected()) {
                 w.setTab(tab);
+                return;
             }
         }
+        // Set it if no other window is selected
+        IChatHud.getInstance().setTab(tab);
     }
 
     public void onTabAddButton(AbstractChatTab tab) {

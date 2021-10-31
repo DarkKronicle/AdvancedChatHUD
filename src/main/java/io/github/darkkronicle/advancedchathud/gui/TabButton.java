@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle, Pablo
+ * Copyright (C) 2021 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.gui.CleanButton;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import io.github.darkkronicle.advancedchathud.util.TextUtil;
@@ -43,9 +44,21 @@ public class TabButton extends CleanButton {
             color = ColorUtil.WHITE.withAlpha(color.alpha());
         }
 
-        boolean selected = IChatHud.getInstance().getTab() == tab;
+        boolean selected = false;
+        if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            selected = IChatHud.getInstance().getTab().equals(tab);
+        } else {
+            ChatWindow window = WindowManager.getInstance().getSelected();
+            if (window != null) {
+                selected = window.getTab().equals(tab);
+            }
+        }
         if (!selected) {
-            color = color.withAlpha(color.alpha() / 2);
+            color =
+                    new ColorUtil.SimpleColor(
+                            color.red() / 2, color.green(), color.blue() / 2, 100);
+        } else {
+            color = color.withAlpha(230);
         }
 
         RenderUtils.drawRect(x, y, width, height, color.color());
@@ -74,7 +87,9 @@ public class TabButton extends CleanButton {
 
     public static TabButton fromTab(AbstractChatTab tab, int x, int y) {
         int width = StringUtils.getStringWidth(tab.getAbreviation()) + PADDING * 2;
-        if (tab.isShowUnread()) width += UNREAD_WIDTH;
+        if (tab.isShowUnread()) {
+            width += UNREAD_WIDTH;
+        }
         return new TabButton(tab, x, y, width, PADDING + 9 + PADDING);
     }
 }

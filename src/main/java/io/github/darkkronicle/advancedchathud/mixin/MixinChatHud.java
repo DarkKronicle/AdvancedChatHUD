@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle, Pablo
+ * Copyright (C) 2021 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -73,9 +73,24 @@ public abstract class MixinChatHud implements IChatHud {
     @Shadow
     protected abstract boolean isChatHidden();
 
+    @Shadow
+    public abstract int getHeight();
+
+    @Override
+    public boolean isOver(double mouseX, double mouseY) {
+        mouseX = mouseX - 4;
+        mouseY = client.getWindow().getScaledHeight() - mouseY - 40;
+        mouseX = mouseX * getChatScale();
+        mouseY = mouseY * getChatScale();
+        return mouseX > 0 && mouseX < getWidth() && mouseY > 0 && mouseY < getHeight();
+    }
+
     @Override
     public void addMessage(HudChatMessage hudMsg) {
-        if (tab == null || !hudMsg.getTabs().contains(tab)) return;
+        if (tab == null || !hudMsg.getTabs().contains(tab)) {
+            return;
+        }
+        ;
         tab.resetUnread();
 
         int width = MathHelper.floor((double) this.getWidth() / this.getChatScale());
@@ -111,6 +126,14 @@ public abstract class MixinChatHud implements IChatHud {
         }
     }
 
+    @Inject(at = @At("HEAD"), method = "scroll", cancellable = true)
+    private void scroll(double amount, CallbackInfo ci) {
+        if (WindowManager.getInstance().getSelected() != null) {
+            // Only scroll if nothing is focused
+            ci.cancel();
+        }
+    }
+
     public AbstractChatTab getTab() {
         return tab;
     }
@@ -130,6 +153,7 @@ public abstract class MixinChatHud implements IChatHud {
             return;
         }
         // Prioritize main first
+        // TODO figure out how to use intrinsic
         if (this.isChatFocused() && !this.client.options.hudHidden && !isChatHidden()) {
             double d = x - 2.0D;
             double e = (double) this.client.getWindow().getScaledHeight() - y - 40.0D;
