@@ -16,6 +16,8 @@
   "advancedchathud.config.match.remove": "§cRemove",
   "advancedchathud.config.match.screen.name": "Matches",
 
+  "advancedchathud.config.general.vanillahud": "Enable Vanilla Chat HUD",
+  "advancedchathud.config.general.info.vanillahud": "Enables the §6Vanilla Chat HUD§r that acts mostly like a §9Chat Window§r.\n§6Vanilla Chat HUD§r can use §9Chat Tabs§r if you click on it and then change the tab.",
   "advancedchathud.config.general.width": "Default Chat Width",
   "advancedchathud.config.general.info.width": "The §6width §rof the §9Chat HUD \nOverrides Vanilla chat width!",
   "advancedchathud.config.general.height": "Default Chat Height",

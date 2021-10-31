@@ -13,6 +13,8 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
 import net.fabricmc.api.EnvType;
@@ -47,11 +49,17 @@ public class WindowManager implements IRenderer {
 
     public void loadFromJson(JsonArray array) {
         reset();
-        if (array == null || array.size() == 0) {
-            ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
-            base.setSelected(true);
-            windows.add(base);
-            return;
+        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            if (array == null || array.size() == 0) {
+                ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
+                base.setSelected(true);
+                windows.add(base);
+                return;
+            }
+        } else {
+            if (array == null || array.size() == 0) {
+                return;
+            }
         }
         ChatWindow.ChatWindowSerializer serializer = new ChatWindow.ChatWindowSerializer();
         for (JsonElement e : array) {
@@ -94,20 +102,14 @@ public class WindowManager implements IRenderer {
         }
     }
 
-    public void scroll(double amount) {
-        for (ChatWindow w : windows) {
-            if (w.isSelected()) {
-                w.scroll(amount);
-            }
-        }
-    }
-
-    public void scroll(double amount, double mouseX, double mouseY) {
+    public boolean scroll(double amount, double mouseX, double mouseY) {
         for (ChatWindow w : windows) {
             if (w.isSelected() || w.isMouseOver(mouseX, mouseY)) {
                 w.scroll(amount);
+                return true;
             }
         }
+        return false;
     }
 
     public Style getText(double mouseX, double mouseY) {
@@ -132,6 +134,12 @@ public class WindowManager implements IRenderer {
         return null;
     }
 
+    public void unSelect() {
+        for (ChatWindow w : windows) {
+            w.setSelected(false);
+        }
+    }
+
     public void setSelected(ChatWindow window) {
         for (ChatWindow w : windows) {
             w.setSelected(window.equals(w));
@@ -149,6 +157,10 @@ public class WindowManager implements IRenderer {
             }
         }
         if (over == null) {
+            if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()
+                    && overVanillaHud(mouseX, mouseY)) {
+                unSelect();
+            }
             return false;
         }
         if (button == 0) {
@@ -173,6 +185,10 @@ public class WindowManager implements IRenderer {
             }
         }
         return true;
+    }
+
+    private boolean overVanillaHud(double mouseX, double mouseY) {
+        return IChatHud.getInstance().isOver(mouseX, mouseY);
     }
 
     public boolean mouseDragged(
@@ -205,8 +221,11 @@ public class WindowManager implements IRenderer {
         for (ChatWindow w : windows) {
             if (w.isSelected()) {
                 w.setTab(tab);
+                return;
             }
         }
+        // Set it if no other window is selected
+        IChatHud.getInstance().setTab(tab);
     }
 
     public void onTabAddButton(AbstractChatTab tab) {
@@ -237,12 +256,14 @@ public class WindowManager implements IRenderer {
     }
 
     public void onNewMessage(HudChatMessage message) {
+        IChatHud.getInstance().addMessage(message);
         for (ChatWindow w : windows) {
             w.addMessage(message);
         }
     }
 
     public void clear() {
+        IChatHud.getInstance().clear(false);
         for (ChatWindow w : windows) {
             w.clearLines();
         }

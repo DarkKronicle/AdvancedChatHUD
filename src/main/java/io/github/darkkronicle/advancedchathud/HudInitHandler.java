@@ -19,6 +19,7 @@ import io.github.darkkronicle.advancedchathud.config.GuiTabManager;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.gui.HudSection;
 import io.github.darkkronicle.advancedchathud.gui.WindowManager;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -51,7 +52,7 @@ public class HudInitHandler implements IInitializationHandler {
                                 return new GuiTabManager(buttons);
                             }
                         });
-        AdvancedChatHud.MAIN_CHAT_TAB = new MainChatTab();
+        IChatHud.getInstance().setTab(AdvancedChatHud.MAIN_CHAT_TAB = new MainChatTab());
 
         // Register on the clear
         ChatScreenSectionHolder.getInstance().addSectionSupplier(HudSection::new);
