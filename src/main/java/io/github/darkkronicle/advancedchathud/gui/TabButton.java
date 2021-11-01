@@ -56,9 +56,7 @@ public class TabButton extends CleanButton {
         if (!selected) {
             color =
                     new ColorUtil.SimpleColor(
-                            color.red() / 2, color.green(), color.blue() / 2, 100);
-        } else {
-            color = color.withAlpha(230);
+                            color.red() / 2, color.green() / 2, color.blue() / 2, 100);
         }
 
         RenderUtils.drawRect(x, y, width, height, color.color());

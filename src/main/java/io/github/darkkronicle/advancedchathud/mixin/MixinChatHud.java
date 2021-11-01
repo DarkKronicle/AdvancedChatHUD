@@ -16,7 +16,6 @@ import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -50,9 +49,6 @@ public abstract class MixinChatHud implements IChatHud {
     private AbstractChatTab tab;
 
     @Shadow
-    public abstract void reset();
-
-    @Shadow
     public abstract int getWidth();
 
     @Shadow
@@ -65,24 +61,53 @@ public abstract class MixinChatHud implements IChatHud {
     public abstract void scroll(double amount);
 
     @Shadow
-    public abstract void clear(boolean clearHistory);
-
-    @Shadow
-    public abstract int getVisibleLineCount();
-
-    @Shadow
-    protected abstract boolean isChatHidden();
-
-    @Shadow
     public abstract int getHeight();
 
-    @Override
-    public boolean isOver(double mouseX, double mouseY) {
-        mouseX = mouseX - 4;
-        mouseY = client.getWindow().getScaledHeight() - mouseY - 40;
-        mouseX = mouseX * getChatScale();
-        mouseY = mouseY * getChatScale();
-        return mouseX > 0 && mouseX < getWidth() && mouseY > 0 && mouseY < getHeight();
+    @Inject(at = @At("HEAD"), method = "scroll", cancellable = true)
+    private void scroll(double amount, CallbackInfo ci) {
+        // Only scroll if nothing is focused
+        if (WindowManager.getInstance().getSelected() != null) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
+    private void render(MatrixStack stack, int delta, CallbackInfo ci) {
+        // Ignore rendering vanilla chat if disabled
+        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "getText", cancellable = true)
+    public void getTextHead(double x, double y, CallbackInfoReturnable<Style> cir) {
+        // Ignore checking vanilla chat for hovered text if disabled
+        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            cir.setReturnValue(WindowManager.getInstance().getText(x, y));
+        }
+    }
+
+    @Inject(at = @At("RETURN"), method = "getText", cancellable = true)
+    public void getTextReturn(double x, double y, CallbackInfoReturnable<Style> cir) {
+        // If vanilla chat didn't find any text, search on our own windows
+        if (cir.getReturnValue() == null) {
+            cir.setReturnValue(WindowManager.getInstance().getText(x, y));
+        }
+    }
+
+    public AbstractChatTab getTab() {
+        return tab;
+    }
+
+    public void setTab(AbstractChatTab tab) {
+        this.tab = tab;
+        this.messages.clear();
+        this.visibleMessages.clear();
+
+        List<HudChatMessage> messages = HudChatMessageHolder.getInstance().getMessages();
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            addMessage(messages.get(i));
+        }
     }
 
     @Override
@@ -90,7 +115,6 @@ public abstract class MixinChatHud implements IChatHud {
         if (tab == null || !hudMsg.getTabs().contains(tab)) {
             return;
         }
-        ;
         tab.resetUnread();
 
         int width = MathHelper.floor((double) this.getWidth() / this.getChatScale());
@@ -126,77 +150,15 @@ public abstract class MixinChatHud implements IChatHud {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "scroll", cancellable = true)
-    private void scroll(double amount, CallbackInfo ci) {
-        if (WindowManager.getInstance().getSelected() != null) {
-            // Only scroll if nothing is focused
-            ci.cancel();
-        }
-    }
+    @Shadow
+    public abstract void clear(boolean clearHistory);
 
-    public AbstractChatTab getTab() {
-        return tab;
-    }
+    @Override
+    public boolean isOver(double mouseX, double mouseY) {
+        double minX = 4 - (4 * getChatScale());
+        double maxX = 4 + (getWidth() + 4 * getChatScale());
 
-    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void render(MatrixStack stack, int delta, CallbackInfo ci) {
-        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "getText", cancellable = true)
-    private void getTextAt(double x, double y, CallbackInfoReturnable<Style> ci) {
-        // Set new text value from cooooolness
-        if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
-            ci.setReturnValue(WindowManager.getInstance().getText(x, y));
-            return;
-        }
-        // Prioritize main first
-        // TODO figure out how to use intrinsic
-        if (this.isChatFocused() && !this.client.options.hudHidden && !isChatHidden()) {
-            double d = x - 2.0D;
-            double e = (double) this.client.getWindow().getScaledHeight() - y - 40.0D;
-            d = MathHelper.floor(d / this.getChatScale());
-            e =
-                    MathHelper.floor(
-                            e
-                                    / (this.getChatScale()
-                                            * (this.client.options.chatLineSpacing + 1.0D)));
-            if (d >= 0.0D && e >= 0.0D) {
-                int i = Math.min(getVisibleLineCount(), this.visibleMessages.size());
-                if (d
-                        <= (double)
-                                MathHelper.floor((double) this.getWidth() / this.getChatScale())) {
-                    Objects.requireNonNull(this.client.textRenderer);
-                    if (e < (double) (9 * i + i)) {
-                        Objects.requireNonNull(this.client.textRenderer);
-                        int j = (int) (e / 9.0D + (double) this.scrolledLines);
-                        if (j >= 0 && j < this.visibleMessages.size()) {
-                            ChatHudLine<OrderedText> chatHudLine = this.visibleMessages.get(j);
-                            ci.setReturnValue(
-                                    this.client
-                                            .textRenderer
-                                            .getTextHandler()
-                                            .getStyleAt(chatHudLine.getText(), (int) d));
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        ci.setReturnValue(WindowManager.getInstance().getText(x, y));
-    }
-
-    public void setTab(AbstractChatTab tab) {
-        this.tab = tab;
-        this.messages.clear();
-        this.visibleMessages.clear();
-
-        List<HudChatMessage> messages = HudChatMessageHolder.getInstance().getMessages();
-        for (int i = messages.size() - 1; i >= 0; i--) {
-            addMessage(messages.get(i));
-        }
-        this.reset();
+        mouseY = (client.getWindow().getScaledHeight() - mouseY - 40) / getChatScale();
+        return mouseX >= minX && mouseX < maxX && mouseY >= 0 && mouseY < getHeight();
     }
 }
