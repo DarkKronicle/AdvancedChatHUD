@@ -46,7 +46,11 @@ public class HudSection extends AdvancedChatScreenSection {
             getScreen().addButton(button, null);
             x += button.getWidth() + space;
         }
-        getScreen().addButton(new NewWindowButton(x, y), null);
+        NewWindowButton windowButton = new NewWindowButton(x, y);
+        getScreen().addButton(windowButton, null);
+        x += windowButton.getWidth() + space;
+        ResetWindowsButton resetButton = new ResetWindowsButton(x, y);
+        getScreen().addButton(resetButton, null);
     }
 
     @Override

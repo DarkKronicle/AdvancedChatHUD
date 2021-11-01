@@ -46,13 +46,13 @@ public class ChatWindow {
 
     private int scrolledLines = 0;
 
-    @Getter private int y;
+    @Getter private double yPercent;
 
-    @Getter private int x;
+    @Getter private double xPercent;
 
-    @Getter private int width;
+    @Getter private double widthPercent;
 
-    @Getter private int height;
+    @Getter private double heightPercent;
 
     private final MinecraftClient client;
 
@@ -75,18 +75,40 @@ public class ChatWindow {
 
     public ChatWindow(AbstractChatTab tab) {
         this.client = MinecraftClient.getInstance();
-        this.y =
-                client.getWindow().getScaledHeight()
-                        - HudConfigStorage.General.Y.config.getIntegerValue();
-        this.x = HudConfigStorage.General.X.config.getIntegerValue();
-        this.width = HudConfigStorage.General.WIDTH.config.getIntegerValue();
-        this.height = HudConfigStorage.General.HEIGHT.config.getIntegerValue();
+        int scaledHeight = client.getWindow().getScaledHeight();
+        int scaledWidth = client.getWindow().getScaledWidth();
+        this.yPercent =
+                ((double) (scaledHeight - HudConfigStorage.General.Y.config.getIntegerValue()))
+                        / scaledHeight;
+        this.xPercent =
+                ((double) HudConfigStorage.General.X.config.getIntegerValue()) / scaledWidth;
+        this.widthPercent =
+                ((double) HudConfigStorage.General.WIDTH.config.getIntegerValue()) / scaledWidth;
+        this.heightPercent =
+                ((double) HudConfigStorage.General.HEIGHT.config.getIntegerValue()) / scaledHeight;
         this.setTab(tab);
     }
 
+    public void setRelativePosition(double x, double y) {
+        if (x > 2) {
+            x = 0;
+        }
+        if (y > 2) {
+            y = 0;
+        }
+        this.xPercent = x;
+        this.yPercent = y;
+    }
+
     public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+        int scaledHeight = client.getWindow().getScaledHeight();
+        this.xPercent = ((double) x) / client.getWindow().getScaledWidth();
+        this.yPercent = ((double) y) / scaledHeight;
+    }
+
+    public void setRelativeDimensions(double width, double height) {
+        this.widthPercent = width;
+        this.heightPercent = height;
     }
 
     public void setTab(AbstractChatTab tab) {
@@ -118,6 +140,22 @@ public class ChatWindow {
                 this.lines.remove(this.lines.size() - 1);
             }
         }
+    }
+
+    public int getConvertedX() {
+        return (int) ((double) client.getWindow().getScaledWidth() * xPercent);
+    }
+
+    public int getConvertedY() {
+        return (int) ((double) client.getWindow().getScaledHeight() * yPercent);
+    }
+
+    public int getConvertedWidth() {
+        return (int) ((double) client.getWindow().getScaledWidth() * widthPercent);
+    }
+
+    public int getConvertedHeight() {
+        return (int) ((double) client.getWindow().getScaledHeight() * heightPercent);
     }
 
     public int getTotalLines() {
@@ -173,11 +211,11 @@ public class ChatWindow {
     }
 
     private int getActualY(int y) {
-        return (int) Math.ceil(this.y / getScale()) - y;
+        return (int) Math.ceil(this.getConvertedY() / getScale()) - y;
     }
 
     private int getLeftX() {
-        return (int) Math.ceil(x / getScale());
+        return (int) Math.ceil(this.getConvertedX() / getScale());
     }
 
     private int getPaddedLeftX() {
@@ -201,15 +239,15 @@ public class ChatWindow {
     }
 
     public int getActualHeight() {
-        return height + getBarHeight();
+        return getConvertedHeight() + getBarHeight();
     }
 
     private int getScaledHeight() {
-        return (int) Math.ceil(height / getScale());
+        return (int) Math.ceil(getConvertedHeight() / getScale());
     }
 
     private int getScaledWidth() {
-        return (int) Math.ceil(width / getScale());
+        return (int) Math.ceil(getConvertedWidth() / getScale());
     }
 
     private int getBarHeight() {
@@ -221,8 +259,10 @@ public class ChatWindow {
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
+        int x = getConvertedX();
+        int y = getConvertedY();
         return (x <= mouseX
-                && x + width >= mouseX
+                && x + getConvertedWidth() >= mouseX
                 && y >= mouseY
                 && y - getActualHeight() <= mouseY);
     }
@@ -569,7 +609,7 @@ public class ChatWindow {
             return null;
         }
         double relX = mouseX;
-        double relY = y - mouseY;
+        double relY = getConvertedY() - mouseY;
         double trueX = relX / getScale() - getPaddedLeftX();
         double trueY = relY / getScale();
         // Divide it by chat scale to get where it actually is
@@ -627,19 +667,25 @@ public class ChatWindow {
     }
 
     public boolean isMouseOverDragBar(double mouseX, double mouseY) {
+        int x = getConvertedX();
+        int y = getConvertedY();
+        int width = getConvertedWidth();
+        int height = getConvertedHeight();
         return (isMouseOver(mouseX, mouseY)
                 && mouseX <= x + width - (getScaledBarHeight() * 3)
                 && mouseY <= y - height);
     }
 
     public boolean onMouseClicked(double mouseX, double mouseY, int button) {
+        int convX = getConvertedX();
+        int width = getConvertedWidth();
         boolean onButtons =
                 isMouseOverDragBar(mouseX - (getScaledBarHeight() * 3), mouseY)
-                        && mouseX >= x + width - getScaledBarHeight() * 3;
+                        && mouseX >= convX + width - getScaledBarHeight() * 3;
         if (!onButtons) {
             return false;
         }
-        int x = width - (int) (mouseX - this.x);
+        int x = width - (int) (mouseX - convX);
         // Visibility | Resize | Close
         if (x <= getScaledBarHeight()) {
             // Close
@@ -655,6 +701,10 @@ public class ChatWindow {
     }
 
     public boolean isMouseOverResize(double mouseX, double mouseY) {
+        int x = getConvertedX();
+        int y = getConvertedY();
+        int width = getConvertedWidth();
+        int height = getConvertedHeight();
         return (isMouseOver(mouseX, mouseY)
                 && mouseX >= x + width - (getScaledBarHeight() * 2)
                 && mouseX <= x + width - (getScaledBarHeight())
@@ -662,6 +712,10 @@ public class ChatWindow {
     }
 
     public boolean isMouseOverVisibility(double mouseX, double mouseY) {
+        int x = getConvertedX();
+        int y = getConvertedY();
+        int width = getConvertedWidth();
+        int height = getConvertedHeight();
         return (isMouseOver(mouseX, mouseY)
                 && mouseX >= x + width - (getScaledBarHeight() * 3)
                 && mouseX <= x + width - (getScaledBarHeight() * 2)
@@ -669,10 +723,10 @@ public class ChatWindow {
     }
 
     public void setDimensions(int width, int height) {
-        this.width = width;
-        this.height = height;
+        this.widthPercent = (double) width / client.getWindow().getScaledWidth();
+        this.heightPercent = (double) height / client.getWindow().getScaledHeight();
         for (ChatMessage m : lines) {
-            m.formatChildren(this.width);
+            m.formatChildren(getConvertedWidth());
         }
     }
 
@@ -716,21 +770,22 @@ public class ChatWindow {
             }
             ChatWindow window = new ChatWindow(tab);
             window.setSelected(obj.get("selected").getAsBoolean());
-            window.setPosition(obj.get("x").getAsInt(), obj.get("y").getAsInt());
+            window.setRelativePosition(obj.get("x").getAsDouble(), obj.get("y").getAsDouble());
             window.setVisibility(
                     HudConfigStorage.Visibility.fromVisibilityString(
                             obj.get("visibility").getAsString()));
-            window.setDimensions(obj.get("width").getAsInt(), obj.get("height").getAsInt());
+            window.setRelativeDimensions(
+                    obj.get("width").getAsDouble(), obj.get("height").getAsDouble());
             return window;
         }
 
         @Override
         public JsonObject save(ChatWindow chatWindow) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("x", chatWindow.getX());
-            obj.addProperty("y", chatWindow.getY());
-            obj.addProperty("width", chatWindow.getWidth());
-            obj.addProperty("height", chatWindow.getHeight());
+            obj.addProperty("x", chatWindow.getXPercent());
+            obj.addProperty("y", chatWindow.getYPercent());
+            obj.addProperty("width", chatWindow.getWidthPercent());
+            obj.addProperty("height", chatWindow.getHeightPercent());
             obj.addProperty("visibility", chatWindow.getVisibility().getStringValue());
             obj.addProperty("tabuuid", chatWindow.getTab().getUuid().toString());
             obj.addProperty("selected", chatWindow.isSelected());

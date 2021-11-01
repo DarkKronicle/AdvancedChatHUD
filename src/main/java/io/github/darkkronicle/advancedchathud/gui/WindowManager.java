@@ -167,13 +167,13 @@ public class WindowManager implements IRenderer {
             setSelected(over);
             if (over.isMouseOverDragBar(mouseX, mouseY)) {
                 drag = over;
-                dragX = (int) mouseX - over.getX();
-                dragY = (int) mouseY - over.getY();
+                dragX = (int) mouseX - over.getConvertedX();
+                dragY = (int) mouseY - over.getConvertedY();
                 resize = false;
             } else if (over.isMouseOverResize(mouseX, mouseY)) {
                 drag = over;
-                dragX = (int) mouseX - over.getWidth();
-                dragY = (int) mouseY + over.getHeight();
+                dragX = (int) mouseX - over.getConvertedWidth();
+                dragY = (int) mouseY + over.getConvertedHeight();
                 resize = true;
             }
             Style style = over.getText(mouseX, mouseY);
@@ -196,7 +196,7 @@ public class WindowManager implements IRenderer {
         if (drag != null && !resize) {
             int x = Math.max((int) mouseX - dragX, 0);
             int y = Math.max((int) mouseY - dragY, drag.getActualHeight());
-            x = Math.min(x, client.getWindow().getScaledWidth() - drag.getWidth());
+            x = Math.min(x, client.getWindow().getScaledWidth() - drag.getConvertedWidth());
             y = Math.min(y, client.getWindow().getScaledHeight());
             drag.setPosition(x, y);
             return true;
@@ -234,7 +234,7 @@ public class WindowManager implements IRenderer {
         if (sel == null) {
             sel = window;
         }
-        window.setPosition(sel.getX() + 15, sel.getY() + 15);
+        window.setPosition(sel.getConvertedX() + 15, sel.getConvertedY() + 15);
         windows.add(window);
         setSelected(window);
     }
