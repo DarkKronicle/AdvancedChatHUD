@@ -122,11 +122,6 @@ public class HudConfigStorage implements IConfigHandler {
                         "topPad",
                         new ConfigInteger(translate("toppad"), 0, 0, 20, translate("info.toppad")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> SHOW_TABS =
-                ConfigStorage.SaveableConfig.fromConfig(
-                        "showTabs",
-                        new ConfigBoolean(translate("showtabs"), true, translate("info.showtabs")));
-
         public static final ConfigStorage.SaveableConfig<ConfigOptionList> VISIBILITY =
                 ConfigStorage.SaveableConfig.fromConfig(
                         "visibility",
@@ -220,7 +215,6 @@ public class HudConfigStorage implements IConfigHandler {
                                 RIGHT_PAD,
                                 BOTTOM_PAD,
                                 TOP_PAD,
-                                SHOW_TABS,
                                 VISIBILITY,
                                 CHAT_SCALE,
                                 FADE_TIME,

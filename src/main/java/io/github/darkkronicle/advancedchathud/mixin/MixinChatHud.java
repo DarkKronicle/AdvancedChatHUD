@@ -115,7 +115,9 @@ public abstract class MixinChatHud implements IChatHud {
         if (tab == null || !hudMsg.getTabs().contains(tab)) {
             return;
         }
-        tab.resetUnread();
+        if (HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
+            tab.resetUnread();
+        }
 
         int width = MathHelper.floor((double) this.getWidth() / this.getChatScale());
 

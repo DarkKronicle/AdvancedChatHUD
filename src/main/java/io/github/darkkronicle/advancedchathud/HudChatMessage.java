@@ -43,8 +43,12 @@ public class HudChatMessage {
                 }
             }
         }
-        if (forward) tabs.add(AdvancedChatHud.MAIN_CHAT_TAB);
-        for (AbstractChatTab tab : tabs) tab.addNewUnread();
+        if (forward) {
+            tabs.add(AdvancedChatHud.MAIN_CHAT_TAB);
+        }
+        for (AbstractChatTab tab : tabs) {
+            tab.addNewUnread();
+        }
     }
 
     public HudChatMessage(ChatMessage message, List<AbstractChatTab> tabs) {
