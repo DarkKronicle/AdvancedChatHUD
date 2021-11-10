@@ -5,27 +5,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-package io.github.darkkronicle.advancedchathud.config;
+package io.github.darkkronicle.advancedchathud.config.gui;
 
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
+import io.github.darkkronicle.advancedchatcore.gui.WidgetConfigList;
+import io.github.darkkronicle.advancedchathud.config.ChatTab;
+import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import javax.annotation.Nullable;
 import net.minecraft.client.gui.screen.Screen;
 
-public class WidgetListTabs extends WidgetListBase<ChatTab, WidgetTabEntry> {
+public class WidgetListTabs extends WidgetConfigList<ChatTab, WidgetTabEntry> {
 
     public WidgetListTabs(
             int x,
             int y,
             int width,
             int height,
-            @Nullable ISelectionListener<ChatTab> selectionListener,
+            ISelectionListener<ChatTab> selectionListener,
             Screen parent) {
-        super(x, y, width, height, selectionListener);
-        this.browserEntryHeight = 22;
+        super(x, y, width, height, selectionListener, parent);
         this.setParent(parent);
     }
 

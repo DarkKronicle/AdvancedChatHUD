@@ -7,6 +7,11 @@
  */
 package io.github.darkkronicle.advancedchathud.util;
 
+import fi.dy.masa.malilib.util.StringUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class TextUtil {
 
     private static final char[] SUPERSCRIPTS =
@@ -21,5 +26,32 @@ public class TextUtil {
             sb.append(SUPERSCRIPTS[num % 10]);
         } while ((num /= 10) > 0);
         return sb.reverse().toString();
+    }
+
+    public static int getMaxLengthTranslation(Collection<String> translations) {
+        return getMaxLengthTranslation(translations.toArray(new String[0]));
+    }
+
+    public static int getMaxLengthTranslation(String... translations) {
+        List<String> translated = new ArrayList<>();
+        for (String translation : translations) {
+            translated.add(StringUtils.translate(translation));
+        }
+        return getMaxLengthString(translated);
+    }
+
+    public static int getMaxLengthString(Collection<String> strings) {
+        return getMaxLengthString(strings.toArray(new String[0]));
+    }
+
+    public static int getMaxLengthString(String... strings) {
+        int max = 0;
+        for (String text : strings) {
+            int width = StringUtils.getStringWidth(text);
+            if (width > max) {
+                max = width;
+            }
+        }
+        return max;
     }
 }

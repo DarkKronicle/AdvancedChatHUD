@@ -327,7 +327,7 @@ public class ChatWindow {
                 renderedLines++;
             }
             if (lines >= scrolledLines) {
-                if (lines == lineCount) {
+                if (lines == totalLines) {
                     break;
                 }
                 if (!y.isPossible(

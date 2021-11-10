@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-package io.github.darkkronicle.advancedchathud.config;
+package io.github.darkkronicle.advancedchathud.config.gui;
 
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -17,12 +17,17 @@ import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
+import io.github.darkkronicle.advancedchatcore.gui.buttons.BackButtonListener;
+import io.github.darkkronicle.advancedchatcore.gui.buttons.Buttons;
+import io.github.darkkronicle.advancedchatcore.gui.buttons.NamedSimpleButton;
+import io.github.darkkronicle.advancedchatcore.interfaces.IClosable;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
+import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.screen.Screen;
 
-public class GuiTabEditor extends GuiConfigsBase {
+public class GuiTabEditor extends GuiConfigsBase implements IClosable {
 
     private final ChatTab tab;
     private final boolean main;
@@ -45,27 +50,35 @@ public class GuiTabEditor extends GuiConfigsBase {
     }
 
     private void createButtons(int x, int y) {
-        String backText = ButtonListener.Type.BACK.getDisplayName();
-        int backWidth = StringUtils.getStringWidth(backText) + 10;
-        int topx = x;
-        ButtonGeneric back = new ButtonGeneric(x + backWidth, y, backWidth, true, backText);
-        this.addButton(back, new ButtonListener(ButtonListener.Type.BACK, this));
-        topx += back.getWidth() + 2;
+        ButtonGeneric back = Buttons.BACK.createButton(x, y);
+        x += this.addButton(back, new BackButtonListener(this)).getWidth() + 2;
 
         if (!main) {
-            String matchesText = ButtonListener.Type.MATCHES.getDisplayName();
-            int matchesWidth = StringUtils.getStringWidth(matchesText) + 10;
-            ButtonGeneric match =
-                    new ButtonGeneric(topx + matchesWidth, y, matchesWidth, true, matchesText);
-            this.addButton(match, new ButtonListener(ButtonListener.Type.MATCHES, this));
-            topx += match.getWidth() + 2;
+            x +=
+                    this.addButton(
+                                    x,
+                                    y,
+                                    "advancedchathud.gui.button.matches",
+                                    (button, mouseButton) -> {
+                                        save();
+                                        GuiBase.openGui(new MatchesEditor(this, tab));
+                                    })
+                            + 2;
         }
 
-        String exportText = ButtonListener.Type.EXPORT.getDisplayName();
-        int exportWidth = StringUtils.getStringWidth(exportText) + 10;
-        ButtonGeneric export =
-                new ButtonGeneric(topx + exportWidth, y, exportWidth, true, exportText);
-        this.addButton(export, new ButtonListener(ButtonListener.Type.EXPORT, this));
+        this.addButton(
+                x,
+                y,
+                "advancedchathud.gui.button.export",
+                (button, mouseButton) -> {
+                    save();
+                    GuiBase.openGui(SharingScreen.fromTab(tab, this));
+                });
+    }
+
+    private int addButton(int x, int y, String translation, IButtonActionListener listener) {
+        return addButton(new NamedSimpleButton(x, y, StringUtils.translate(translation)), listener)
+                .getWidth();
     }
 
     @Override
@@ -101,10 +114,6 @@ public class GuiTabEditor extends GuiConfigsBase {
         AdvancedChatHud.MAIN_CHAT_TAB.setUpTabs();
     }
 
-    public void back() {
-        closeGui(true);
-    }
-
     @Override
     public boolean onKeyTyped(int keyCode, int scanCode, int modifiers) {
         // Override so that on escape stuff still gets saved
@@ -127,47 +136,8 @@ public class GuiTabEditor extends GuiConfigsBase {
         }
     }
 
-    public static class ButtonListener implements IButtonActionListener {
-
-        private final GuiTabEditor parent;
-        private final ButtonListener.Type type;
-
-        public ButtonListener(ButtonListener.Type type, GuiTabEditor parent) {
-            this.type = type;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-            if (this.type == ButtonListener.Type.BACK) {
-                parent.back();
-            } else if (this.type == ButtonListener.Type.EXPORT) {
-                parent.save();
-                GuiBase.openGui(SharingScreen.fromTab(parent.tab, parent));
-            } else if (this.type == Type.MATCHES) {
-                parent.save();
-                GuiBase.openGui(new MatchesEditor(parent, parent.tab));
-            }
-        }
-
-        public enum Type {
-            BACK("back"),
-            EXPORT("export"),
-            MATCHES("matches");
-
-            private final String translation;
-
-            private static String translate(String key) {
-                return "advancedchathud.gui.button." + key;
-            }
-
-            Type(String key) {
-                this.translation = translate(key);
-            }
-
-            public String getDisplayName() {
-                return StringUtils.translate(translation);
-            }
-        }
+    @Override
+    public void close(ButtonBase button) {
+        closeGui(true);
     }
 }

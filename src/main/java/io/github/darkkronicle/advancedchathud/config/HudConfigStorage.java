@@ -184,12 +184,6 @@ public class HudConfigStorage implements IConfigHandler {
                                 false,
                                 translate("info.alternatelines")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> SHOW_TIME =
-                ConfigStorage.SaveableConfig.fromConfig(
-                        "showTime",
-                        new ConfigBoolean(
-                                translate("showtime"), false, translate("info.showtime")));
-
         public static final ConfigStorage.SaveableConfig<ConfigInteger> STORED_LINES =
                 ConfigStorage.SaveableConfig.fromConfig(
                         "storedLines",
@@ -223,7 +217,6 @@ public class HudConfigStorage implements IConfigHandler {
                                 EMPTY_TEXT_COLOR,
                                 HUD_LINE_TYPE,
                                 ALTERNATE_LINES,
-                                SHOW_TIME,
                                 STORED_LINES);
     }
 
