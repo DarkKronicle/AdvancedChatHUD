@@ -28,7 +28,7 @@
     "fabric": "*",
     "minecraft": ">=1.17.0",
     "malilib": ">=0.10.0-dev.20",
-    "advancedchatcore": ">=1.0.0"
+    "advancedchatcore": ">=1.2.0-1.17.1"
   },
   "custom": {
     "acmodule": true,
