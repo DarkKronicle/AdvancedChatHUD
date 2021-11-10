@@ -13,6 +13,7 @@ import com.google.gson.JsonParser;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.Message;
+import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.gui.buttons.NamedSimpleButton;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
@@ -58,8 +59,11 @@ public class SharingScreen extends GuiBase {
         this.addTextField(text, null);
 
         this.addButton(
-                new NamedSimpleButton(x, y, "advancedchat.gui.button.importtab"),
-                (button, mouseButton) -> importTab());
+                x, y, "advancedchat.gui.button.importtab", (button, mouseButton) -> importTab());
+    }
+
+    private void addButton(int x, int y, String translation, IButtonActionListener listener) {
+        this.addButton(new NamedSimpleButton(x, y, StringUtils.translate(translation)), listener);
     }
 
     public void importTab() {
