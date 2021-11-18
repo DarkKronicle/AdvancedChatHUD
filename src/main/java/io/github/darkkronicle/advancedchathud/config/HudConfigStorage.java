@@ -23,8 +23,9 @@ import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
-import io.github.darkkronicle.advancedchatcore.config.options.ConfigSimpleColor;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
+import io.github.darkkronicle.advancedchatcore.config.options.ConfigColor;
+import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import java.io.File;
@@ -51,40 +52,40 @@ public class HudConfigStorage implements IConfigHandler {
             return StringUtils.translate("advancedchathud.config.general." + key);
         }
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> VANILLA_HUD =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigBoolean> VANILLA_HUD =
+                SaveableConfig.fromConfig(
                         "vanillHud",
                         new ConfigBoolean(
                                 translate("vanillahud"), false, translate("info.vanillahud")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> CHAT_HEADS =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigBoolean> CHAT_HEADS =
+                SaveableConfig.fromConfig(
                         "chatHeads",
                         new ConfigBoolean(
                                 translate("chatheads"), false, translate("info.chatheads")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> WIDTH =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> WIDTH =
+                SaveableConfig.fromConfig(
                         "width",
                         new ConfigInteger(
                                 translate("width"), 280, 100, 600, translate("info.width")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> HEIGHT =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> HEIGHT =
+                SaveableConfig.fromConfig(
                         "height",
                         new ConfigInteger(
                                 translate("height"), 117, 20, 400, translate("info.height")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> X =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> X =
+                SaveableConfig.fromConfig(
                         "x", new ConfigInteger(translate("x"), 0, 0, 4000, translate("info.x")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> Y =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> Y =
+                SaveableConfig.fromConfig(
                         "y", new ConfigInteger(translate("y"), 30, 0, 4000, translate("info.y")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> MESSAGE_SPACE =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> MESSAGE_SPACE =
+                SaveableConfig.fromConfig(
                         "messageSpace",
                         new ConfigInteger(
                                 translate("messagespace"),
@@ -93,57 +94,57 @@ public class HudConfigStorage implements IConfigHandler {
                                 10,
                                 translate("info.messagespace")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> LINE_SPACE =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> LINE_SPACE =
+                SaveableConfig.fromConfig(
                         "lineSpace",
                         new ConfigInteger(
                                 translate("linespace"), 9, 8, 20, translate("info.linespace")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> LEFT_PAD =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> LEFT_PAD =
+                SaveableConfig.fromConfig(
                         "leftPad",
                         new ConfigInteger(
                                 translate("leftpad"), 2, 0, 20, translate("info.leftpad")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> RIGHT_PAD =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> RIGHT_PAD =
+                SaveableConfig.fromConfig(
                         "rightPad",
                         new ConfigInteger(
                                 translate("rightpad"), 2, 0, 20, translate("info.rightpad")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> BOTTOM_PAD =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> BOTTOM_PAD =
+                SaveableConfig.fromConfig(
                         "bottomPad",
                         new ConfigInteger(
                                 translate("bottompad"), 1, 0, 20, translate("info.bottompad")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> TOP_PAD =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> TOP_PAD =
+                SaveableConfig.fromConfig(
                         "topPad",
                         new ConfigInteger(translate("toppad"), 0, 0, 20, translate("info.toppad")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigOptionList> VISIBILITY =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigOptionList> VISIBILITY =
+                SaveableConfig.fromConfig(
                         "visibility",
                         new ConfigOptionList(
                                 translate("visibility"),
                                 Visibility.VANILLA,
                                 translate("info.visibility")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigDouble> CHAT_SCALE =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigDouble> CHAT_SCALE =
+                SaveableConfig.fromConfig(
                         translate("chatScale"),
                         new ConfigDouble(
                                 translate("chatscale"), 1, 0, 1, translate("info.chatscale")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> FADE_TIME =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> FADE_TIME =
+                SaveableConfig.fromConfig(
                         "fadeTime",
                         new ConfigInteger(
                                 translate("fadetime"), 40, 0, 200, translate("info.fadetime")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> FADE_START =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> FADE_START =
+                SaveableConfig.fromConfig(
                         "fadeStart",
                         new ConfigInteger(
                                 translate("fadestart"),
@@ -152,40 +153,40 @@ public class HudConfigStorage implements IConfigHandler {
                                 1000,
                                 translate("info.fadestart")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigOptionList> FADE_TYPE =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigOptionList> FADE_TYPE =
+                SaveableConfig.fromConfig(
                         "fadeType",
                         new ConfigOptionList(
                                 translate("fadetype"),
                                 ConfigStorage.Easing.LINEAR,
                                 translate("info.fadetype")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigSimpleColor> EMPTY_TEXT_COLOR =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigColor> EMPTY_TEXT_COLOR =
+                SaveableConfig.fromConfig(
                         "emptyTextColor",
-                        new ConfigSimpleColor(
+                        new ConfigColor(
                                 translate("emptytextcolor"),
-                                ColorUtil.WHITE,
+                                Colors.getInstance().getColorOrWhite("white"),
                                 translate("info.emptytextcolor")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigOptionList> HUD_LINE_TYPE =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigOptionList> HUD_LINE_TYPE =
+                SaveableConfig.fromConfig(
                         "hudLineType",
                         new ConfigOptionList(
                                 translate("hudlinetype"),
                                 HudLineType.FULL,
                                 translate("info.hudlinetype")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigBoolean> ALTERNATE_LINES =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigBoolean> ALTERNATE_LINES =
+                SaveableConfig.fromConfig(
                         "alternateLines",
                         new ConfigBoolean(
                                 translate("alternatelines"),
                                 false,
                                 translate("info.alternatelines")));
 
-        public static final ConfigStorage.SaveableConfig<ConfigInteger> STORED_LINES =
-                ConfigStorage.SaveableConfig.fromConfig(
+        public static final SaveableConfig<ConfigInteger> STORED_LINES =
+                SaveableConfig.fromConfig(
                         "storedLines",
                         new ConfigInteger(
                                 translate("storedlines"),
@@ -194,30 +195,29 @@ public class HudConfigStorage implements IConfigHandler {
                                 1000,
                                 translate("info.storedlines")));
 
-        public static final ImmutableList<ConfigStorage.SaveableConfig<? extends IConfigBase>>
-                OPTIONS =
-                        ImmutableList.of(
-                                VANILLA_HUD,
-                                CHAT_HEADS,
-                                WIDTH,
-                                HEIGHT,
-                                X,
-                                Y,
-                                MESSAGE_SPACE,
-                                LINE_SPACE,
-                                LEFT_PAD,
-                                RIGHT_PAD,
-                                BOTTOM_PAD,
-                                TOP_PAD,
-                                VISIBILITY,
-                                CHAT_SCALE,
-                                FADE_TIME,
-                                FADE_START,
-                                FADE_TYPE,
-                                EMPTY_TEXT_COLOR,
-                                HUD_LINE_TYPE,
-                                ALTERNATE_LINES,
-                                STORED_LINES);
+        public static final ImmutableList<SaveableConfig<? extends IConfigBase>> OPTIONS =
+                ImmutableList.of(
+                        VANILLA_HUD,
+                        CHAT_HEADS,
+                        WIDTH,
+                        HEIGHT,
+                        X,
+                        Y,
+                        MESSAGE_SPACE,
+                        LINE_SPACE,
+                        LEFT_PAD,
+                        RIGHT_PAD,
+                        BOTTOM_PAD,
+                        TOP_PAD,
+                        VISIBILITY,
+                        CHAT_SCALE,
+                        FADE_TIME,
+                        FADE_START,
+                        FADE_TYPE,
+                        EMPTY_TEXT_COLOR,
+                        HUD_LINE_TYPE,
+                        ALTERNATE_LINES,
+                        STORED_LINES);
     }
 
     public static void loadFromFile() {
@@ -258,9 +258,7 @@ public class HudConfigStorage implements IConfigHandler {
                 }
 
                 ConfigStorage.readOptions(
-                        root,
-                        General.NAME,
-                        (List<ConfigStorage.SaveableConfig<?>>) General.OPTIONS);
+                        root, General.NAME, (List<SaveableConfig<?>>) General.OPTIONS);
 
                 int version = JsonUtils.getIntegerOrDefault(root, "configVersion", 0);
             }
@@ -275,7 +273,7 @@ public class HudConfigStorage implements IConfigHandler {
             JsonObject root = new JsonObject();
 
             ConfigStorage.writeOptions(
-                    root, General.NAME, (List<ConfigStorage.SaveableConfig<?>>) General.OPTIONS);
+                    root, General.NAME, (List<SaveableConfig<?>>) General.OPTIONS);
 
             root.add("maintab", tabJson.save(MAIN_TAB));
 

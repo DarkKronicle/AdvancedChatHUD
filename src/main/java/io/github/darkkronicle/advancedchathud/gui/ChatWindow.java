@@ -14,7 +14,9 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
+import io.github.darkkronicle.advancedchatcore.util.Color;
 import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchatcore.util.EasingMethod;
 import io.github.darkkronicle.advancedchatcore.util.FluidText;
 import io.github.darkkronicle.advancedchatcore.util.LimitedInteger;
@@ -272,7 +274,6 @@ public class ChatWindow {
             return;
         }
 
-        int lineCount = lines.size();
         int totalLines = getTotalLines();
 
         boolean chatFocused = visibility == HudConfigStorage.Visibility.ALWAYS || focused;
@@ -379,7 +380,7 @@ public class ChatWindow {
                     tab.getAbreviation(),
                     leftX + (labelWidth) / 2,
                     getActualY(newY - 3),
-                    ColorUtil.WHITE.color());
+                    Colors.getInstance().getColorOrWhite("white").color());
             drawRect(
                     matrixStack,
                     leftX + labelWidth,
@@ -473,7 +474,7 @@ public class ChatWindow {
                         visibility.getDisplayName(),
                         (int) (mouseX / getScale() + 4),
                         (int) (mouseY / getScale() - 16),
-                        ColorUtil.WHITE.color());
+                        Colors.getInstance().getColorOrWhite("white").color());
             }
         }
 
@@ -494,7 +495,7 @@ public class ChatWindow {
                     getActualY(scrollHeight + 10),
                     1,
                     10,
-                    ColorUtil.WHITE.color());
+                    Colors.getInstance().getColorOrWhite("white").color());
         }
         matrixStack.pop();
     }
@@ -520,9 +521,8 @@ public class ChatWindow {
             height += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
             // Start of a line
         }
-        ColorUtil.SimpleColor background = line.getParent().getBackground();
-        ColorUtil.SimpleColor text =
-                HudConfigStorage.General.EMPTY_TEXT_COLOR.config.getSimpleColor();
+        Color background = line.getParent().getBackgroundColor();
+        Color text = HudConfigStorage.General.EMPTY_TEXT_COLOR.config.get();
         if (background == null) {
             background = tab.getInnerColor();
         }
@@ -569,7 +569,8 @@ public class ChatWindow {
         if (line.getParent().getStacks() > 0 && lineIndex == 0) {
             FluidText toPrint = new FluidText(render);
             Style style = Style.EMPTY;
-            TextColor color = TextColor.fromRgb(ColorUtil.GRAY.color());
+            TextColor color =
+                    TextColor.fromRgb(Colors.getInstance().getColorOrWhite("gray").color());
             style = style.withColor(color);
             toPrint.getRawTexts()
                     .add(new RawText(" (" + (line.getParent().getStacks() + 1) + ")", style));

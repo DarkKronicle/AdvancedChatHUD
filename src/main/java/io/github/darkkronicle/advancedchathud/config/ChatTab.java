@@ -15,10 +15,10 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.util.StringUtils;
-import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
-import io.github.darkkronicle.advancedchatcore.config.options.ConfigSimpleColor;
+import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
+import io.github.darkkronicle.advancedchatcore.config.options.ConfigColor;
 import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchatcore.util.FindType;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import java.util.ArrayList;
@@ -41,8 +41,8 @@ public class ChatTab {
 
     private UUID uuid = UUID.randomUUID();
 
-    private ConfigStorage.SaveableConfig<ConfigString> name =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigString> name =
+            SaveableConfig.fromConfig(
                     "name",
                     new ConfigString(translate("name"), "Boring Chat Tab", translate("info.name")));
 
@@ -50,54 +50,54 @@ public class ChatTab {
             new ArrayList<>(
                     Collections.singleton(new Match("I will match to text!", FindType.LITERAL)));
 
-    private ConfigStorage.SaveableConfig<ConfigString> startingMessage =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigString> startingMessage =
+            SaveableConfig.fromConfig(
                     "startingMessage",
                     new ConfigString(
                             translate("startingmessage"), "", translate("info.startingmessage")));
 
-    private ConfigStorage.SaveableConfig<ConfigBoolean> forward =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigBoolean> forward =
+            SaveableConfig.fromConfig(
                     "forward",
                     new ConfigBoolean(translate("forward"), true, translate("info.forward")));
 
-    private ConfigStorage.SaveableConfig<ConfigString> abbreviation =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigString> abbreviation =
+            SaveableConfig.fromConfig(
                     "abbreviation",
                     new ConfigString(
                             translate("abbreviation"), "BCT", translate("info.abbreviation")));
 
-    private ConfigStorage.SaveableConfig<ConfigSimpleColor> mainColor =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigColor> mainColor =
+            SaveableConfig.fromConfig(
                     "mainColor",
-                    new ConfigSimpleColor(
+                    new ConfigColor(
                             translate("maincolor"),
-                            ColorUtil.GRAY.withAlpha(100),
+                            Colors.getInstance().getColorOrWhite("gray").withAlpha(100),
                             translate("info.maincolor")));
 
-    private ConfigStorage.SaveableConfig<ConfigSimpleColor> borderColor =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigColor> borderColor =
+            SaveableConfig.fromConfig(
                     "borderColor",
-                    new ConfigSimpleColor(
+                    new ConfigColor(
                             translate("bordercolor"),
-                            ColorUtil.BLACK.withAlpha(180),
+                            Colors.getInstance().getColorOrWhite("black").withAlpha(180),
                             translate("info.bordercolor")));
 
-    private ConfigStorage.SaveableConfig<ConfigSimpleColor> innerColor =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigColor> innerColor =
+            SaveableConfig.fromConfig(
                     "innerColor",
-                    new ConfigSimpleColor(
+                    new ConfigColor(
                             translate("innercolor"),
-                            ColorUtil.BLACK.withAlpha(100),
+                            Colors.getInstance().getColorOrWhite("black").withAlpha(100),
                             translate("info.innercolor")));
 
-    private ConfigStorage.SaveableConfig<ConfigBoolean> showUnread =
-            ConfigStorage.SaveableConfig.fromConfig(
+    private SaveableConfig<ConfigBoolean> showUnread =
+            SaveableConfig.fromConfig(
                     "showUnread",
                     new ConfigBoolean(
                             translate("showunread"), false, translate("info.showunread")));
 
-    private final ImmutableList<ConfigStorage.SaveableConfig<?>> options =
+    private final ImmutableList<SaveableConfig<?>> options =
             ImmutableList.of(
                     name,
                     startingMessage,
@@ -109,7 +109,7 @@ public class ChatTab {
                     showUnread);
 
     /** Options that the main tab can use */
-    private final ImmutableList<ConfigStorage.SaveableConfig<?>> mainEditableOptions =
+    private final ImmutableList<SaveableConfig<?>> mainEditableOptions =
             ImmutableList.of(
                     name,
                     startingMessage,
@@ -153,7 +153,7 @@ public class ChatTab {
         @Override
         public ChatTab load(JsonObject obj) {
             ChatTab t = new ChatTab();
-            for (ConfigStorage.SaveableConfig<?> conf : t.getOptions()) {
+            for (SaveableConfig<?> conf : t.getOptions()) {
                 IConfigBase option = conf.config;
                 if (obj.has(conf.key)) {
                     option.setValueFromJsonElement(obj.get(conf.key));
@@ -190,7 +190,7 @@ public class ChatTab {
         public JsonObject save(ChatTab tab) {
             Match.MatchSerializer serializer = new Match.MatchSerializer();
             JsonObject obj = new JsonObject();
-            for (ConfigStorage.SaveableConfig<?> option : tab.getOptions()) {
+            for (SaveableConfig<?> option : tab.getOptions()) {
                 obj.add(option.key, option.config.getAsJsonElement());
             }
             JsonArray find = new JsonArray();

@@ -33,9 +33,9 @@ public class CustomChatTab extends AbstractChatTab {
         super(
                 storage.getName().config.getStringValue(),
                 storage.getAbbreviation().config.getStringValue(),
-                storage.getMainColor().config.getSimpleColor(),
-                storage.getBorderColor().config.getSimpleColor(),
-                storage.getInnerColor().config.getSimpleColor(),
+                storage.getMainColor().config.get(),
+                storage.getBorderColor().config.get(),
+                storage.getInnerColor().config.get(),
                 storage.getShowUnread().config.getBooleanValue(),
                 storage.getUuid());
         this.storage = storage;

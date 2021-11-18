@@ -16,7 +16,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
-import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
+import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
 import io.github.darkkronicle.advancedchatcore.gui.buttons.BackButtonListener;
 import io.github.darkkronicle.advancedchatcore.gui.buttons.Buttons;
 import io.github.darkkronicle.advancedchatcore.gui.buttons.NamedSimpleButton;
@@ -84,13 +84,13 @@ public class GuiTabEditor extends GuiConfigsBase implements IClosable {
     @Override
     public List<ConfigOptionWrapper> getConfigs() {
         ArrayList<IConfigBase> config = new ArrayList<>();
-        List<ConfigStorage.SaveableConfig<? extends IConfigBase>> options;
+        List<SaveableConfig<? extends IConfigBase>> options;
         if (main) {
             options = tab.getMainEditableOptions();
         } else {
             options = tab.getOptions();
         }
-        for (ConfigStorage.SaveableConfig<? extends IConfigBase> s : options) {
+        for (SaveableConfig<? extends IConfigBase> s : options) {
             config.add(s.config);
         }
 

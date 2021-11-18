@@ -9,7 +9,8 @@ package io.github.darkkronicle.advancedchathud.gui;
 
 import fi.dy.masa.malilib.render.RenderUtils;
 import io.github.darkkronicle.advancedchatcore.gui.CleanButton;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.util.Color;
+import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import net.minecraft.client.gui.DrawableHelper;
@@ -35,10 +36,10 @@ public class NewWindowButton extends CleanButton {
         int relMY = mouseY - y;
         hovered = relMX >= 0 && relMX <= width && relMY >= 0 && relMY <= height;
 
-        ColorUtil.SimpleColor plusBack = ColorUtil.BLACK.withAlpha(100);
+        Color plusBack = Colors.getInstance().getColorOrWhite("background").withAlpha(100);
         boolean plusHovered = hovered && relMX >= width - height;
         if (plusHovered) {
-            plusBack = ColorUtil.WHITE.withAlpha(plusBack.alpha());
+            plusBack = Colors.getInstance().getColorOrWhite("hover").withAlpha(plusBack.alpha());
         }
 
         RenderUtils.drawRect(x, y, width, height, plusBack.color());

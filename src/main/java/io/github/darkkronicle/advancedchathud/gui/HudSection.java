@@ -9,7 +9,7 @@ package io.github.darkkronicle.advancedchathud.gui;
 
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchatcore.interfaces.AdvancedChatScreenSection;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.util.Color;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
@@ -25,11 +25,11 @@ public class HudSection extends AdvancedChatScreenSection {
         super(screen);
     }
 
-    private ColorUtil.SimpleColor getColor() {
-        ColorUtil.SimpleColor baseColor;
+    private Color getColor() {
+        Color baseColor;
         ChatWindow sel = WindowManager.getInstance().getSelected();
         if (sel == null) {
-            baseColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.getSimpleColor();
+            baseColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.get();
         } else {
             baseColor = sel.getTab().getInnerColor();
         }

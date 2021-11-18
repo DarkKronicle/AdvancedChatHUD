@@ -10,11 +10,12 @@ package io.github.darkkronicle.advancedchathud.gui;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.gui.CleanButton;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
+import io.github.darkkronicle.advancedchatcore.util.Color;
+import io.github.darkkronicle.advancedchatcore.util.Colors;
+import io.github.darkkronicle.advancedchatcore.util.TextUtil;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
-import io.github.darkkronicle.advancedchathud.util.TextUtil;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
@@ -39,9 +40,9 @@ public class TabButton extends CleanButton {
         int relMX = mouseX - x;
         int relMY = mouseY - y;
         hovered = relMX >= 0 && relMX <= width && relMY >= 0 && relMY <= height;
-        ColorUtil.SimpleColor color = baseColor;
+        Color color = baseColor;
         if (hovered) {
-            color = ColorUtil.WHITE.withAlpha(color.alpha());
+            color = Colors.getInstance().getColorOrWhite("hover").withAlpha(color.alpha());
         }
 
         boolean selected = false;
@@ -54,9 +55,7 @@ public class TabButton extends CleanButton {
             }
         }
         if (!selected) {
-            color =
-                    new ColorUtil.SimpleColor(
-                            color.red() / 2, color.green() / 2, color.blue() / 2, 100);
+            color = new Color(color.red() / 2, color.green() / 2, color.blue() / 2, 100);
         }
 
         RenderUtils.drawRect(x, y, width, height, color.color());

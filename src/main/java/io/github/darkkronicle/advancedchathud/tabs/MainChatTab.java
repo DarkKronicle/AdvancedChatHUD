@@ -27,9 +27,9 @@ public class MainChatTab extends AbstractChatTab {
         super(
                 "Main",
                 HudConfigStorage.MAIN_TAB.getAbbreviation().config.getStringValue(),
-                HudConfigStorage.MAIN_TAB.getMainColor().config.getSimpleColor(),
-                HudConfigStorage.MAIN_TAB.getBorderColor().config.getSimpleColor(),
-                HudConfigStorage.MAIN_TAB.getInnerColor().config.getSimpleColor(),
+                HudConfigStorage.MAIN_TAB.getMainColor().config.get(),
+                HudConfigStorage.MAIN_TAB.getBorderColor().config.get(),
+                HudConfigStorage.MAIN_TAB.getInnerColor().config.get(),
                 HudConfigStorage.MAIN_TAB.getShowUnread().config.getBooleanValue(),
                 HudConfigStorage.MAIN_TAB.getUuid());
         setUpTabs();
@@ -37,9 +37,9 @@ public class MainChatTab extends AbstractChatTab {
 
     public void refreshOptions() {
         this.abreviation = HudConfigStorage.MAIN_TAB.getAbbreviation().config.getStringValue();
-        this.mainColor = HudConfigStorage.MAIN_TAB.getMainColor().config.getSimpleColor();
-        this.innerColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.getSimpleColor();
-        this.borderColor = HudConfigStorage.MAIN_TAB.getBorderColor().config.getSimpleColor();
+        this.mainColor = HudConfigStorage.MAIN_TAB.getMainColor().config.get();
+        this.innerColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.get();
+        this.borderColor = HudConfigStorage.MAIN_TAB.getBorderColor().config.get();
         this.showUnread = HudConfigStorage.MAIN_TAB.getShowUnread().config.getBooleanValue();
         this.uuid = HudConfigStorage.MAIN_TAB.getUuid();
     }

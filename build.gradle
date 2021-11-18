@@ -28,6 +28,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.17.1:${project.malilib_version}"
 	modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
+	implementation 'com.electronwill.night-config:toml:3.6.5'
 }
 
 processResources {
