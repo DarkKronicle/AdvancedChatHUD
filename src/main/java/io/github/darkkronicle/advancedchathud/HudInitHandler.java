@@ -60,5 +60,6 @@ public class HudInitHandler implements IInitializationHandler {
         ChatHistory.getInstance().addOnClear(() -> HudChatMessageHolder.getInstance().clear());
         ChatHistory.getInstance().addOnUpdate(HudChatMessageHolder.getInstance());
         RenderEventHandler.getInstance().registerGameOverlayRenderer(WindowManager.getInstance());
+        ResolutionEventHandler.ON_RESOLUTION_CHANGE.add(WindowManager.getInstance());
     }
 }

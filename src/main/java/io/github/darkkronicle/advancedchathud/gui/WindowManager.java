@@ -11,8 +11,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
+import io.github.darkkronicle.advancedchatcore.util.SyncTaskQueue;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.ResolutionEventHandler;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
@@ -25,7 +27,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
 
 @Environment(EnvType.CLIENT)
-public class WindowManager implements IRenderer {
+public class WindowManager implements IRenderer, ResolutionEventHandler {
 
     private static final WindowManager INSTANCE = new WindowManager();
     private final MinecraftClient client;
@@ -267,5 +269,15 @@ public class WindowManager implements IRenderer {
         for (ChatWindow w : windows) {
             w.clearLines();
         }
+    }
+
+    @Override
+    public void onResolutionChange() {
+        // Delay resolution change because when toggling full screen it can take a render cycle for it to apply
+        SyncTaskQueue.getInstance().add(2, () -> {
+            for (ChatWindow w : windows) {
+                w.onResolutionChange();
+            }
+        });
     }
 }

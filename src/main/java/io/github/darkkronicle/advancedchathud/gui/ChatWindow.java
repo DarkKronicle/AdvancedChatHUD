@@ -373,7 +373,7 @@ public class ChatWindow {
                     getActualY(newY),
                     labelWidth,
                     scaledBar,
-                    tab.getBorderColor().withAlpha(180).color());
+                    tab.getBorderColor().color());
             DrawableHelper.drawCenteredText(
                     matrixStack,
                     MinecraftClient.getInstance().textRenderer,
@@ -592,6 +592,9 @@ public class ChatWindow {
         if (lineIndex == line.getParent().getLineCount() - 1
                 && line.getParent().getOwner() != null
                 && HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue()) {
+            // Allow head to be transparent
+            RenderUtils.setupBlend();
+            // Draw head
             RenderSystem.setShaderColor(1, 1, 1, applied);
             RenderSystem.setShaderTexture(0, line.getParent().getOwner().getTexture());
             DrawableHelper.drawTexture(
@@ -791,6 +794,12 @@ public class ChatWindow {
             obj.addProperty("tabuuid", chatWindow.getTab().getUuid().toString());
             obj.addProperty("selected", chatWindow.isSelected());
             return obj;
+        }
+    }
+
+    public void onResolutionChange() {
+        for (ChatMessage m : lines) {
+            m.formatChildren(getConvertedWidth());
         }
     }
 }
