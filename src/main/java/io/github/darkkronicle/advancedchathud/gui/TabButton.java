@@ -31,7 +31,7 @@ public class TabButton extends CleanButton {
     private static final int RED = 0xFF_FF_55_55;
 
     private TabButton(AbstractChatTab tab, int x, int y, int width, int height) {
-        super(x, y, width, height, tab.getMainColor(), tab.getAbreviation());
+        super(x, y, width, height, tab.getMainColor(), tab.getAbbreviation());
         this.tab = tab;
     }
 
@@ -83,10 +83,10 @@ public class TabButton extends CleanButton {
     }
 
     public static TabButton fromTab(AbstractChatTab tab, int x, int y) {
-        int width = StringUtils.getStringWidth(tab.getAbreviation()) + PADDING * 2;
+        int width = StringUtils.getStringWidth(tab.getAbbreviation()) + PADDING * 2;
         if (tab.isShowUnread()) {
             width += UNREAD_WIDTH;
         }
-        return new TabButton(tab, x, y, width, PADDING + 9 + PADDING);
+        return new TabButton(tab, x, y, width, PADDING + 8 + PADDING);
     }
 }

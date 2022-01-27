@@ -14,14 +14,15 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfigHandler;
 import io.github.darkkronicle.advancedchatcore.gui.ConfigGuiListBase;
 import io.github.darkkronicle.advancedchatcore.gui.buttons.NamedSimpleButton;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import java.util.List;
 
 public class GuiTabManager extends ConfigGuiListBase<ChatTab, WidgetTabEntry, WidgetListTabs> {
 
-    public GuiTabManager(List<GuiConfigHandler.TabButton> tabButtons) {
-        super(tabButtons);
+    public GuiTabManager() {
+        super();
         this.title = StringUtils.translate("advancedchat.screen.main");
     }
 
@@ -34,29 +35,21 @@ public class GuiTabManager extends ConfigGuiListBase<ChatTab, WidgetTabEntry, Wi
     @Override
     public void initGuiConfig(int x, int y) {
         x = this.width - 10;
-        x -=
-                this.addButton(
-                                x,
-                                y,
-                                "advancedchathud.gui.button.addtab",
-                                (button, mouseButton) -> {
-                                    HudConfigStorage.TABS.add(new ChatTab());
-                                    this.getListWidget().refreshEntries();
-                                })
-                        + 2;
-        x -=
-                this.addButton(
-                                x,
-                                y,
-                                "advancedchathud.gui.button.import",
-                                (button, mouseButton) ->
-                                        GuiBase.openGui(new SharingScreen(null, this)))
-                        + 2;
+        y -= 48;
+        x -= this.addButton(x, y, "advancedchathud.gui.button.addtab", (button, mouseButton) -> {
+            HudConfigStorage.TABS.add(new ChatTab());
+            this.getListWidget().refreshEntries();
+        }) + 2;
+        x -= this.addButton(x, y, "advancedchathud.gui.button.import", (button, mouseButton) ->
+                GuiBase.openGui(new SharingScreen(null, this))
+        ) + 2;
+        x -= this.addButton(x, y, "advancedchathud.gui.button.reload", (button, mouseButton) ->
+                AdvancedChatHud.MAIN_CHAT_TAB.setUpTabs()
+        ) + 2;
     }
 
     protected int addButton(int x, int y, String translation, IButtonActionListener listener) {
-        ButtonGeneric button =
-                new NamedSimpleButton(x, y, StringUtils.translate(translation), false);
+        ButtonGeneric button = new NamedSimpleButton(x, y, StringUtils.translate(translation), false);
         this.addButton(button, listener);
         return button.getWidth();
     }

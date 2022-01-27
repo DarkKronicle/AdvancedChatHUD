@@ -7,45 +7,100 @@
  */
 package io.github.darkkronicle.advancedchathud.tabs;
 
+import io.github.darkkronicle.Konstruct.NodeException;
+import io.github.darkkronicle.Konstruct.functions.Function;
+import io.github.darkkronicle.Konstruct.functions.Variable;
+import io.github.darkkronicle.Konstruct.nodes.LiteralNode;
+import io.github.darkkronicle.Konstruct.nodes.Node;
+import io.github.darkkronicle.Konstruct.parser.*;
+import io.github.darkkronicle.advancedchatcore.konstruct.AdvancedChatKonstruct;
 import io.github.darkkronicle.advancedchatcore.util.FluidText;
 import io.github.darkkronicle.advancedchatcore.util.SearchUtils;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.Match;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.Level;
 
 /** ChatTab that loads from {@link ChatTab}. Easy to customize. */
 public class CustomChatTab extends AbstractChatTab {
 
-    @Getter private String name;
-
     @Getter private List<Match> matches;
 
-    @Getter private boolean forward;
+    @Setter
+    @Getter
+    private boolean forward;
 
-    @Getter private String startingMessage;
+    @Getter
+    @Setter
+    private String startingMessage;
 
-    @Getter private ChatTab storage;
+    @Getter
+    @Setter
+    private ChatTab tab;
 
-    public CustomChatTab(ChatTab storage) {
+    private NodeProcessor processor = null;
+    private Function function = null;
+
+    @Getter
+    @Setter
+    private boolean konstructed = false;
+
+    public CustomChatTab(ChatTab tab) {
         super(
-                storage.getName().config.getStringValue(),
-                storage.getAbbreviation().config.getStringValue(),
-                storage.getMainColor().config.get(),
-                storage.getBorderColor().config.get(),
-                storage.getInnerColor().config.get(),
-                storage.getShowUnread().config.getBooleanValue(),
-                storage.getUuid());
-        this.storage = storage;
-        this.matches = new ArrayList<>(storage.getMatches());
-        this.forward = storage.getForward().config.getBooleanValue();
-        this.startingMessage = storage.getStartingMessage().config.getStringValue();
+            tab.getName().config.getStringValue(),
+            tab.getAbbreviation().config.getStringValue(),
+            tab.getMainColor().config.get(),
+            tab.getBorderColor().config.get(),
+            tab.getInnerColor().config.get(),
+            tab.getShowUnread().config.getBooleanValue(),
+            tab.getUuid()
+        );
+        this.tab = tab;
+        this.matches = new ArrayList<>(tab.getMatches());
+        this.forward = tab.getForward().config.getBooleanValue();
+        this.startingMessage = tab.getStartingMessage().config.getStringValue();
+    }
+
+    public void setNode(String content) {
+        konstructed = true;
+        ParseResult result;
+        try {
+            Node node = AdvancedChatKonstruct.getInstance().getNode(content);
+            processor = AdvancedChatKonstruct.getInstance().copy();
+            processor.addVariable("tab", Variable.of(new ChatTabObject(this)));
+            result = processor.parse(node);
+        } catch (NodeException e) {
+            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName(), e);
+            return;
+        }
+        Optional<Function> func = result.getContext().getFunction("shouldAdd");
+        if (func.isEmpty()) {
+            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName() + ". Function 'shouldAdd(text)' does not exist!");
+            return;
+        }
+        if (!func.get().getArgumentCount().equals(IntRange.of(1))) {
+            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName() + ". Function 'shouldAdd(text)' should only have one argument!");
+        }
+        function = func.get();
     }
 
     @Override
     public boolean shouldAdd(Text text) {
+        if (konstructed) {
+            if (function == null) {
+                return false;
+            }
+            ParseContext context = processor.createContext();
+            Result result = function.parse(context, List.of(new LiteralNode(text.getString())));
+            return result.getContent().getBoolean();
+        }
         FluidText newText = new FluidText(text);
         String search = newText.getString();
         for (Match m : matches) {

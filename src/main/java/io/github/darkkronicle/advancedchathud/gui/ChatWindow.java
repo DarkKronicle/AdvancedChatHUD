@@ -358,7 +358,7 @@ public class ChatWindow {
                     tab.getBorderColor().color());
             int scaledBar = getBarHeight();
             int newY = getScaledHeight() + scaledBar;
-            String label = tab.getAbreviation();
+            String label = tab.getAbbreviation();
             int labelWidth = StringUtils.getStringWidth(label) + 8;
             drawRect(
                     matrixStack,
@@ -377,7 +377,7 @@ public class ChatWindow {
             DrawableHelper.drawCenteredText(
                     matrixStack,
                     MinecraftClient.getInstance().textRenderer,
-                    tab.getAbreviation(),
+                    tab.getAbbreviation(),
                     leftX + (labelWidth) / 2,
                     getActualY(newY - 3),
                     Colors.getInstance().getColorOrWhite("white").color());

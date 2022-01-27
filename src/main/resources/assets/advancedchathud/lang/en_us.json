@@ -2,7 +2,8 @@
   "advancedchat.config.yes": "Correct!",
 
   "advancedchathud.gui.button.addtab": "New Chat Tab",
-  "advancedchathud.tab.general": "§9Chat HUD",
+  "advancedchathud.tab.advancedchathud": "§9HUD",
+  "advancedchathud.tab.general": "§7Chat HUD",
   "advancedchathud.tab.tabs": "§bChat Tabs",
 
   "advancedchathud.config.general.timeformat": "Time Format",

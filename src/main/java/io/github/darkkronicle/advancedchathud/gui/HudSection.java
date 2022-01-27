@@ -7,19 +7,36 @@
  */
 package io.github.darkkronicle.advancedchathud.gui;
 
+import fi.dy.masa.malilib.gui.button.ButtonBase;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
+import io.github.darkkronicle.advancedchatcore.gui.IconButton;
 import io.github.darkkronicle.advancedchatcore.interfaces.AdvancedChatScreenSection;
 import io.github.darkkronicle.advancedchatcore.util.Color;
+import io.github.darkkronicle.advancedchatcore.util.RowList;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
+import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
+import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
+import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.Identifier;
+
+import java.util.Collections;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class HudSection extends AdvancedChatScreenSection {
+
+    private static final Identifier ADD_ICON =
+            new Identifier(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/add_window.png");
+
+    private static final Identifier RESET_ICON =
+            new Identifier(AdvancedChatHud.MOD_ID, "textures/gui/chatwindow/reset_windows.png");
 
     public HudSection(AdvancedChatScreen screen) {
         super(screen);
@@ -38,19 +55,39 @@ public class HudSection extends AdvancedChatScreenSection {
 
     @Override
     public void initGui() {
-        int x = 2;
-        int space = 2;
+        boolean left = !HudConfigStorage.General.TAB_BUTTONS_ON_RIGHT.config.getBooleanValue();
+        int x = left ? 2 : MinecraftClient.getInstance().getWindow().getScaledWidth() - 2;
         int y = MinecraftClient.getInstance().getWindow().getScaledHeight() - 31;
-        for (AbstractChatTab tab : AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs()) {
-            TabButton button = TabButton.fromTab(tab, x, y);
-            getScreen().addButton(button, null);
-            x += button.getWidth() + space;
+        List<AbstractChatTab> tabs = AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs();
+        if (!left) {
+            Collections.reverse(tabs);
         }
-        NewWindowButton windowButton = new NewWindowButton(x, y);
-        getScreen().addButton(windowButton, null);
-        x += windowButton.getWidth() + space;
-        ResetWindowsButton resetButton = new ResetWindowsButton(x, y);
-        getScreen().addButton(resetButton, null);
+        RowList<ButtonBase> rows = left ? getScreen().getLeftSideButtons() : getScreen().getRightSideButtons();
+        rows.createSection("tabs", 0);
+        for (AbstractChatTab tab : tabs) {
+            rows.add("tabs", TabButton.fromTab(tab, 0, 0));
+        }
+        IconButton window = new IconButton(0, 0, 14, 32, ADD_ICON, (button) -> WindowManager.getInstance().onTabAddButton(IChatHud.getInstance().getTab()));
+        IconButton reset = new IconButton(0, 0, 14, 32, RESET_ICON, (button) -> WindowManager.getInstance().reset());
+        if (left) {
+            rows.add("tabs", window);
+            rows.add("tabs", reset);
+        } else {
+            rows.add("tabs", window, 0);
+            rows.add("tabs", reset, 0);
+        }
+
+        if (getScreen().getChatField().getText().isEmpty()) {
+            ChatWindow chatWindow = WindowManager.getInstance().getSelected();
+            if (chatWindow == null) {
+                return;
+            }
+            AbstractChatTab tab = chatWindow.getTab();
+            if (tab instanceof CustomChatTab custom) {
+                getScreen().getChatField().setText(custom.getStartingMessage());
+                getScreen().getChatField().setCursor(custom.getStartingMessage().length());
+            }
+        }
     }
 
     @Override

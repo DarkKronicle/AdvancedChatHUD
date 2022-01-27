@@ -8,6 +8,7 @@
 package io.github.darkkronicle.advancedchathud;
 
 import fi.dy.masa.malilib.event.InitializationHandler;
+import io.github.darkkronicle.advancedchatcore.ModuleHandler;
 import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -28,6 +29,6 @@ public class AdvancedChatHud implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // This will run after AdvancedChatCore's because of load order
-        InitializationHandler.getInstance().registerInitializationHandler(new HudInitHandler());
+        ModuleHandler.getInstance().registerInitHandler(MOD_ID, 0, new HudInitHandler());
     }
 }

@@ -64,6 +64,18 @@ public class HudConfigStorage implements IConfigHandler {
                         new ConfigBoolean(
                                 translate("chatheads"), false, translate("info.chatheads")));
 
+        public static final SaveableConfig<ConfigBoolean> ALWAYS_SHOW_TAB_BUTTONS =
+                SaveableConfig.fromConfig(
+                        "alwaysShowTabButtons",
+                        new ConfigBoolean(
+                                translate("alwaysshowtabbuttons"), false, translate("info.alwaysshowtabbuttons")));
+
+        public static final SaveableConfig<ConfigBoolean> TAB_BUTTONS_ON_RIGHT =
+                SaveableConfig.fromConfig(
+                        "tabButtonsOnRight",
+                        new ConfigBoolean(
+                                translate("righttabbuttons"), false, translate("info.righttabbuttons")));
+
         public static final SaveableConfig<ConfigInteger> WIDTH =
                 SaveableConfig.fromConfig(
                         "width",
@@ -199,6 +211,8 @@ public class HudConfigStorage implements IConfigHandler {
                 ImmutableList.of(
                         VANILLA_HUD,
                         CHAT_HEADS,
+                        ALWAYS_SHOW_TAB_BUTTONS,
+                        TAB_BUTTONS_ON_RIGHT,
                         WIDTH,
                         HEIGHT,
                         X,

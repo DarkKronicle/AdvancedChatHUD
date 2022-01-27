@@ -7,14 +7,22 @@
  */
 package io.github.darkkronicle.advancedchathud.tabs;
 
+import fi.dy.masa.malilib.util.FileUtils;
+import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.UUID;
 import lombok.Getter;
 import net.minecraft.text.Text;
+import org.apache.logging.log4j.Level;
 
 /** Main chat tab that manages other chat tabs. */
 public class MainChatTab extends AbstractChatTab {
@@ -36,7 +44,7 @@ public class MainChatTab extends AbstractChatTab {
     }
 
     public void refreshOptions() {
-        this.abreviation = HudConfigStorage.MAIN_TAB.getAbbreviation().config.getStringValue();
+        this.abbreviation = HudConfigStorage.MAIN_TAB.getAbbreviation().config.getStringValue();
         this.mainColor = HudConfigStorage.MAIN_TAB.getMainColor().config.get();
         this.innerColor = HudConfigStorage.MAIN_TAB.getInnerColor().config.get();
         this.borderColor = HudConfigStorage.MAIN_TAB.getBorderColor().config.get();
@@ -59,6 +67,24 @@ public class MainChatTab extends AbstractChatTab {
             customChatTabs.add(customTab);
             allChatTabs.add(customTab);
         }
+
+        Path konstructDir = FileUtils.getConfigDirectory().toPath().resolve("advancedchat").resolve("konstructTabs");
+        konstructDir.toFile().mkdirs();
+        for (CustomChatTab custom : customChatTabs) {
+            File file = konstructDir.resolve(custom.getName() + ".knst").toFile();
+            if (!file.exists()) {
+                continue;
+            }
+            String contents;
+            try {
+                contents = String.join("\n", Files.readAllLines(file.toPath())).replaceAll("\r", "");
+            } catch (IOException e) {
+                AdvancedChatHud.LOGGER.log(Level.ERROR, "Error reading " + file + ".", e);
+                continue;
+            }
+            custom.setNode(contents);
+        }
+
         for (HudChatMessage message : HudChatMessageHolder.getInstance().getMessages()) {
             ArrayList<AbstractChatTab> tabs = new ArrayList<>();
             for (AbstractChatTab t : allChatTabs) {

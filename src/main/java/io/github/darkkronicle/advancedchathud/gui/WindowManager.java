@@ -96,6 +96,17 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         for (int i = windows.size() - 1; i >= 0; i--) {
             windows.get(i).render(matrixStack, client.inGameHud.getTicks(), isChatFocused());
         }
+        if (HudConfigStorage.General.ALWAYS_SHOW_TAB_BUTTONS.config.getBooleanValue()) {
+            renderButtons();
+        }
+    }
+
+    public void renderButtons() {
+
+    }
+
+    public void resetButtons() {
+
     }
 
     public void resetScroll() {
@@ -106,7 +117,14 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
 
     public boolean scroll(double amount, double mouseX, double mouseY) {
         for (ChatWindow w : windows) {
-            if (w.isSelected() || w.isMouseOver(mouseX, mouseY)) {
+            // Prioritize mouse over first
+            if (w.isMouseOver(mouseX, mouseY)) {
+                w.scroll(amount);
+                return true;
+            }
+        }
+        for (ChatWindow w : windows) {
+            if (w.isSelected()) {
                 w.scroll(amount);
                 return true;
             }

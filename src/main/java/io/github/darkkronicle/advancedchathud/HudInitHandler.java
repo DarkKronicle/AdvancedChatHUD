@@ -34,24 +34,20 @@ public class HudInitHandler implements IInitializationHandler {
         AdvancedChatCore.FORWARD_TO_HUD = false;
         ConfigManager.getInstance()
                 .registerConfigHandler(AdvancedChatHud.MOD_ID, new HudConfigStorage());
-        GuiConfigHandler.getInstance()
-                .addGuiSection(
-                        GuiConfigHandler.createGuiConfigSection(
-                                StringUtils.translate("advancedchathud.tab.general"),
-                                HudConfigStorage.General.OPTIONS));
-        GuiConfigHandler.getInstance()
-                .addGuiSection(
-                        new GuiConfigHandler.Tab() {
-                            @Override
-                            public String getName() {
-                                return StringUtils.translate("advancedchathud.tab.tabs");
-                            }
-
-                            @Override
-                            public Screen getScreen(List<GuiConfigHandler.TabButton> buttons) {
-                                return new GuiTabManager(buttons);
-                            }
-                        });
+        GuiConfigHandler.getInstance().addTab(
+                GuiConfigHandler.children("advancedchathud", "advancedchathud.tab.advancedchathud",
+                        GuiConfigHandler.wrapSaveableOptions(
+                                "hud_general",
+                                "advancedchathud.tab.general",
+                                HudConfigStorage.General.OPTIONS
+                        ),
+                        GuiConfigHandler.wrapScreen(
+                                "tabs",
+                                "advancedchathud.tab.tabs",
+                                (parent) -> new GuiTabManager()
+                        )
+                )
+        );
         IChatHud.getInstance().setTab(AdvancedChatHud.MAIN_CHAT_TAB = new MainChatTab());
 
         // Register on the clear

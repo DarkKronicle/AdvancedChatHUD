@@ -21,7 +21,7 @@ public abstract class AbstractChatTab {
 
     // Each tab stores their own messages.
     protected String name;
-    protected String abreviation;
+    protected String abbreviation;
     protected Color mainColor;
     protected Color borderColor;
     protected Color innerColor;
@@ -31,14 +31,14 @@ public abstract class AbstractChatTab {
 
     public AbstractChatTab(
             String name,
-            String abreviation,
+            String abbreviation,
             Color mainColor,
             Color borderColor,
             Color innerColor,
             boolean showUnread,
             UUID uuid) {
         this.name = name;
-        this.abreviation = abreviation;
+        this.abbreviation = abbreviation;
         this.mainColor = mainColor;
         this.showUnread = showUnread;
         this.innerColor = innerColor;
