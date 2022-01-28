@@ -39,17 +39,13 @@ public class MatchesEditor extends CoreGuiListBase<Match, WidgetMatchEntry, Widg
         super.initGui();
         int y = 26;
         int x = this.width - 10;
-        this.addButton(
-                x,
-                y,
-                "advancedchathud.gui.button.addmatch",
+        this.addButton(x, y, "advancedchathud.gui.button.addmatch",
                 (button, mouseButton) -> this.addMatch());
         this.addButton(Buttons.BACK.createButton(2, y), new BackButtonListener(this));
     }
 
     protected void addButton(int x, int y, String translation, IButtonActionListener listener) {
-        ButtonGeneric button =
-                new NamedSimpleButton(x, y, StringUtils.translate(translation), false);
+        ButtonGeneric button = new NamedSimpleButton(x, y, StringUtils.translate(translation), false);
         // Right aline
         this.addButton(button, listener);
     }

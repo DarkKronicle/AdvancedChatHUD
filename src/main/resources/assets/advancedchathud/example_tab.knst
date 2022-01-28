@@ -1,0 +1,14 @@
+def staffShouldAdd(tab, text) {
+    if (isMatch('coolserver.net', server, 'literal') {
+        tab.setHidden(false);
+        return(isMatch('''^\[StaffChat\]''', text, 'regex'))
+    };
+    tab.setHidden(true);
+    false
+};
+
+# Gets tab with the name "staff"
+staff = getTab('staff')
+
+# Set the function via name reference
+staff.setShouldAdd('staffShouldAdd')

@@ -9,6 +9,7 @@ package io.github.darkkronicle.advancedchathud.config.gui;
 
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import io.github.darkkronicle.advancedchatcore.gui.WidgetConfigList;
+import io.github.darkkronicle.advancedchatcore.gui.WidgetConfigListEntry;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.Match;
 import java.util.Collection;
@@ -43,6 +44,15 @@ public class WidgetListMatches extends WidgetConfigList<Match, WidgetMatchEntry>
                 entry,
                 listIndex,
                 this);
+    }
+
+    @Override
+    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers) {
+        boolean val = super.onKeyTyped(keyCode, scanCode, modifiers);
+        for (WidgetMatchEntry widget : this.listWidgets) {
+            widget.save();
+        }
+        return val;
     }
 
     @Override

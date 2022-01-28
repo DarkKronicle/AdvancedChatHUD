@@ -1,5 +1,6 @@
 package io.github.darkkronicle.advancedchathud.tabs;
 
+import io.github.darkkronicle.Konstruct.NodeException;
 import io.github.darkkronicle.Konstruct.functions.Function;
 import io.github.darkkronicle.Konstruct.functions.ObjectFunction;
 import io.github.darkkronicle.Konstruct.nodes.Node;
@@ -8,10 +9,13 @@ import io.github.darkkronicle.Konstruct.parser.ParseContext;
 import io.github.darkkronicle.Konstruct.parser.Result;
 import io.github.darkkronicle.Konstruct.type.IntegerObject;
 import io.github.darkkronicle.Konstruct.type.KonstructObject;
+import io.github.darkkronicle.Konstruct.type.NullObject;
 import io.github.darkkronicle.advancedchatcore.util.Color;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
+import lombok.Getter;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ChatTabObject extends KonstructObject<ChatTabObject> {
 
@@ -19,23 +23,19 @@ public class ChatTabObject extends KonstructObject<ChatTabObject> {
         @Override
         public Result parse(ParseContext context, ChatTabObject self, List<Node> input) {
             Result r1 = Function.parseArgument(context, input, 0);
-            if (Function.shouldReturn(r1)) return r1;
             IntegerObject c1 = new IntegerObject(IntegerObject.fromObject(r1.getContent()).orElse(0));
 
             Result r2 = Function.parseArgument(context, input, 1);
-            if (Function.shouldReturn(r2)) return r2;
             IntegerObject c2 = new IntegerObject(IntegerObject.fromObject(r2.getContent()).orElse(0));
 
             Result r3 = Function.parseArgument(context, input, 2);
-            if (Function.shouldReturn(r3)) return r3;
             IntegerObject c3 = new IntegerObject(IntegerObject.fromObject(r3.getContent()).orElse(0));
 
             Result r4 = Function.parseArgument(context, input, 3);
-            if (Function.shouldReturn(r4)) return r4;
             IntegerObject c4 = new IntegerObject(IntegerObject.fromObject(r4.getContent()).orElse(0));
 
             setColor(self, new Color(c1.getValue(), c2.getValue(), c3.getValue(), c4.getValue()));
-            return Result.success((KonstructObject<?>) null);
+            return Result.success(new NullObject());
         }
 
         @Override
@@ -85,7 +85,6 @@ public class ChatTabObject extends KonstructObject<ChatTabObject> {
                 @Override
                 public Result parse(ParseContext context, ChatTabObject self, List<Node> input) {
                     Result s1 = Function.parseArgument(context, input, 0);
-                    if (Function.shouldReturn(s1)) return s1;
                     self.tab.setAbbreviation(s1.getContent().getString());
                     return Result.success((KonstructObject<?>) null);
                 }
@@ -104,7 +103,6 @@ public class ChatTabObject extends KonstructObject<ChatTabObject> {
                 @Override
                 public Result parse(ParseContext context, ChatTabObject self, List<Node> input) {
                     Result s1 = Function.parseArgument(context, input, 0);
-                    if (Function.shouldReturn(s1)) return s1;
                     self.tab.setForward(s1.getContent().getBoolean());
                     return Result.success((KonstructObject<?>) null);
                 }
@@ -118,10 +116,36 @@ public class ChatTabObject extends KonstructObject<ChatTabObject> {
                 public IntRange getArgumentCount() {
                     return IntRange.of(1);
                 }
+            },
+            new ObjectFunction<>() {
+                @Override
+                public Result parse(ParseContext context, ChatTabObject self, List<Node> input) {
+                    Result s1 = Function.parseArgument(context, input, 0);
+                    Optional<Function> function = context.getFunction(s1.getContent().getString());
+                    if (function.isEmpty()) {
+                        throw new NodeException("Function " + s1.getContent().getString() + " does not exist!");
+                    }
+                    if (!function.get().getArgumentCount().equals(IntRange.of(2))) {
+                        throw new NodeException("Function " + function.get() + " has to have 2 arguments!");
+                    }
+                    self.tab.setFunction(function.get());
+                    return Result.success(new NullObject());
+                }
+
+                @Override
+                public String getName() {
+                    return "setShouldAdd";
+                }
+
+                @Override
+                public IntRange getArgumentCount() {
+                    return IntRange.of(1);
+                }
             }
 
     );
 
+    @Getter
     private final CustomChatTab tab;
 
     public ChatTabObject(CustomChatTab tab) {

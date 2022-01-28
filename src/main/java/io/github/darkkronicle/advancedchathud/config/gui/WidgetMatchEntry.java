@@ -54,16 +54,10 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
         int removeWidth = 0;
         if (listIndex != 0) {
             // Always want one
-            removeWidth =
-                    addButton(
-                                    pos,
-                                    y,
-                                    "advancedchathud.config.match.remove",
-                                    (button, mouseButton) -> {
-                                        parent.tab.getMatches().remove(entry);
-                                        parent.refreshEntries();
-                                    })
-                            + 1;
+            removeWidth = addButton(pos, y, "advancedchathud.config.match.remove", (button, mouseButton) -> {
+                parent.tab.getMatches().remove(entry);
+                parent.refreshEntries();
+            }) + 1;
         }
         pos -= removeWidth;
         int findWidth = getFindTypeWidth();
@@ -78,13 +72,7 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
                 });
 
         pos -= findWidth + 1;
-        GuiTextFieldGeneric nameField =
-                new GuiTextFieldGeneric(
-                        pos - nameWidth,
-                        y,
-                        nameWidth,
-                        20,
-                        MinecraftClient.getInstance().textRenderer);
+        GuiTextFieldGeneric nameField = new GuiTextFieldGeneric(pos - nameWidth, y, nameWidth, 20, MinecraftClient.getInstance().textRenderer);
         nameField.setMaxLength(64000);
         nameField.setText(entry.getPattern());
         name = new TextFieldWrapper<>(nameField, new SaveListener(this));
@@ -112,6 +100,10 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
     @Override
     public String getName() {
         return null;
+    }
+
+    public void save() {
+        entry.setPattern(name.getTextField().getText());
     }
 
     private static class SaveListener implements ITextFieldListener<GuiTextFieldGeneric> {

@@ -54,16 +54,10 @@ public class GuiTabEditor extends GuiConfigsBase implements IClosable {
         x += this.addButton(back, new BackButtonListener(this)).getWidth() + 2;
 
         if (!main) {
-            x +=
-                    this.addButton(
-                                    x,
-                                    y,
-                                    "advancedchathud.gui.button.matches",
-                                    (button, mouseButton) -> {
-                                        save();
-                                        GuiBase.openGui(new MatchesEditor(this, tab));
-                                    })
-                            + 2;
+            x += this.addButton(x, y, "advancedchathud.gui.button.matches", (button, mouseButton) -> {
+                save();
+                GuiBase.openGui(new MatchesEditor(this, tab));
+            }) + 2;
         }
 
         this.addButton(

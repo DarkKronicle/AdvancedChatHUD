@@ -8,6 +8,13 @@
 package io.github.darkkronicle.advancedchathud.tabs;
 
 import fi.dy.masa.malilib.util.FileUtils;
+import io.github.darkkronicle.Konstruct.NodeException;
+import io.github.darkkronicle.Konstruct.functions.Function;
+import io.github.darkkronicle.Konstruct.functions.Variable;
+import io.github.darkkronicle.Konstruct.nodes.Node;
+import io.github.darkkronicle.Konstruct.parser.*;
+import io.github.darkkronicle.Konstruct.type.NullObject;
+import io.github.darkkronicle.advancedchatcore.konstruct.AdvancedChatKonstruct;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
@@ -19,7 +26,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import io.github.darkkronicle.advancedchathud.util.FileUtil;
 import lombok.Getter;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
@@ -30,6 +41,9 @@ public class MainChatTab extends AbstractChatTab {
     @Getter private ArrayList<AbstractChatTab> allChatTabs = new ArrayList<>();
 
     @Getter private ArrayList<CustomChatTab> customChatTabs = new ArrayList<>();
+
+    @Getter
+    private NodeProcessor processor = null;
 
     public MainChatTab() {
         super(
@@ -52,6 +66,15 @@ public class MainChatTab extends AbstractChatTab {
         this.uuid = HudConfigStorage.MAIN_TAB.getUuid();
     }
 
+    public CustomChatTab getCustom(String name) {
+        for (CustomChatTab tab : customChatTabs) {
+            if (tab.getName().equals(name)) {
+                return tab;
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean shouldAdd(Text text) {
         return true;
@@ -70,19 +93,26 @@ public class MainChatTab extends AbstractChatTab {
 
         Path konstructDir = FileUtils.getConfigDirectory().toPath().resolve("advancedchat").resolve("konstructTabs");
         konstructDir.toFile().mkdirs();
-        for (CustomChatTab custom : customChatTabs) {
-            File file = konstructDir.resolve(custom.getName() + ".knst").toFile();
-            if (!file.exists()) {
-                continue;
-            }
-            String contents;
-            try {
-                contents = String.join("\n", Files.readAllLines(file.toPath())).replaceAll("\r", "");
-            } catch (IOException e) {
-                AdvancedChatHud.LOGGER.log(Level.ERROR, "Error reading " + file + ".", e);
-                continue;
-            }
-            custom.setNode(contents);
+
+        Optional<List<Path>> files = FileUtil.getFilesWithExtensionCaught(konstructDir, ".knst");
+        if (files.isPresent() && files.get().size() != 0) {
+            processor = AdvancedChatKonstruct.getInstance().copy();
+            processor.addFunction("getTab", new Function() {
+                @Override
+                public Result parse(ParseContext context, List<Node> input) {
+                    CustomChatTab tab = getCustom(Function.parseArgument(context, input, 0).getContent().getString());
+                    if (tab == null) {
+                        return Result.success(new NullObject());
+                    }
+                    return Result.success(new ChatTabObject(tab));
+                }
+
+                @Override
+                public IntRange getArgumentCount() {
+                    return IntRange.of(1);
+                }
+            });
+            this.loadKonstruct(files.get());
         }
 
         for (HudChatMessage message : HudChatMessageHolder.getInstance().getMessages()) {
@@ -95,6 +125,24 @@ public class MainChatTab extends AbstractChatTab {
             message.setTabs(tabs);
         }
         this.refreshOptions();
+    }
+
+    public void loadKonstruct(List<Path> paths) {
+        for (Path path : paths) {
+            try {
+                loadKonstruct(path);
+            } catch (IOException e) {
+                AdvancedChatHud.LOGGER.log(Level.ERROR, "Error reading " + path + ".", e);
+            } catch (NodeException e) {
+                AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct script " + path, e);
+            }
+        }
+    }
+
+    private void loadKonstruct(Path path) throws IOException, NodeException {
+        String contents = String.join("\n", Files.readAllLines(path)).replaceAll("\r", "");
+        Node node = AdvancedChatKonstruct.getInstance().getNode(contents);
+        processor.parse(node);
     }
 
     public AbstractChatTab fromUUID(UUID uuid) {

@@ -13,6 +13,7 @@ import io.github.darkkronicle.Konstruct.functions.Variable;
 import io.github.darkkronicle.Konstruct.nodes.LiteralNode;
 import io.github.darkkronicle.Konstruct.nodes.Node;
 import io.github.darkkronicle.Konstruct.parser.*;
+import io.github.darkkronicle.Konstruct.type.BooleanObject;
 import io.github.darkkronicle.advancedchatcore.konstruct.AdvancedChatKonstruct;
 import io.github.darkkronicle.advancedchatcore.util.FluidText;
 import io.github.darkkronicle.advancedchatcore.util.SearchUtils;
@@ -45,12 +46,8 @@ public class CustomChatTab extends AbstractChatTab {
     @Setter
     private ChatTab tab;
 
-    private NodeProcessor processor = null;
-    private Function function = null;
-
-    @Getter
     @Setter
-    private boolean konstructed = false;
+    private Function function;
 
     public CustomChatTab(ChatTab tab) {
         super(
@@ -66,48 +63,51 @@ public class CustomChatTab extends AbstractChatTab {
         this.matches = new ArrayList<>(tab.getMatches());
         this.forward = tab.getForward().config.getBooleanValue();
         this.startingMessage = tab.getStartingMessage().config.getStringValue();
+        setDefaultFunction();
     }
 
-    public void setNode(String content) {
-        konstructed = true;
-        ParseResult result;
-        try {
-            Node node = AdvancedChatKonstruct.getInstance().getNode(content);
-            processor = AdvancedChatKonstruct.getInstance().copy();
-            processor.addVariable("tab", Variable.of(new ChatTabObject(this)));
-            result = processor.parse(node);
-        } catch (NodeException e) {
-            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName(), e);
-            return;
-        }
-        Optional<Function> func = result.getContext().getFunction("shouldAdd");
-        if (func.isEmpty()) {
-            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName() + ". Function 'shouldAdd(text)' does not exist!");
-            return;
-        }
-        if (!func.get().getArgumentCount().equals(IntRange.of(1))) {
-            AdvancedChatHud.LOGGER.log(Level.ERROR, "Error setting up konstruct chat tab " + tab.getName() + ". Function 'shouldAdd(text)' should only have one argument!");
-        }
-        function = func.get();
+    public void setDefaultFunction() {
+        function = new Function() {
+            @Override
+            public Result parse(ParseContext context, List<Node> input) {
+                CustomChatTab self = ((ChatTabObject) Function.parseArgument(context, input, 0).getContent()).getTab();
+                String search = Function.parseArgument(context, input, 1).getContent().getString();
+                for (Match m : self.matches) {
+                    if (SearchUtils.isMatch(search, m.getPattern(), m.getFindType())) {
+                        return Result.success(new BooleanObject(true));
+                    }
+                }
+                return Result.success(new BooleanObject(false));
+            }
+
+            @Override
+            public IntRange getArgumentCount() {
+                return IntRange.of(2);
+            }
+        };
     }
 
     @Override
     public boolean shouldAdd(Text text) {
-        if (konstructed) {
-            if (function == null) {
-                return false;
-            }
-            ParseContext context = processor.createContext();
-            Result result = function.parse(context, List.of(new LiteralNode(text.getString())));
-            return result.getContent().getBoolean();
-        }
         FluidText newText = new FluidText(text);
         String search = newText.getString();
-        for (Match m : matches) {
-            if (SearchUtils.isMatch(search, m.getPattern(), m.getFindType())) {
-                return true;
+        ParseContext context = AdvancedChatHud.MAIN_CHAT_TAB.getProcessor().createContext();
+        Result result = function.parse(context, List.of(new Node() {
+            @Override
+            public Result parse(ParseContext context) {
+                return Result.success(new ChatTabObject(CustomChatTab.this));
             }
-        }
-        return false;
+
+            @Override
+            public List<Node> getChildren() {
+                return new ArrayList<>(0);
+            }
+
+            @Override
+            public void addChild(Node node) {
+
+            }
+        }, new LiteralNode(search)));
+        return result.getContent().getBoolean();
     }
 }
