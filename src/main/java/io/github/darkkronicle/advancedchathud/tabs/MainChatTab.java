@@ -94,24 +94,25 @@ public class MainChatTab extends AbstractChatTab {
         Path konstructDir = FileUtils.getConfigDirectory().toPath().resolve("advancedchat").resolve("konstructTabs");
         konstructDir.toFile().mkdirs();
 
+        processor = AdvancedChatKonstruct.getInstance().copy();
+        processor.addFunction("getTab", new Function() {
+            @Override
+            public Result parse(ParseContext context, List<Node> input) {
+                CustomChatTab tab = getCustom(Function.parseArgument(context, input, 0).getContent().getString());
+                if (tab == null) {
+                    return Result.success(new NullObject());
+                }
+                return Result.success(new ChatTabObject(tab));
+            }
+
+            @Override
+            public IntRange getArgumentCount() {
+                return IntRange.of(1);
+            }
+        });
+
         Optional<List<Path>> files = FileUtil.getFilesWithExtensionCaught(konstructDir, ".knst");
         if (files.isPresent() && files.get().size() != 0) {
-            processor = AdvancedChatKonstruct.getInstance().copy();
-            processor.addFunction("getTab", new Function() {
-                @Override
-                public Result parse(ParseContext context, List<Node> input) {
-                    CustomChatTab tab = getCustom(Function.parseArgument(context, input, 0).getContent().getString());
-                    if (tab == null) {
-                        return Result.success(new NullObject());
-                    }
-                    return Result.success(new ChatTabObject(tab));
-                }
-
-                @Override
-                public IntRange getArgumentCount() {
-                    return IntRange.of(1);
-                }
-            });
             this.loadKonstruct(files.get());
         }
 
