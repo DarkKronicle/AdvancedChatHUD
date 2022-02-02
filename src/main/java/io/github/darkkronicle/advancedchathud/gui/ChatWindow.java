@@ -180,12 +180,12 @@ public class ChatWindow {
         }
     }
 
-    private static void drawRect(
+    public static void drawRect(
             MatrixStack stack, int x, int y, int width, int height, int color) {
         DrawableHelper.fill(stack, x, y, x + width, y + height, color);
     }
 
-    private static void fill(MatrixStack stack, int x, int y, int x2, int y2, int color) {
+    public static void fill(MatrixStack stack, int x, int y, int x2, int y2, int color) {
         DrawableHelper.fill(stack, x, y, x2, y2, color);
     }
 
@@ -663,6 +663,56 @@ public class ChatWindow {
                                                 .getIntegerValue())
                         || !y.incrementIfPossible(
                                 HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
+                    break;
+                }
+            }
+        }
+        return null;
+    }
+
+    public ChatMessage getMessage(double mouseX, double mouseY) {
+        if (!WindowManager.getInstance().isChatFocused()) {
+            return null;
+        }
+        double relX = mouseX;
+        double relY = getConvertedY() - mouseY;
+        double trueX = relX / getScale() - getPaddedLeftX();
+        double trueY = relY / getScale();
+        // Divide it by chat scale to get where it actually is
+        if (trueX < 0.0D || trueY < 0.0D) {
+            return null;
+        }
+        if (trueY > getScaledHeight() || trueX > getScaledWidth()) {
+            return null;
+        }
+
+        int lines = 0;
+        int lineCount = this.lines.size();
+        LimitedInteger y = new LimitedInteger(getScaledHeight(), HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
+        for (ChatMessage message : this.lines) {
+            // To get the proper index of reversed
+            for (int i = message.getLineCount() - 1; i >= 0; i--) {
+                lines++;
+                if (lines < scrolledLines) {
+                    continue;
+                }
+                if (!y.incrementIfPossible(HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
+                    break;
+                }
+                if (trueY <= y.getValue() && trueY >= y.getValue() - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()) {
+                    return message;
+                }
+            }
+            if (lines >= scrolledLines) {
+                if (lines == lineCount) {
+                    break;
+                }
+                if (!y.isPossible(
+                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
+                                + HudConfigStorage.General.MESSAGE_SPACE.config
+                                .getIntegerValue())
+                        || !y.incrementIfPossible(
+                        HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
                     break;
                 }
             }

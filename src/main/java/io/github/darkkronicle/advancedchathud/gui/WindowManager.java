@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
+import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchatcore.util.SyncTaskQueue;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
@@ -141,6 +142,15 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         return null;
     }
 
+    public ChatMessage getMessage(double mouseX, double mouseY) {
+        for (ChatWindow w : windows) {
+            if (w.isMouseOver(mouseX, mouseY)) {
+                return w.getMessage(mouseX, mouseY);
+            }
+        }
+        return null;
+    }
+
     public boolean isChatFocused() {
         return this.client.currentScreen instanceof AdvancedChatScreen;
     }
@@ -255,6 +265,13 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
             sel = window;
         }
         window.setPosition(sel.getConvertedX() + 15, sel.getConvertedY() + 15);
+        windows.add(window);
+        setSelected(window);
+    }
+
+    public void createTab(int x, int y) {
+        ChatWindow window = new ChatWindow(IChatHud.getInstance().getTab());
+        window.setPosition(x, y);
         windows.add(window);
         setSelected(window);
     }
