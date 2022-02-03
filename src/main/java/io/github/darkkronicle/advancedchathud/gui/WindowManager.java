@@ -15,6 +15,7 @@ import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchatcore.util.SyncTaskQueue;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
+import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.ResolutionEventHandler;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
@@ -269,13 +270,6 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         setSelected(window);
     }
 
-    public void createTab(int x, int y) {
-        ChatWindow window = new ChatWindow(IChatHud.getInstance().getTab());
-        window.setPosition(x, y);
-        windows.add(window);
-        setSelected(window);
-    }
-
     public void deleteWindow(ChatWindow chatWindow) {
         windows.remove(chatWindow);
         if (!windows.isEmpty()) {
@@ -314,5 +308,24 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
                 w.onResolutionChange();
             }
         });
+    }
+
+    public void onRemoveMessage(ChatMessage remove) {
+        IChatHud.getInstance().removeMessage(remove);
+        for (ChatWindow w : windows) {
+            w.removeMessage(remove);
+        }
+    }
+
+    public void duplicateTab(int x, int y) {
+        ChatWindow window = new ChatWindow(IChatHud.getInstance().getTab());
+        ChatWindow selected = getSelected();
+        if (selected != null) {
+            window.setRelativeDimensions(selected.getWidthPercent(), selected.getHeightPercent());
+            window.setVisibility(selected.getVisibility());
+        }
+        window.setPosition(x, y);
+        windows.add(window);
+        setSelected(window);
     }
 }

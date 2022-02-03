@@ -60,12 +60,30 @@ public class HudChatMessageHolder implements IChatMessageProcessor {
         HudChatMessage remove = getMessage(message);
         if (remove != null) {
             messages.remove(remove);
+            WindowManager.getInstance().onRemoveMessage(remove.getMessage());
+        }
+    }
+
+    public void removeChatMessage(ChatMessage message) {
+        HudChatMessage m = getMessageFromContent(message);
+        if (m != null) {
+            messages.remove(m);
+            WindowManager.getInstance().onRemoveMessage(message);
         }
     }
 
     public HudChatMessage getMessage(ChatMessage message) {
         for (HudChatMessage m : messages) {
             if (m.getMessage().getUuid().equals(message.getUuid())) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public HudChatMessage getMessageFromContent(ChatMessage message) {
+        for (HudChatMessage m : messages) {
+            if (m.getMessage().isSimilar(message) && m.getMessage().getTime().equals(message.getTime())) {
                 return m;
             }
         }

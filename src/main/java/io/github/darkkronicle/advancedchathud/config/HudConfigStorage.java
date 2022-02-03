@@ -31,6 +31,8 @@ import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -305,7 +307,9 @@ public class HudConfigStorage implements IConfigHandler {
 
     @Override
     public void load() {
+        MainChatTab.LOAD_ALL_JSON = true;
         loadFromFile();
+        MainChatTab.LOAD_ALL_JSON = false;
     }
 
     @Override

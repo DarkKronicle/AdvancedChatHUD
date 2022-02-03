@@ -111,6 +111,12 @@ public abstract class MixinChatHud implements IChatHud {
     }
 
     @Override
+    public void removeMessage(ChatMessage remove) {
+        // Reset messages that exist
+        setTab(this.tab);
+    }
+
+    @Override
     public void addMessage(HudChatMessage hudMsg) {
         if (tab == null || !hudMsg.getTabs().contains(tab)) {
             return;
@@ -154,6 +160,8 @@ public abstract class MixinChatHud implements IChatHud {
 
     @Shadow
     public abstract void clear(boolean clearHistory);
+
+    @Shadow public abstract void reset();
 
     @Override
     public boolean isOver(double mouseX, double mouseY) {

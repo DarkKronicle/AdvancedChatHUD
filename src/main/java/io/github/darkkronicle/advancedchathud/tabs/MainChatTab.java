@@ -7,10 +7,10 @@
  */
 package io.github.darkkronicle.advancedchathud.tabs;
 
+import com.google.gson.JsonArray;
 import fi.dy.masa.malilib.util.FileUtils;
 import io.github.darkkronicle.Konstruct.NodeException;
 import io.github.darkkronicle.Konstruct.functions.Function;
-import io.github.darkkronicle.Konstruct.functions.Variable;
 import io.github.darkkronicle.Konstruct.nodes.Node;
 import io.github.darkkronicle.Konstruct.parser.*;
 import io.github.darkkronicle.Konstruct.type.NullObject;
@@ -21,7 +21,6 @@ import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import io.github.darkkronicle.advancedchathud.util.FileUtil;
 import lombok.Getter;
 import net.minecraft.text.Text;
@@ -41,6 +41,8 @@ public class MainChatTab extends AbstractChatTab {
     @Getter private ArrayList<AbstractChatTab> allChatTabs = new ArrayList<>();
 
     @Getter private ArrayList<CustomChatTab> customChatTabs = new ArrayList<>();
+
+    public static boolean LOAD_ALL_JSON = false;
 
     @Getter
     private NodeProcessor processor = null;
@@ -82,6 +84,10 @@ public class MainChatTab extends AbstractChatTab {
 
     /** Method used for loading in tabs from the config. */
     public void setUpTabs() {
+        JsonArray windows = null;
+        if (!LOAD_ALL_JSON) {
+            windows = WindowManager.getInstance().saveJson();
+        }
         customChatTabs = new ArrayList<>();
         allChatTabs = new ArrayList<>();
         allChatTabs.add(this);
@@ -126,6 +132,9 @@ public class MainChatTab extends AbstractChatTab {
             message.setTabs(tabs);
         }
         this.refreshOptions();
+        if (windows != null) {
+            WindowManager.getInstance().loadFromJson(windows);
+        }
     }
 
     public void loadKonstruct(List<Path> paths) {

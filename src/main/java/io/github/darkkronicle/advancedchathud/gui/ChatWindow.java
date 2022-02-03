@@ -625,7 +625,7 @@ public class ChatWindow {
         }
 
         int lines = 0;
-        int lineCount = this.lines.size();
+        int lineCount = this.getTotalLines();
         LimitedInteger y =
                 new LimitedInteger(
                         getScaledHeight(),
@@ -687,7 +687,7 @@ public class ChatWindow {
         }
 
         int lines = 0;
-        int lineCount = this.lines.size();
+        int lineCount = this.getTotalLines();
         LimitedInteger y = new LimitedInteger(getScaledHeight(), HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
         for (ChatMessage message : this.lines) {
             // To get the proper index of reversed
@@ -806,6 +806,19 @@ public class ChatWindow {
 
     public void clearLines() {
         this.lines.clear();
+    }
+
+    public void removeMessage(ChatMessage remove) {
+        ChatMessage toRemove = null;
+        for (ChatMessage line : lines) {
+            if (remove.isSimilar(line) && remove.getTime().equals(line.getTime())) {
+                toRemove = line;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            lines.remove(toRemove);
+        }
     }
 
     public static class ChatWindowSerializer implements IJsonSave<ChatWindow> {

@@ -7,6 +7,7 @@
  */
 package io.github.darkkronicle.advancedchathud.itf;
 
+import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import net.fabricmc.api.EnvType;
@@ -29,4 +30,6 @@ public interface IChatHud {
     static IChatHud getInstance() {
         return (IChatHud) MinecraftClient.getInstance().inGameHud.getChatHud();
     }
+
+    void removeMessage(ChatMessage remove);
 }

@@ -9,15 +9,17 @@ package io.github.darkkronicle.advancedchathud.gui;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
+import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
+import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.gui.ContextMenu;
 import io.github.darkkronicle.advancedchatcore.gui.IconButton;
 import io.github.darkkronicle.advancedchatcore.interfaces.AdvancedChatScreenSection;
-import io.github.darkkronicle.advancedchatcore.util.Color;
-import io.github.darkkronicle.advancedchatcore.util.RawText;
-import io.github.darkkronicle.advancedchatcore.util.RowList;
+import io.github.darkkronicle.advancedchatcore.util.*;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
+import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
@@ -27,10 +29,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.Level;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -109,14 +117,43 @@ public class HudSection extends AdvancedChatScreenSection {
         LinkedHashMap<Text, ContextMenu.ContextConsumer> actions = new LinkedHashMap<>();
         message = WindowManager.getInstance().getMessage(mouseX, mouseY);
         if (message != null) {
-            actions.put(RawText.withStyle("Copy", Style.EMPTY), (x, y) -> {
+            FluidText data = new FluidText();
+            try {
+                data.append(
+                        RawText.withFormatting(message.getTime().format(DateTimeFormatter.ofPattern(ConfigStorage.General.TIME_FORMAT.config.getStringValue())), Formatting.AQUA
+                ));
+            } catch (IllegalArgumentException e) {
+                AdvancedChatHud.LOGGER.log(Level.WARN, "Can't format time for context menu!", e);
+            }
+            if (message.getOwner() != null) {
+                data.append(RawText.withFormatting(" - ", Formatting.GRAY));
+                if (message.getOwner().getEntry().getDisplayName() != null) {
+                    data.append(new FluidText(message.getOwner().getEntry().getDisplayName()));
+                } else {
+                    data.append(RawText.withStyle(message.getOwner().getEntry().getProfile().getName(), Style.EMPTY));
+                }
+            }
+            if (!data.getString().isBlank())  {
+                actions.put(data, (x, y) -> {
+                    InfoUtils.printActionbarMessage("advancedchathud.context.nothing");
+                });
+            }
+            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.copy"), Style.EMPTY), (x, y) -> {
                 MinecraftClient.getInstance().keyboard.setClipboard(message.getOriginalText().getString());
-                InfoUtils.printActionbarMessage("§aCopied");
+                InfoUtils.printActionbarMessage("advancedchathud.context.copied");
             });
+            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.delete"), Style.EMPTY), (x, y) -> {
+                HudChatMessageHolder.getInstance().removeChatMessage(message);
+            });
+            if (message.getOwner() != null) {
+                actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.messageowner"), Style.EMPTY), (x, y) -> {
+                    getScreen().getChatField().setText("/msg " + message.getOwner().getEntry().getProfile().getName() + " ");
+                });
+            }
         }
-        actions.put(RawText.withStyle("Remove All Windows", Style.EMPTY), (x, y) -> WindowManager.getInstance().reset());
-        actions.put(RawText.withStyle("Clear All Messages", Style.EMPTY), (x, y) -> WindowManager.getInstance().clear());
-        actions.put(RawText.withStyle("Add Window Here", Style.EMPTY), (x, y) -> WindowManager.getInstance().createTab(x, y));
+        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.removeallwindows"), Style.EMPTY), (x, y) -> WindowManager.getInstance().reset());
+        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.clearallmessages"), Style.EMPTY), (x, y) -> WindowManager.getInstance().clear());
+        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.duplicatewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().duplicateTab(x, y));
         menu = new ContextMenu(mouseX, mouseY, actions, () -> menu = null);
     }
 

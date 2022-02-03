@@ -112,6 +112,12 @@
   "advancedchat.config.findtype.literal": "§6Literal",
   "advancedchat.config.findtype.upperlower": "§eUpper-Lower",
   "advancedchat.config.findtype.regex": "§bRegEx",
-  "advancedchat.config.findtype.all": "§dAll"
+  "advancedchat.config.findtype.all": "§dAll",
 
+  "advancedchathud.context.copy": "Copy",
+  "advancedchathud.context.delete": "Delete",
+  "advancedchathud.context.removeallwindows": "Remove All Windows",
+  "advancedchathud.context.clearallmessages": "Clear All Messages",
+  "advancedchathud.context.duplicatewindow": "Duplicate Window",
+  "advancedchathud.context.messageowner": "Reply"
 }
