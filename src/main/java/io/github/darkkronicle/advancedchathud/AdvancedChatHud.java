@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2021-2022 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +7,6 @@
  */
 package io.github.darkkronicle.advancedchathud;
 
-import fi.dy.masa.malilib.event.InitializationHandler;
 import io.github.darkkronicle.advancedchatcore.ModuleHandler;
 import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import net.fabricmc.api.ClientModInitializer;
@@ -15,9 +14,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class AdvancedChatHud implements ClientModInitializer {

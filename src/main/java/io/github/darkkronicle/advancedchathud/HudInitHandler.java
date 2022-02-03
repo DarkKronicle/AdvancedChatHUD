@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2021-2022 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,8 +32,7 @@ public class HudInitHandler implements IInitializationHandler {
     @Override
     public void registerModHandlers() {
         AdvancedChatCore.FORWARD_TO_HUD = false;
-        ConfigManager.getInstance()
-                .registerConfigHandler(AdvancedChatHud.MOD_ID, new HudConfigStorage());
+        ConfigManager.getInstance().registerConfigHandler(AdvancedChatHud.MOD_ID, new HudConfigStorage());
         GuiConfigHandler.getInstance().addTab(
                 GuiConfigHandler.children("advancedchathud", "advancedchathud.tab.advancedchathud",
                         GuiConfigHandler.wrapSaveableOptions(

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2021-2022 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -85,7 +85,7 @@ public class MainChatTab extends AbstractChatTab {
     /** Method used for loading in tabs from the config. */
     public void setUpTabs() {
         JsonArray windows = null;
-        if (!LOAD_ALL_JSON) {
+        if (LOAD_ALL_JSON) {
             windows = WindowManager.getInstance().saveJson();
         }
         customChatTabs = new ArrayList<>();
