@@ -8,8 +8,8 @@ plugins {
 	id "com.diffplug.spotless" version "5.17.1"
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = "${project.minecraft_version}-${project.mod_version}"
@@ -18,9 +18,6 @@ group = project.maven_group
 Properties additionalProperties = new Properties()
 if (file("extra.properties").exists()) {
 	additionalProperties.load(file("extra.properties").newReader())
-}
-
-minecraft {
 }
 
 repositories {
@@ -34,7 +31,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.18.0:${project.malilib_version}"
+	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.18.2:${project.malilib_version}"
 	modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
 }
 
@@ -48,7 +45,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	it.options.release = 16
+	it.options.release = 17
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task

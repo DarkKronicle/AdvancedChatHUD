@@ -58,13 +58,13 @@ public abstract class MixinChatHud implements IChatHud {
     protected abstract boolean isChatFocused();
 
     @Shadow
-    public abstract void scroll(double amount);
+    public abstract void scroll(int amount);
 
     @Shadow
     public abstract int getHeight();
 
     @Inject(at = @At("HEAD"), method = "scroll", cancellable = true)
-    private void scroll(double amount, CallbackInfo ci) {
+    private void scroll(int amount, CallbackInfo ci) {
         // Only scroll if nothing is focused
         if (WindowManager.getInstance().getSelected() != null) {
             ci.cancel();
@@ -141,7 +141,7 @@ public abstract class MixinChatHud implements IChatHud {
             orderedText = text.next();
             if (this.isChatFocused() && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
-                this.scroll(1.0D);
+                this.scroll(1);
             }
         }
 

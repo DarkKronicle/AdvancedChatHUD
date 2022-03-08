@@ -66,11 +66,13 @@ public class HudConfigStorage implements IConfigHandler {
                         new ConfigBoolean(
                                 translate("chatheads"), false, translate("info.chatheads")));
 
-        public static final SaveableConfig<ConfigBoolean> ALWAYS_SHOW_TAB_BUTTONS =
+        public static final SaveableConfig<ConfigBoolean> MINIMALIST =
                 SaveableConfig.fromConfig(
-                        "alwaysShowTabButtons",
+                        "minimalist",
                         new ConfigBoolean(
-                                translate("alwaysshowtabbuttons"), false, translate("info.alwaysshowtabbuttons")));
+                                translate("minimalist"),
+                                false,
+                                translate("info.minimalist")));
 
         public static final SaveableConfig<ConfigBoolean> TAB_BUTTONS_ON_RIGHT =
                 SaveableConfig.fromConfig(
@@ -209,11 +211,19 @@ public class HudConfigStorage implements IConfigHandler {
                                 1000,
                                 translate("info.storedlines")));
 
+        public static final SaveableConfig<ConfigBoolean> RENDER_IN_OTHER_GUI =
+                SaveableConfig.fromConfig(
+                        "renderInOther",
+                        new ConfigBoolean(
+                                translate("renderinother"),
+                                true,
+                                translate("info.renderinother")));
+
         public static final ImmutableList<SaveableConfig<? extends IConfigBase>> OPTIONS =
                 ImmutableList.of(
                         VANILLA_HUD,
+                        MINIMALIST,
                         CHAT_HEADS,
-                        ALWAYS_SHOW_TAB_BUTTONS,
                         TAB_BUTTONS_ON_RIGHT,
                         WIDTH,
                         HEIGHT,
@@ -233,7 +243,8 @@ public class HudConfigStorage implements IConfigHandler {
                         EMPTY_TEXT_COLOR,
                         HUD_LINE_TYPE,
                         ALTERNATE_LINES,
-                        STORED_LINES);
+                        STORED_LINES,
+                        RENDER_IN_OTHER_GUI);
     }
 
     public static void loadFromFile() {

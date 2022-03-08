@@ -95,20 +95,14 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
 
     @Override
     public void onRenderGameOverlayPost(MatrixStack matrixStack) {
+        boolean isFocused = isChatFocused();
+        int ticks = client.inGameHud.getTicks();
+        if (!HudConfigStorage.General.RENDER_IN_OTHER_GUI.config.getBooleanValue() && !isFocused && client.currentScreen != null) {
+            return;
+        }
         for (int i = windows.size() - 1; i >= 0; i--) {
-            windows.get(i).render(matrixStack, client.inGameHud.getTicks(), isChatFocused());
+            windows.get(i).render(matrixStack, ticks, isFocused);
         }
-        if (HudConfigStorage.General.ALWAYS_SHOW_TAB_BUTTONS.config.getBooleanValue()) {
-            renderButtons();
-        }
-    }
-
-    public void renderButtons() {
-
-    }
-
-    public void resetButtons() {
-
     }
 
     public void resetScroll() {

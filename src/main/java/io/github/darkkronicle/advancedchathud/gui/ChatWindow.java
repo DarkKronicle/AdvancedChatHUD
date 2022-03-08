@@ -269,7 +269,14 @@ public class ChatWindow {
                 && y - getActualHeight() <= mouseY);
     }
 
+    public boolean isMinimalist() {
+        return HudConfigStorage.General.MINIMALIST.config.getBooleanValue();
+    }
+
     public void render(MatrixStack matrixStack, int ticks, boolean focused) {
+        if (!focused) {
+            resetScroll();
+        }
         if (visibility == HudConfigStorage.Visibility.FOCUSONLY && !focused) {
             return;
         }
@@ -349,6 +356,9 @@ public class ChatWindow {
             if (isSelected()) {
                 tab.resetUnread();
             }
+        }
+
+        if (focused && !isMinimalist()) {
             drawOutline(
                     matrixStack,
                     leftX,

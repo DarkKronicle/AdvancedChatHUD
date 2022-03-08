@@ -154,6 +154,7 @@ public class HudSection extends AdvancedChatScreenSection {
         actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.removeallwindows"), Style.EMPTY), (x, y) -> WindowManager.getInstance().reset());
         actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.clearallmessages"), Style.EMPTY), (x, y) -> WindowManager.getInstance().clear());
         actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.duplicatewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().duplicateTab(x, y));
+        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.minimalist"), Style.EMPTY), (x, y) -> HudConfigStorage.General.MINIMALIST.config.setBooleanValue(!HudConfigStorage.General.MINIMALIST.config.getBooleanValue()));
         menu = new ContextMenu(mouseX, mouseY, actions, () -> menu = null);
     }
 

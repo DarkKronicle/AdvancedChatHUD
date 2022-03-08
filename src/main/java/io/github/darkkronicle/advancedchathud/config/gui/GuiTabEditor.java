@@ -92,9 +92,9 @@ public class GuiTabEditor extends GuiConfigsBase implements IClosable {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         save();
-        super.onClose();
+        super.close();
     }
 
     @Override
