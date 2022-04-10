@@ -66,14 +66,6 @@ public class HudConfigStorage implements IConfigHandler {
                         new ConfigBoolean(
                                 translate("chatheads"), false, translate("info.chatheads")));
 
-        public static final SaveableConfig<ConfigBoolean> MINIMALIST =
-                SaveableConfig.fromConfig(
-                        "minimalist",
-                        new ConfigBoolean(
-                                translate("minimalist"),
-                                false,
-                                translate("info.minimalist")));
-
         public static final SaveableConfig<ConfigBoolean> TAB_BUTTONS_ON_RIGHT =
                 SaveableConfig.fromConfig(
                         "tabButtonsOnRight",
@@ -222,7 +214,6 @@ public class HudConfigStorage implements IConfigHandler {
         public static final ImmutableList<SaveableConfig<? extends IConfigBase>> OPTIONS =
                 ImmutableList.of(
                         VANILLA_HUD,
-                        MINIMALIST,
                         CHAT_HEADS,
                         TAB_BUTTONS_ON_RIGHT,
                         WIDTH,

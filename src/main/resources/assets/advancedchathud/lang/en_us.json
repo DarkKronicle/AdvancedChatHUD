@@ -2,6 +2,7 @@
   "advancedchat.config.yes": "Correct!",
 
   "advancedchathud.gui.button.addtab": "New Chat Tab",
+  "advancedchathud.gui.button.reload": "Reload Konstruct Tabs",
   "advancedchathud.tab.advancedchathud": "§9HUD",
   "advancedchathud.tab.general": "§7Chat HUD",
   "advancedchathud.tab.tabs": "§bChat Tabs",
@@ -10,7 +11,7 @@
   "advancedchathud.config.general.info.timeformat": "How time is displayed if §6Show Time§r is enabled for both the §9Chat HUD§r and the §aChat Log§r. \nSee the §6SimpleDateFormat§r class for the format ",
   "advancedchathud.config.general.chatheads": "Display Chat Heads",
   "advancedchathud.config.general.info.chatheads": "Whether or not the §6head of the message sender§r displays beside their message",
-  "advancedchathud.gui.button.matches": "Matches",
+  "advancedchathud.gui.button.matches": "§6Matches",
   "advancedchathud.gui.button.back": "Back",
   "advancedchathud.gui.button.export": "Export",
   "advancedchathud.gui.button.addmatch": "§aAdd Match",
@@ -79,8 +80,6 @@
   "advancedchathud.config.general.info.righttabbuttons": "Whether or not §6tab buttons§r will display on the right side",
   "advancedchathud.config.general.renderinother": "Render Chat in Other GUI",
   "advancedchathud.config.general.info.renderinother": "Whether or not §6chat§r will render if another GUI is opened",
-  "advancedchathud.config.general.minimalist": "Minimalist Mode",
-  "advancedchathud.config.general.info.minimalist": "Enables a less cluttered window design. When active moving will not be possible.\nThe right click context menu can toggle this",
   "advancedchathud.config.general.persistenttext": "Persistent Text",
   "advancedchathud.config.general.info.persistenttext": "Whether or not messages that are §6typed but not sent§r are kept after closing the §9Chat Box",
   "advancedchathud.config.general.moretext": "Extended Text Limit",
@@ -95,6 +94,8 @@
   "advancedchathud.gui.button.import": "Import Tab",
   "advancedchathud.config.tab.name": "Tab Name",
   "advancedchathud.config.tab.info.name": "What the tab shows up as §6in the config \n§7§oIt is good practice to name your tabs meaningfully!",
+  "advancedchathud.config.tab.order": "Order",
+  "advancedchathud.config.tab.info.order": "The number that sorts the tabs. If this number is lower, it will be higher on the list.",
   "advancedchathud.config.tab.startingmessage": "Starting Message",
   "advancedchathud.config.tab.info.startingmessage": "What text shows up §6when the tab is focused§r",
   "advancedchathud.config.tab.abbreviation": "Tab HUD Abbreviation",
@@ -115,6 +116,20 @@
   "advancedchathud.config.tab.showunread": "Show Unread Messages",
   "advancedchathud.config.tab.info.showunread": "Whether or not the number of §6unread messages§r are displayed for the §bchat tab§r",
 
+  "advancedchathud.windowconfig.x": "Window X",
+  "advancedchathud.windowconfig.info.x": "The X value for the window",
+  "advancedchathud.windowconfig.y": "Window Y",
+  "advancedchathud.windowconfig.info.y": "The Y value for the window",
+  "advancedchathud.windowconfig.width": "Window Width",
+  "advancedchathud.windowconfig.info.width": "The width value for the window",
+  "advancedchathud.windowconfig.height": "Window Width",
+  "advancedchathud.windowconfig.info.height": "The width value for the window",
+  "advancedchathud.windowconfig.renderright": "Align Right",
+  "advancedchathud.windowconfig.info.renderright": "If the text should render aligned to the right side",
+  "advancedchathud.windowconfig.minimalist": "Minimalist Mode",
+  "advancedchathud.windowconfig.info.minimalist": "Enables a less cluttered window design. When active moving will not be possible.\nThe right click context menu can toggle this",
+
+
   "advancedchat.config.findtype.literal": "§6Literal",
   "advancedchat.config.findtype.upperlower": "§eUpper-Lower",
   "advancedchat.config.findtype.regex": "§bRegEx",
@@ -128,5 +143,6 @@
   "advancedchathud.context.removeallwindows": "Remove All Windows",
   "advancedchathud.context.clearallmessages": "Clear All Messages",
   "advancedchathud.context.duplicatewindow": "Duplicate Window",
+  "advancedchathud.context.configurewindow": "Configure Window",
   "advancedchathud.context.messageowner": "Reply"
 }

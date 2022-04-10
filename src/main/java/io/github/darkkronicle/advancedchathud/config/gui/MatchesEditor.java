@@ -41,7 +41,7 @@ public class MatchesEditor extends CoreGuiListBase<Match, WidgetMatchEntry, Widg
         int x = this.width - 10;
         this.addButton(x, y, "advancedchathud.gui.button.addmatch",
                 (button, mouseButton) -> this.addMatch());
-        this.addButton(Buttons.BACK.createButton(2, y), new BackButtonListener(this));
+        this.addButton(Buttons.BACK.createButton(10, y), new BackButtonListener(this));
     }
 
     protected void addButton(int x, int y, String translation, IButtonActionListener listener) {
@@ -52,6 +52,7 @@ public class MatchesEditor extends CoreGuiListBase<Match, WidgetMatchEntry, Widg
 
     @Override
     protected void closeGui(boolean showParent) {
+        getListWidget().save();
         AdvancedChatHud.MAIN_CHAT_TAB.setUpTabs();
         super.closeGui(showParent);
     }

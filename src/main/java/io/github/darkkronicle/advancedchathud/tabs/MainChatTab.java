@@ -24,10 +24,7 @@ import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import io.github.darkkronicle.advancedchathud.util.FileUtil;
@@ -94,8 +91,16 @@ public class MainChatTab extends AbstractChatTab {
         for (ChatTab tab : HudConfigStorage.TABS) {
             CustomChatTab customTab = new CustomChatTab(tab);
             customChatTabs.add(customTab);
-            allChatTabs.add(customTab);
         }
+        customChatTabs.sort((customTab1, customTab2) -> {
+            Comparator<CustomChatTab> comparator = Comparator.comparingInt(tab -> tab.getTab().getOrder().config.getIntegerValue());
+            int num = comparator.compare(customTab1, customTab2);
+            if (num != 0) {
+                return num;
+            }
+            return customTab1.getTab().getName().config.getStringValue().compareTo(customTab2.getTab().getName().config.getStringValue());
+        });
+        allChatTabs.addAll(customChatTabs);
 
         Path konstructDir = FileUtils.getConfigDirectory().toPath().resolve("advancedchat").resolve("konstructTabs");
         konstructDir.toFile().mkdirs();

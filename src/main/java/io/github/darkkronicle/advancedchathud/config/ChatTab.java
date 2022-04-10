@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
@@ -45,6 +46,11 @@ public class ChatTab {
             SaveableConfig.fromConfig(
                     "name",
                     new ConfigString(translate("name"), "Boring Chat Tab", translate("info.name")));
+
+    private SaveableConfig<ConfigInteger> order =
+            SaveableConfig.fromConfig(
+                    "order",
+                    new ConfigInteger(translate("order"), 0, translate("info.order")));
 
     private List<Match> matches =
             new ArrayList<>(
@@ -100,6 +106,7 @@ public class ChatTab {
     private final ImmutableList<SaveableConfig<?>> options =
             ImmutableList.of(
                     name,
+                    order,
                     startingMessage,
                     forward,
                     abbreviation,
@@ -112,6 +119,7 @@ public class ChatTab {
     private final ImmutableList<SaveableConfig<?>> mainEditableOptions =
             ImmutableList.of(
                     name,
+                    order,
                     startingMessage,
                     abbreviation,
                     mainColor,
@@ -143,7 +151,10 @@ public class ChatTab {
                                     Matcher.quoteReplacement(matches.get(0).getPattern()))
                             .replaceAll(
                                     Pattern.quote("<findtype>"),
-                                    Matcher.quoteReplacement(getFind().getDisplayName())));
+                                    Matcher.quoteReplacement(getFind().getDisplayName()))
+                            .replaceAll(
+                                    Pattern.quote("<order>"),
+                                    Matcher.quoteReplacement(order.config.getStringValue())));
         }
         return hover;
     }

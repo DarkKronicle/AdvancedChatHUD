@@ -9,6 +9,7 @@ package io.github.darkkronicle.advancedchathud.gui;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedChatScreen;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
@@ -18,6 +19,7 @@ import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
 import io.github.darkkronicle.advancedchathud.ResolutionEventHandler;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
+import io.github.darkkronicle.advancedchathud.config.gui.ChatWindowEditor;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.LinkedList;
@@ -311,15 +313,28 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         }
     }
 
-    public void duplicateTab(int x, int y) {
+    public void duplicateTab(ChatWindow hovered, int x, int y) {
         ChatWindow window = new ChatWindow(IChatHud.getInstance().getTab());
-        ChatWindow selected = getSelected();
-        if (selected != null) {
-            window.setRelativeDimensions(selected.getWidthPercent(), selected.getHeightPercent());
-            window.setVisibility(selected.getVisibility());
-        }
+        window.setRelativeDimensions(hovered.getWidthPercent(), hovered.getHeightPercent());
+        window.setVisibility(hovered.getVisibility());
         window.setPosition(x, y);
         windows.add(window);
         setSelected(window);
+    }
+
+    public ChatWindow getHovered(int x, int y) {
+        int windowHeight = client.getWindow().getScaledHeight();
+        for (ChatWindow w : windows) {
+            int wX = w.getConvertedX();
+            int wY = w.getConvertedY();
+            if (x >= wX && x <= wX + w.getConvertedWidth() && y <= wY && y >= wY - w.getConvertedHeight()) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    public void configureTab(AdvancedChatScreen screen, ChatWindow window) {
+        GuiBase.openGui(new ChatWindowEditor(screen, window));
     }
 }

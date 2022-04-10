@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Level;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class HudSection extends AdvancedChatScreenSection {
     @Override
     public void initGui() {
         boolean left = !HudConfigStorage.General.TAB_BUTTONS_ON_RIGHT.config.getBooleanValue();
-        List<AbstractChatTab> tabs = AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs();
+        List<AbstractChatTab> tabs = new ArrayList<>(AdvancedChatHud.MAIN_CHAT_TAB.getAllChatTabs());
         if (!left) {
             Collections.reverse(tabs);
         }
@@ -151,10 +152,14 @@ public class HudSection extends AdvancedChatScreenSection {
                 });
             }
         }
+        ChatWindow hovered = WindowManager.getInstance().getHovered(mouseX, mouseY);
         actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.removeallwindows"), Style.EMPTY), (x, y) -> WindowManager.getInstance().reset());
         actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.clearallmessages"), Style.EMPTY), (x, y) -> WindowManager.getInstance().clear());
-        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.duplicatewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().duplicateTab(x, y));
-        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.minimalist"), Style.EMPTY), (x, y) -> HudConfigStorage.General.MINIMALIST.config.setBooleanValue(!HudConfigStorage.General.MINIMALIST.config.getBooleanValue()));
+        if (hovered != null) {
+            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.duplicatewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().duplicateTab(hovered, x, y));
+            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.configurewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().configureTab(getScreen(), hovered));
+            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.minimalist"), Style.EMPTY), (x, y) -> hovered.toggleMinimalist());
+        }
         menu = new ContextMenu(mouseX, mouseY, actions, () -> menu = null);
     }
 

@@ -55,6 +55,12 @@ public class WidgetListMatches extends WidgetConfigList<Match, WidgetMatchEntry>
         return val;
     }
 
+    public void save() {
+        for (WidgetMatchEntry widget : this.listWidgets) {
+            widget.save();
+        }
+    }
+
     @Override
     protected Collection<Match> getAllEntries() {
         return tab.getMatches();

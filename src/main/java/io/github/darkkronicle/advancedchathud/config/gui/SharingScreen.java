@@ -59,7 +59,7 @@ public class SharingScreen extends GuiBase {
         this.addTextField(text, null);
 
         this.addButton(
-                x, y, "advancedchat.gui.button.importtab", (button, mouseButton) -> importTab());
+                x, y, "advancedchathud.gui.button.import", (button, mouseButton) -> importTab());
     }
 
     private void addButton(int x, int y, String translation, IButtonActionListener listener) {

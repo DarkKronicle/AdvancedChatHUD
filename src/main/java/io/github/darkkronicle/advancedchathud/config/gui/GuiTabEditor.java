@@ -53,21 +53,21 @@ public class GuiTabEditor extends GuiConfigsBase implements IClosable {
         ButtonGeneric back = Buttons.BACK.createButton(x, y);
         x += this.addButton(back, new BackButtonListener(this)).getWidth() + 2;
 
-        if (!main) {
-            x += this.addButton(x, y, "advancedchathud.gui.button.matches", (button, mouseButton) -> {
-                save();
-                GuiBase.openGui(new MatchesEditor(this, tab));
-            }) + 2;
-        }
-
-        this.addButton(
+        x += this.addButton(
                 x,
                 y,
                 "advancedchathud.gui.button.export",
                 (button, mouseButton) -> {
                     save();
                     GuiBase.openGui(SharingScreen.fromTab(tab, this));
-                });
+                }) + 2;
+
+        if (!main) {
+            x += this.addButton(x, y, "advancedchathud.gui.button.matches", (button, mouseButton) -> {
+                save();
+                GuiBase.openGui(new MatchesEditor(this, tab));
+            }) + 2;
+        }
     }
 
     private int addButton(int x, int y, String translation, IButtonActionListener listener) {

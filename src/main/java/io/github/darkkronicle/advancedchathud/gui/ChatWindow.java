@@ -48,13 +48,17 @@ public class ChatWindow {
 
     private int scrolledLines = 0;
 
-    @Getter private double yPercent;
+    @Getter @Setter private double yPercent;
 
-    @Getter private double xPercent;
+    @Getter @Setter private double xPercent;
 
-    @Getter private double widthPercent;
+    @Getter @Setter private double widthPercent;
 
-    @Getter private double heightPercent;
+    @Getter @Setter private double heightPercent;
+
+    @Getter @Setter private boolean renderRight = false;
+
+    @Getter @Setter private boolean minimalist = false;
 
     private final MinecraftClient client;
 
@@ -225,7 +229,7 @@ public class ChatWindow {
                 + (int)
                         Math.ceil(
                                 HudConfigStorage.General.LEFT_PAD.config.getIntegerValue()
-                                        + headOffset()));
+                                        + (renderRight ? 0 : headOffset())));
     }
 
     private double getScale() {
@@ -237,7 +241,7 @@ public class ChatWindow {
     }
 
     private int getPaddedRightX() {
-        return (getRightX() - HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue());
+        return (getRightX() - HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue() - (renderRight ? headOffset() : 0));
     }
 
     public int getActualHeight() {
@@ -267,10 +271,6 @@ public class ChatWindow {
                 && x + getConvertedWidth() >= mouseX
                 && y >= mouseY
                 && y - getActualHeight() <= mouseY);
-    }
-
-    public boolean isMinimalist() {
-        return HudConfigStorage.General.MINIMALIST.config.getBooleanValue();
     }
 
     public void render(MatrixStack matrixStack, int ticks, boolean focused) {
@@ -588,17 +588,23 @@ public class ChatWindow {
         }
 
         int backgroundWidth;
+        int scaledWidth = getScaledWidth();
+        int lineWidth = client.textRenderer.getWidth(render) + 2;
 
         if (!focused
                 && HudConfigStorage.General.HUD_LINE_TYPE.config.getOptionListValue()
                         == HudConfigStorage.HudLineType.COMPACT) {
-            backgroundWidth = client.textRenderer.getWidth(render) + 4 + headOffset();
+            backgroundWidth = lineWidth + headOffset();
         } else {
-            backgroundWidth = getScaledWidth();
+            backgroundWidth = scaledWidth;
         }
 
         // Draw background
-        drawRect(matrixStack, x, getActualY(y), backgroundWidth, height, background.color());
+        if (renderRight) {
+            drawRect(matrixStack, x + (scaledWidth - backgroundWidth), getActualY(y), backgroundWidth, height, background.color());
+        } else {
+            drawRect(matrixStack, x, getActualY(y), backgroundWidth, height, background.color());
+        }
         if (lineIndex == line.getParent().getLineCount() - 1
                 && line.getParent().getOwner() != null
                 && HudConfigStorage.General.CHAT_HEADS.config.getBooleanValue()) {
@@ -607,15 +613,22 @@ public class ChatWindow {
             // Draw head
             RenderSystem.setShaderColor(1, 1, 1, applied);
             RenderSystem.setShaderTexture(0, line.getParent().getOwner().getTexture());
+            int headX;
+            if (renderRight) {
+                headX = pRX + 2;
+            } else {
+                headX = pLX - 10;
+            }
+            int headY = getActualY(y);
             DrawableHelper.drawTexture(
-                    matrixStack, pLX - 10, getActualY(y), 8, 8, 8, 8, 8, 8, 64, 64);
+                    matrixStack, headX, headY, 8, 8, 8, 8, 8, 8, 64, 64);
             DrawableHelper.drawTexture(
-                    matrixStack, pLX - 10, getActualY(y), 8, 8, 40, 8, 8, 8, 64, 64);
+                    matrixStack, headX, headY, 8, 8, 40, 8, 8, 8, 64, 64);
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
         client.textRenderer.drawWithShadow(
-                matrixStack, render.asOrderedText(), pLX, getActualY(y) + 1, text.color());
+                matrixStack, render.asOrderedText(), renderRight ? pRX - lineWidth : pLX, getActualY(y) + 1, text.color());
     }
 
     public Style getText(double mouseX, double mouseY) {
@@ -651,16 +664,21 @@ public class ChatWindow {
                         HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
                 }
+
                 if (trueY <= y.getValue()
                         && trueY
                                 >= y.getValue()
                                         - HudConfigStorage.General.LINE_SPACE.config
                                                 .getIntegerValue()) {
                     ChatMessage.AdvancedChatLine line = message.getLines().get(i);
+                    double truestX = trueX;
+                    if (renderRight) {
+                        truestX = trueX - (getScaledWidth() - line.getWidth()) + headOffset() + HudConfigStorage.General.RIGHT_PAD.config.getIntegerValue() + HudConfigStorage.General.LEFT_PAD.config.getIntegerValue();
+                    }
                     return this.client
                             .textRenderer
                             .getTextHandler()
-                            .getStyleAt(line.getText(), (int) trueX);
+                            .getStyleAt(line.getText(), (int) truestX);
                 }
             }
             if (lines >= scrolledLines) {
@@ -790,7 +808,7 @@ public class ChatWindow {
         this.widthPercent = (double) width / client.getWindow().getScaledWidth();
         this.heightPercent = (double) height / client.getWindow().getScaledHeight();
         for (ChatMessage m : lines) {
-            m.formatChildren(getConvertedWidth());
+            m.formatChildren(getPaddedWidth());
         }
     }
 
@@ -831,6 +849,10 @@ public class ChatWindow {
         }
     }
 
+    public void toggleMinimalist() {
+        minimalist = !minimalist;
+    }
+
     public static class ChatWindowSerializer implements IJsonSave<ChatWindow> {
 
         @Override
@@ -847,6 +869,12 @@ public class ChatWindow {
             }
             ChatWindow window = new ChatWindow(tab);
             window.setSelected(obj.get("selected").getAsBoolean());
+            if (obj.has("renderRight")) {
+                window.setRenderRight(obj.get("renderRight").getAsBoolean());
+            }
+            if (obj.has("minimalist")) {
+                window.setMinimalist(obj.get("minimalist").getAsBoolean());
+            }
             window.setRelativePosition(obj.get("x").getAsDouble(), obj.get("y").getAsDouble());
             window.setVisibility(
                     HudConfigStorage.Visibility.fromVisibilityString(
@@ -866,6 +894,8 @@ public class ChatWindow {
             obj.addProperty("visibility", chatWindow.getVisibility().getStringValue());
             obj.addProperty("tabuuid", chatWindow.getTab().getUuid().toString());
             obj.addProperty("selected", chatWindow.isSelected());
+            obj.addProperty("renderRight", chatWindow.isRenderRight());
+            obj.addProperty("minimalist", chatWindow.isMinimalist());
             return obj;
         }
     }
