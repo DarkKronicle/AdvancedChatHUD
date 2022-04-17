@@ -49,6 +49,11 @@ public class ChatWindowEditor extends GuiConfigsBase implements IClosable {
             false,
             "advancedchathud.windowconfig.info.renderright");
 
+    private final ConfigBoolean renderTopFirst = new ConfigBoolean(
+            "advancedchathud.windowconfig.rendertopfirst",
+            false,
+            "advancedchathud.windowconfig.info.rendertopfirst");
+
     private final ConfigBoolean minimalist = new ConfigBoolean(
             "advancedchathud.windowconfig.minimalist",
             false,
@@ -67,6 +72,7 @@ public class ChatWindowEditor extends GuiConfigsBase implements IClosable {
         windowWidth.setIntegerValue(window.getConvertedWidth());
         windowHeight.setIntegerValue(window.getConvertedHeight());
         renderRight.setBooleanValue(window.isRenderRight());
+        renderTopFirst.setBooleanValue(window.isRenderTopFirst());
         minimalist.setBooleanValue(window.isMinimalist());
     }
 
@@ -74,6 +80,7 @@ public class ChatWindowEditor extends GuiConfigsBase implements IClosable {
         window.setPosition(windowX.getIntegerValue(), windowY.getIntegerValue());
         window.setDimensions(windowWidth.getIntegerValue(), windowHeight.getIntegerValue());
         window.setRenderRight(renderRight.getBooleanValue());
+        window.setRenderTopFirst(renderTopFirst.getBooleanValue());
         window.setMinimalist(minimalist.getBooleanValue());
     }
 
@@ -96,6 +103,7 @@ public class ChatWindowEditor extends GuiConfigsBase implements IClosable {
         config.add(windowWidth);
         config.add(windowHeight);
         config.add(renderRight);
+        config.add(renderTopFirst);
         config.add(minimalist);
 
         return GuiConfigsBase.ConfigOptionWrapper.createFor(config);

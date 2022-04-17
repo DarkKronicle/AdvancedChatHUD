@@ -29,6 +29,8 @@ import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import io.github.darkkronicle.advancedchathud.util.ScissorUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.EnvType;
@@ -42,11 +44,17 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class ChatWindow {
 
-    private int scrolledLines = 0;
+    private double scrolledHeight = 0;
+    private double scrollStart = 0;
+    private double scrollEnd = 0;
+
+    private long lastScroll = 0;
+    private int scrollDuration = 200;
 
     @Getter @Setter private double yPercent;
 
@@ -59,6 +67,8 @@ public class ChatWindow {
     @Getter @Setter private boolean renderRight = false;
 
     @Getter @Setter private boolean minimalist = false;
+
+    @Getter @Setter private boolean renderTopFirst = false;
 
     private final MinecraftClient client;
 
@@ -137,8 +147,8 @@ public class ChatWindow {
                 newMessage.setCreationTick(MinecraftClient.getInstance().inGameHud.getTicks());
             }
             this.lines.add(0, newMessage);
-            if (scrolledLines > 0) {
-                scrolledLines++;
+            if (scrolledHeight > 0) {
+                scrolledHeight += (HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()) * newMessage.getLineCount() + HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
             }
             int visibleMessagesMaxSize =
                     HudConfigStorage.General.STORED_LINES.config.getIntegerValue();
@@ -173,14 +183,32 @@ public class ChatWindow {
     }
 
     public void scroll(double amount) {
-        this.scrolledLines = (int) ((double) this.scrolledLines + amount);
-        int totalLines = getTotalLines();
-        if (this.scrolledLines > totalLines) {
-            this.scrolledLines = totalLines;
+        this.scrollEnd = this.scrolledHeight + amount * 15;
+        this.scrollStart = this.scrolledHeight;
+        lastScroll = Util.getMeasuringTimeMs();
+    }
+
+    public void updateScroll() {
+        long time = Util.getMeasuringTimeMs();
+        scrollDuration = 300;
+        scrolledHeight = scrollStart + (
+                (scrollEnd - scrollStart) * (1 - EasingMethod.Method.QUART.apply(
+                        1 - ((float) (time - lastScroll)) / scrollDuration
+                ))
+        );
+        int totalHeight = getTotalHeight();
+        if (this.scrolledHeight > totalHeight) {
+            scrollStart = totalHeight;
+            scrollEnd = totalHeight;
+            lastScroll = 0;
+            this.scrolledHeight = totalHeight;
         }
 
-        if (this.scrolledLines <= 0) {
-            this.scrolledLines = 0;
+        if (this.scrolledHeight <= 0) {
+            scrollStart = 0;
+            scrollEnd = 0;
+            lastScroll = 0;
+            this.scrolledHeight = 0;
         }
     }
 
@@ -202,7 +230,10 @@ public class ChatWindow {
     }
 
     public void resetScroll() {
-        this.scrolledLines = 0;
+        this.lastScroll = 0;
+        this.scrollStart = 0;
+        this.scrollEnd = 0;
+        this.scrolledHeight = 0;
     }
 
     public int getPaddedWidth() {
@@ -273,10 +304,15 @@ public class ChatWindow {
                 && y - getActualHeight() <= mouseY);
     }
 
+    public int getTotalHeight() {
+        return getTotalLines() * HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() + (lines.size() - 1) * HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
+    }
+
     public void render(MatrixStack matrixStack, int ticks, boolean focused) {
         if (!focused) {
             resetScroll();
         }
+        updateScroll();
         if (visibility == HudConfigStorage.Visibility.FOCUSONLY && !focused) {
             return;
         }
@@ -284,15 +320,17 @@ public class ChatWindow {
         int totalLines = getTotalLines();
 
         boolean chatFocused = visibility == HudConfigStorage.Visibility.ALWAYS || focused;
+        int totalHeight = getTotalHeight();
 
-        if (scrolledLines > totalLines) {
-            scrolledLines = totalLines;
+        if (scrolledHeight > totalHeight) {
+            scrolledHeight = totalHeight;
         }
 
         matrixStack.push();
         matrixStack.scale((float) getScale(), (float) getScale(), 1);
 
         int lines = 0;
+        int currentHeight = 0;
         int renderedLines = 0;
         int scaledWidth = getScaledWidth();
         int scaledHeight = getScaledHeight();
@@ -300,54 +338,68 @@ public class ChatWindow {
         int padLX = getPaddedLeftX();
         int rightX = getRightX();
         int padRX = getPaddedRightX();
+        int limit = getScaledHeight() - HudConfigStorage.General.TOP_PAD.config.getIntegerValue() + HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
+        int lastY = 0;
         LimitedInteger y =
                 new LimitedInteger(
-                        getScaledHeight()
-                                - HudConfigStorage.General.TOP_PAD.config.getIntegerValue(),
-                        HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
+                        getScaledHeight() - HudConfigStorage.General.TOP_PAD.config.getIntegerValue() + (HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue() + HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() * (renderTopFirst ? 2 : 1)),
+                        renderTopFirst ? HudConfigStorage.General.TOP_PAD.config.getIntegerValue() + HudConfigStorage.General.LINE_SPACE.config.getIntegerValue(): HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
 
+        double scale = client.getWindow().getScaleFactor();
+        ScissorUtil.applyScissorBox(
+                (int) (getConvertedX() * scale),
+                (int) ((client.getWindow().getScaledHeight() - getConvertedY()) * scale),
+                (int) (getConvertedWidth() * scale),
+                (int) (getConvertedHeight() * scale));
+        boolean foundScroll = false;
         for (int j = 0; j < this.lines.size(); j++) {
             ChatMessage message = this.lines.get(j);
             // To get the proper index of reversed
             for (int i = message.getLineCount() - 1; i >= 0; i--) {
-                int lineIndex = message.getLineCount() - i - 1;
+                int lineIndex = renderTopFirst ? i : message.getLineCount() - i - 1;
                 lines++;
-                if (lines < scrolledLines) {
+                if (currentHeight < scrolledHeight - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()) {
+                    currentHeight += HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
                     continue;
                 }
-                if (!y.incrementIfPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
+                boolean renderBelow = false;
+                if (!foundScroll) {
+                    foundScroll = true;
+                    y.incrementIfPossible(currentHeight - (int) scrolledHeight - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() + client.textRenderer.fontHeight);
+                    renderBelow = true;
+                }
+                currentHeight += HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
+                if (!y.incrementIfPossible(HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
                 }
-                ChatMessage.AdvancedChatLine line = message.getLines().get(i);
+                ChatMessage.AdvancedChatLine line = message.getLines().get(renderTopFirst ? message.getLineCount() - i - 1 : i);
                 drawLine(
                         matrixStack,
                         line,
                         leftX,
-                        y.getValue(),
+                        renderTopFirst ? limit - y.getValue() + client.textRenderer.fontHeight : y.getValue(),
                         padLX,
                         padRX,
                         lineIndex,
                         j,
                         renderedLines,
                         chatFocused,
-                        ticks);
+                        ticks,
+                        renderBelow ? y.getValue() - lastY - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() - 1 : 0);
+                lastY = y.getValue();
                 renderedLines++;
             }
-            if (lines >= scrolledLines) {
+            if (currentHeight >= scrolledHeight) {
                 if (lines == totalLines) {
                     break;
                 }
-                if (!y.isPossible(
-                                HudConfigStorage.General.LINE_SPACE.config.getIntegerValue()
-                                        + HudConfigStorage.General.MESSAGE_SPACE.config
-                                                .getIntegerValue())
-                        || !y.incrementIfPossible(
-                                HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
+                if (!y.isPossible(HudConfigStorage.General.LINE_SPACE.config.getIntegerValue() + HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue()) || !y.incrementIfPossible(HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue())) {
                     break;
                 }
             }
+            currentHeight += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
         }
+        ScissorUtil.resetScissor();
         if (renderedLines == 0) {
             y.setValue(0);
         }
@@ -489,16 +541,19 @@ public class ChatWindow {
         }
 
         if (chatFocused) {
-            fill(
-                    matrixStack,
-                    leftX,
-                    getActualY(y.getValue()),
-                    rightX,
-                    getActualY(getScaledHeight()),
-                    tab.getInnerColor().color());
+            if (y.getValue() < getScaledHeight()) {
+                // Check to see if we've already gone above the boundaries
+                fill(
+                        matrixStack,
+                        leftX,
+                        getActualY(renderTopFirst ? limit - y.getValue() : y.getValue()),
+                        rightX,
+                        getActualY(renderTopFirst ? 0 : getScaledHeight()),
+                        tab.getInnerColor().color());
+            }
             // Scroll bar
-            float add = (float) (scrolledLines) / (totalLines + 1);
-            int scrollHeight = (int) (add * getScaledHeight());
+            float add = (float) (scrolledHeight) / (getTotalHeight());
+            int scrollHeight = (int) (add * (getScaledHeight() - 10));
             drawRect(
                     matrixStack,
                     getScaledWidth() + leftX - 1,
@@ -521,11 +576,13 @@ public class ChatWindow {
             int messageIndex,
             int renderedLines,
             boolean focused,
-            int ticks) {
+            int ticks,
+            int renderBelow) {
         int height = HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
         if (renderedLines == 0) {
             if (focused) {
-                height += HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue();
+                height += renderTopFirst ? HudConfigStorage.General.TOP_PAD.config.getIntegerValue() + HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue() + 1 : HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue();
+                height += renderBelow;
             }
         } else if (lineIndex == 0) {
             height += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
@@ -600,10 +657,14 @@ public class ChatWindow {
         }
 
         // Draw background
+        int backgroundY = getActualY(y);
+        if (renderTopFirst && renderedLines == 0) {
+            backgroundY -= 1 + HudConfigStorage.General.TOP_PAD.config.getIntegerValue();
+        }
         if (renderRight) {
-            drawRect(matrixStack, x + (scaledWidth - backgroundWidth), getActualY(y), backgroundWidth, height, background.color());
+            drawRect(matrixStack, x + (scaledWidth - backgroundWidth), backgroundY, backgroundWidth, height, background.color());
         } else {
-            drawRect(matrixStack, x, getActualY(y), backgroundWidth, height, background.color());
+            drawRect(matrixStack, x, backgroundY, backgroundWidth, height, background.color());
         }
         if (lineIndex == line.getParent().getLineCount() - 1
                 && line.getParent().getOwner() != null
@@ -647,21 +708,24 @@ public class ChatWindow {
             return null;
         }
 
-        int lines = 0;
-        int lineCount = this.getTotalLines();
+        int lineHeight = 0;
+        boolean foundScroll = false;
         LimitedInteger y =
                 new LimitedInteger(
-                        getScaledHeight(),
+                        getScaledHeight() + HudConfigStorage.General.LINE_SPACE.config.getIntegerValue(),
                         HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
         for (ChatMessage message : this.lines) {
             // To get the proper index of reversed
             for (int i = message.getLineCount() - 1; i >= 0; i--) {
-                lines++;
-                if (lines < scrolledLines) {
+                lineHeight += HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
+                if (lineHeight < scrolledHeight) {
                     continue;
                 }
-                if (!y.incrementIfPossible(
-                        HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
+                if (!foundScroll) {
+                    foundScroll = true;
+                    trueY -= lineHeight - (int) scrolledHeight - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
+                }
+                if (!y.incrementIfPossible(HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
                 }
 
@@ -681,8 +745,8 @@ public class ChatWindow {
                             .getStyleAt(line.getText(), (int) truestX);
                 }
             }
-            if (lines >= scrolledLines) {
-                if (lines == lineCount) {
+            if (lineHeight >= scrolledHeight) {
+                if (lineHeight == getTotalHeight()) {
                     break;
                 }
                 if (!y.isPossible(
@@ -694,6 +758,7 @@ public class ChatWindow {
                     break;
                 }
             }
+            lineHeight += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
         }
         return null;
     }
@@ -704,6 +769,9 @@ public class ChatWindow {
         }
         double relX = mouseX;
         double relY = getConvertedY() - mouseY;
+        if (renderTopFirst) {
+            relY = getConvertedHeight() - relY;
+        }
         double trueX = relX / getScale() - getPaddedLeftX();
         double trueY = relY / getScale();
         // Divide it by chat scale to get where it actually is
@@ -714,15 +782,19 @@ public class ChatWindow {
             return null;
         }
 
-        int lines = 0;
-        int lineCount = this.getTotalLines();
-        LimitedInteger y = new LimitedInteger(getScaledHeight(), HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
+        int lineHeight = 0;
+        boolean foundScroll = false;
+        LimitedInteger y = new LimitedInteger(getScaledHeight() + HudConfigStorage.General.LINE_SPACE.config.getIntegerValue(), HudConfigStorage.General.BOTTOM_PAD.config.getIntegerValue());
         for (ChatMessage message : this.lines) {
             // To get the proper index of reversed
             for (int i = message.getLineCount() - 1; i >= 0; i--) {
-                lines++;
-                if (lines < scrolledLines) {
+                lineHeight += HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
+                if (lineHeight < scrolledHeight) {
                     continue;
+                }
+                if (!foundScroll) {
+                    foundScroll = true;
+                    trueY -= lineHeight - (int) scrolledHeight - HudConfigStorage.General.LINE_SPACE.config.getIntegerValue();
                 }
                 if (!y.incrementIfPossible(HudConfigStorage.General.LINE_SPACE.config.getIntegerValue())) {
                     break;
@@ -731,8 +803,8 @@ public class ChatWindow {
                     return message;
                 }
             }
-            if (lines >= scrolledLines) {
-                if (lines == lineCount) {
+            if (lineHeight >= scrolledHeight) {
+                if (lineHeight == getTotalHeight()) {
                     break;
                 }
                 if (!y.isPossible(
@@ -744,6 +816,7 @@ public class ChatWindow {
                     break;
                 }
             }
+            lineHeight += HudConfigStorage.General.MESSAGE_SPACE.config.getIntegerValue();
         }
         return null;
     }
@@ -872,6 +945,9 @@ public class ChatWindow {
             if (obj.has("renderRight")) {
                 window.setRenderRight(obj.get("renderRight").getAsBoolean());
             }
+            if (obj.has("renderTopFirst")) {
+                window.setRenderTopFirst(obj.get("renderTopFirst").getAsBoolean());
+            }
             if (obj.has("minimalist")) {
                 window.setMinimalist(obj.get("minimalist").getAsBoolean());
             }
@@ -895,6 +971,7 @@ public class ChatWindow {
             obj.addProperty("tabuuid", chatWindow.getTab().getUuid().toString());
             obj.addProperty("selected", chatWindow.isSelected());
             obj.addProperty("renderRight", chatWindow.isRenderRight());
+            obj.addProperty("renderTopFirst", chatWindow.isRenderTopFirst());
             obj.addProperty("minimalist", chatWindow.isMinimalist());
             return obj;
         }
