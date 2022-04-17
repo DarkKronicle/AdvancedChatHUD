@@ -26,6 +26,7 @@ import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
 import io.github.darkkronicle.advancedchatcore.config.options.ConfigColor;
 import io.github.darkkronicle.advancedchatcore.util.Colors;
+import io.github.darkkronicle.advancedchatcore.util.EasingMethod;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.gui.WindowManager;
 import java.io.File;
@@ -211,6 +212,24 @@ public class HudConfigStorage implements IConfigHandler {
                                 true,
                                 translate("info.renderinother")));
 
+        public static final SaveableConfig<ConfigInteger> SCROLL_TIME =
+                SaveableConfig.fromConfig(
+                        "scrollTime",
+                        new ConfigInteger(
+                                translate("scrolltime"),
+                                200,
+                                1,
+                                2000,
+                                translate("info.scrolltime")));
+
+        public static final SaveableConfig<ConfigOptionList> SCROLL_TYPE =
+                SaveableConfig.fromConfig(
+                        "scrollTime",
+                        new ConfigOptionList(
+                                translate("scrolltype"),
+                                ConfigStorage.Easing.QUART,
+                                translate("info.scrolltype")));
+
         public static final ImmutableList<SaveableConfig<? extends IConfigBase>> OPTIONS =
                 ImmutableList.of(
                         VANILLA_HUD,
@@ -235,7 +254,9 @@ public class HudConfigStorage implements IConfigHandler {
                         HUD_LINE_TYPE,
                         ALTERNATE_LINES,
                         STORED_LINES,
-                        RENDER_IN_OTHER_GUI);
+                        RENDER_IN_OTHER_GUI,
+                        SCROLL_TIME,
+                        SCROLL_TYPE);
     }
 
     public static void loadFromFile() {
