@@ -189,14 +189,22 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
                     }
                 }
             } else if (window.getTab() instanceof CustomChatTab tab) {
+                Boolean replaced = false;
+
                 for (ChatWindow w : windows) {
                     if (w.getTab() instanceof CustomChatTab tab2) {
                         if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
                             screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
 
+                            replaced = true;
+
                             break;
                         }
                     }
+                }
+
+                if (!replaced) {
+                    screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText());
                 }
             }
         }
