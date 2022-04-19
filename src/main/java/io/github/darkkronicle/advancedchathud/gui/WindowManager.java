@@ -181,7 +181,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
             if (window.getTab() instanceof MainChatTab tab) {
                 for (ChatWindow w : windows) {
                     if (w.getTab() instanceof CustomChatTab tab2) {
-                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage())) {
+                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
                             screen.getChatField().setText(screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
 
                             break;
@@ -191,7 +191,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
             } else if (window.getTab() instanceof CustomChatTab tab) {
                 for (ChatWindow w : windows) {
                     if (w.getTab() instanceof CustomChatTab tab2) {
-                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage())) {
+                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
                             screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
 
                             break;
