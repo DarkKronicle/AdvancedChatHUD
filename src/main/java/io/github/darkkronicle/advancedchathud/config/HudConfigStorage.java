@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2022 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -230,6 +230,14 @@ public class HudConfigStorage implements IConfigHandler {
                                 ConfigStorage.Easing.QUART,
                                 translate("info.scrolltype")));
 
+        public static final SaveableConfig<ConfigBoolean> CHANGE_START_MESSAGE =
+                SaveableConfig.fromConfig(
+                        "changeStartMessage",
+                        new ConfigBoolean(
+                                translate("changeStartMessage"),
+                                true,
+                                translate("info.changeStartMessage")));
+
         public static final ImmutableList<SaveableConfig<? extends IConfigBase>> OPTIONS =
                 ImmutableList.of(
                         VANILLA_HUD,
@@ -256,7 +264,8 @@ public class HudConfigStorage implements IConfigHandler {
                         STORED_LINES,
                         RENDER_IN_OTHER_GUI,
                         SCROLL_TIME,
-                        SCROLL_TYPE);
+                        SCROLL_TYPE,
+                        CHANGE_START_MESSAGE);
     }
 
     public static void loadFromFile() {

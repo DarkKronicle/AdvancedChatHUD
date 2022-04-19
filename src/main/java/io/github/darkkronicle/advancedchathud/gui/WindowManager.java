@@ -177,7 +177,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         windows.remove(window);
         windows.addFirst(window);
 
-        if (client.currentScreen instanceof AdvancedChatScreen screen) {
+        if (HudConfigStorage.General.CHANGE_START_MESSAGE.config.getBooleanValue() && client.currentScreen instanceof AdvancedChatScreen screen) {
             if (window.getTab() instanceof MainChatTab tab) {
                 for (ChatWindow w : windows) {
                     if (w.getTab() instanceof CustomChatTab tab2) {
