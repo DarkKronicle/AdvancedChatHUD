@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DarkKronicle
+ * Copyright (C) 2022 DarkKronicle
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,10 +22,13 @@ import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.config.gui.ChatWindowEditor;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
+import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
 import java.util.LinkedList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -173,6 +176,30 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         }
         windows.remove(window);
         windows.addFirst(window);
+
+        if (client.currentScreen instanceof AdvancedChatScreen screen) {
+            if (window.getTab() instanceof MainChatTab tab) {
+                for (ChatWindow w : windows) {
+                    if (w.getTab() instanceof CustomChatTab tab2) {
+                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage())) {
+                            screen.getChatField().setText(screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
+
+                            break;
+                        }
+                    }
+                }
+            } else if (window.getTab() instanceof CustomChatTab tab) {
+                for (ChatWindow w : windows) {
+                    if (w.getTab() instanceof CustomChatTab tab2) {
+                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage())) {
+                            screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean mouseClicked(Screen screen, double mouseX, double mouseY, int button) {
