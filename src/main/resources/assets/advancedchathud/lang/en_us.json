@@ -90,6 +90,8 @@
   "advancedchathud.config.general.info.moretext": "Whether or not messages that are §6over the 256 character limit§r are broken into multiple chat messages",
   "advancedchathud.config.general.sendtocurrenttab": "Always Send Message to Focused Tab",
   "advancedchathud.config.general.info.sendtocurrenttab": "Whether or not messages §6sent by you§r are displayed in the currently focused tab, §6regardless of the chat filter",
+  "advancedchathud.config.general.changeStartMessage": "Change Start Message",
+  "advancedchathud.config.general.info.changeStartMessage": "Whether or not to change the start message when you switch chat windows",
 
   "advancedchathud.config.tabmenu.configure": "§bConfigure",
   "advancedchathud.config.tabmenu.remove": "§cDelete",
