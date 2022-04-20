@@ -192,8 +192,8 @@ public class ChatWindow {
         long time = Util.getMeasuringTimeMs();
         scrollDuration = 300;
         scrolledHeight = scrollStart + (
-                (scrollEnd - scrollStart) * (1 - EasingMethod.Method.QUART.apply(
-                        1 - ((float) (time - lastScroll)) / scrollDuration
+                (scrollEnd - scrollStart) * (1 - ((ConfigStorage.Easing) HudConfigStorage.General.SCROLL_TYPE.config.getOptionListValue()).apply(
+                        1 - ((float) (time - lastScroll)) / HudConfigStorage.General.SCROLL_TIME.config.getIntegerValue()
                 ))
         );
         int totalHeight = getTotalHeight();

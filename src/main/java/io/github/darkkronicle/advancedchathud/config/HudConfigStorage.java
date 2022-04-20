@@ -224,7 +224,7 @@ public class HudConfigStorage implements IConfigHandler {
 
         public static final SaveableConfig<ConfigOptionList> SCROLL_TYPE =
                 SaveableConfig.fromConfig(
-                        "scrollTime",
+                        "scrollType",
                         new ConfigOptionList(
                                 translate("scrolltype"),
                                 ConfigStorage.Easing.QUART,

@@ -177,35 +177,35 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         windows.remove(window);
         windows.addFirst(window);
 
-        if (HudConfigStorage.General.CHANGE_START_MESSAGE.config.getBooleanValue() && client.currentScreen instanceof AdvancedChatScreen screen) {
-            if (window.getTab() instanceof MainChatTab tab) {
-                for (ChatWindow w : windows) {
-                    if (w.getTab() instanceof CustomChatTab tab2) {
-                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
-                            screen.getChatField().setText(screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
-
-                            break;
-                        }
+        if (!HudConfigStorage.General.CHANGE_START_MESSAGE.config.getBooleanValue() || !(client.currentScreen instanceof AdvancedChatScreen screen)) {
+            return;
+        }
+        if (window.getTab() instanceof MainChatTab) {
+            for (ChatWindow w : windows) {
+                if (w.getTab() instanceof CustomChatTab tab2) {
+                    if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
+                        screen.getChatField().setText(screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
+                        break;
                     }
                 }
-            } else if (window.getTab() instanceof CustomChatTab tab) {
-                Boolean replaced = false;
+            }
+        } else if (window.getTab() instanceof CustomChatTab tab) {
+            boolean replaced = false;
 
-                for (ChatWindow w : windows) {
-                    if (w.getTab() instanceof CustomChatTab tab2) {
-                        if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
-                            screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
+            for (ChatWindow w : windows) {
+                if (w.getTab() instanceof CustomChatTab tab2) {
+                    if (screen.getChatField().getText().startsWith(tab2.getStartingMessage()) && tab2.getStartingMessage().length() > 0) {
+                        screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText().substring(tab2.getStartingMessage().length()));
 
-                            replaced = true;
+                        replaced = true;
 
-                            break;
-                        }
+                        break;
                     }
                 }
+            }
 
-                if (!replaced) {
-                    screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText());
-                }
+            if (!replaced) {
+                screen.getChatField().setText(tab.getStartingMessage() + screen.getChatField().getText());
             }
         }
     }

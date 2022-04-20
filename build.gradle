@@ -71,10 +71,6 @@ spotless {
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
 	}
-	java {
-		target 'src/*/java/**/*.java'
-		licenseHeaderFile "HEADER.txt"
-	}
 }
 
 // configure the maven publication
