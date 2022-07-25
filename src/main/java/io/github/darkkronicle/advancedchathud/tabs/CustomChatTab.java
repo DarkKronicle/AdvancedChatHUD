@@ -7,27 +7,21 @@
  */
 package io.github.darkkronicle.advancedchathud.tabs;
 
-import io.github.darkkronicle.Konstruct.NodeException;
 import io.github.darkkronicle.Konstruct.functions.Function;
-import io.github.darkkronicle.Konstruct.functions.Variable;
 import io.github.darkkronicle.Konstruct.nodes.LiteralNode;
 import io.github.darkkronicle.Konstruct.nodes.Node;
 import io.github.darkkronicle.Konstruct.parser.*;
 import io.github.darkkronicle.Konstruct.type.BooleanObject;
-import io.github.darkkronicle.advancedchatcore.konstruct.AdvancedChatKonstruct;
-import io.github.darkkronicle.advancedchatcore.util.FluidText;
 import io.github.darkkronicle.advancedchatcore.util.SearchUtils;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.config.ChatTab;
 import io.github.darkkronicle.advancedchathud.config.Match;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.Level;
 
 /** ChatTab that loads from {@link ChatTab}. Easy to customize. */
 public class CustomChatTab extends AbstractChatTab {
@@ -89,8 +83,7 @@ public class CustomChatTab extends AbstractChatTab {
 
     @Override
     public boolean shouldAdd(Text text) {
-        FluidText newText = new FluidText(text);
-        String search = newText.getString();
+        String search = text.getString();
         ParseContext context = AdvancedChatHud.MAIN_CHAT_TAB.getProcessor().createContext();
         Result result = function.parse(context, List.of(new Node() {
             @Override

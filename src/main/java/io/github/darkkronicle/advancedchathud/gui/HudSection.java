@@ -29,7 +29,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -118,47 +117,47 @@ public class HudSection extends AdvancedChatScreenSection {
         LinkedHashMap<Text, ContextMenu.ContextConsumer> actions = new LinkedHashMap<>();
         message = WindowManager.getInstance().getMessage(mouseX, mouseY);
         if (message != null) {
-            FluidText data = new FluidText();
+            TextBuilder data = new TextBuilder();
             try {
                 data.append(
-                        RawText.withFormatting(message.getTime().format(DateTimeFormatter.ofPattern(ConfigStorage.General.TIME_FORMAT.config.getStringValue())), Formatting.AQUA
-                ));
+                        message.getTime().format(DateTimeFormatter.ofPattern(ConfigStorage.General.TIME_FORMAT.config.getStringValue())), Style.EMPTY.withFormatting(Formatting.AQUA)
+                );
             } catch (IllegalArgumentException e) {
                 AdvancedChatHud.LOGGER.log(Level.WARN, "Can't format time for context menu!", e);
             }
             if (message.getOwner() != null) {
-                data.append(RawText.withFormatting(" - ", Formatting.GRAY));
+                data.append(" - ", Style.EMPTY.withFormatting(Formatting.GRAY));
                 if (message.getOwner().getEntry().getDisplayName() != null) {
-                    data.append(new FluidText(message.getOwner().getEntry().getDisplayName()));
+                    data.append(message.getOwner().getEntry().getDisplayName());
                 } else {
-                    data.append(RawText.withStyle(message.getOwner().getEntry().getProfile().getName(), Style.EMPTY));
+                    data.append(message.getOwner().getEntry().getProfile().getName());
                 }
             }
-            if (!data.getString().isBlank())  {
-                actions.put(data, (x, y) -> {
+            if (!data.build().getString().isBlank())  {
+                actions.put(data.build(), (x, y) -> {
                     InfoUtils.printActionbarMessage("advancedchathud.context.nothing");
                 });
             }
-            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.copy"), Style.EMPTY), (x, y) -> {
+            actions.put(Text.literal(StringUtils.translate("advancedchathud.context.copy")), (x, y) -> {
                 MinecraftClient.getInstance().keyboard.setClipboard(message.getOriginalText().getString());
                 InfoUtils.printActionbarMessage("advancedchathud.context.copied");
             });
-            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.delete"), Style.EMPTY), (x, y) -> {
+            actions.put(Text.literal(StringUtils.translate("advancedchathud.context.delete")), (x, y) -> {
                 HudChatMessageHolder.getInstance().removeChatMessage(message);
             });
             if (message.getOwner() != null) {
-                actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.messageowner"), Style.EMPTY), (x, y) -> {
+                actions.put(Text.literal(StringUtils.translate("advancedchathud.context.messageowner")), (x, y) -> {
                     getScreen().getChatField().setText("/msg " + message.getOwner().getEntry().getProfile().getName() + " ");
                 });
             }
         }
         ChatWindow hovered = WindowManager.getInstance().getHovered(mouseX, mouseY);
-        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.removeallwindows"), Style.EMPTY), (x, y) -> WindowManager.getInstance().reset());
-        actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.clearallmessages"), Style.EMPTY), (x, y) -> WindowManager.getInstance().clear());
+        actions.put(Text.literal(StringUtils.translate("advancedchathud.context.removeallwindows")), (x, y) -> WindowManager.getInstance().reset());
+        actions.put(Text.literal(StringUtils.translate("advancedchathud.context.clearallmessages")), (x, y) -> WindowManager.getInstance().clear());
         if (hovered != null) {
-            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.duplicatewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().duplicateTab(hovered, x, y));
-            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.configurewindow"), Style.EMPTY), (x, y) -> WindowManager.getInstance().configureTab(getScreen(), hovered));
-            actions.put(RawText.withStyle(StringUtils.translate("advancedchathud.context.minimalist"), Style.EMPTY), (x, y) -> hovered.toggleMinimalist());
+            actions.put(Text.literal(StringUtils.translate("advancedchathud.context.duplicatewindow")), (x, y) -> WindowManager.getInstance().duplicateTab(hovered, x, y));
+            actions.put(Text.literal(StringUtils.translate("advancedchathud.context.configurewindow")), (x, y) -> WindowManager.getInstance().configureTab(getScreen(), hovered));
+            actions.put(Text.literal(StringUtils.translate("advancedchathud.context.minimalist")), (x, y) -> hovered.toggleMinimalist());
         }
         menu = new ContextMenu(mouseX, mouseY, actions, () -> menu = null);
     }

@@ -79,7 +79,7 @@ public abstract class MixinChatHud implements IChatHud {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "getText", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "getTextStyleAt", cancellable = true)
     public void getTextHead(double x, double y, CallbackInfoReturnable<Style> cir) {
         // Ignore checking vanilla chat for hovered text if disabled
         if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
@@ -87,7 +87,7 @@ public abstract class MixinChatHud implements IChatHud {
         }
     }
 
-    @Inject(at = @At("RETURN"), method = "getText", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "getTextStyleAt", cancellable = true)
     public void getTextReturn(double x, double y, CallbackInfoReturnable<Style> cir) {
         // If vanilla chat didn't find any text, search on our own windows
         if (cir.getReturnValue() == null) {

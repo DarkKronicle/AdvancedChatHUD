@@ -14,13 +14,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.chat.ChatMessage;
 import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
-import io.github.darkkronicle.advancedchatcore.util.Color;
-import io.github.darkkronicle.advancedchatcore.util.ColorUtil;
-import io.github.darkkronicle.advancedchatcore.util.Colors;
-import io.github.darkkronicle.advancedchatcore.util.EasingMethod;
-import io.github.darkkronicle.advancedchatcore.util.FluidText;
-import io.github.darkkronicle.advancedchatcore.util.LimitedInteger;
-import io.github.darkkronicle.advancedchatcore.util.RawText;
+import io.github.darkkronicle.advancedchatcore.util.*;
 import io.github.darkkronicle.advancedchathud.AdvancedChatHud;
 import io.github.darkkronicle.advancedchathud.HudChatMessage;
 import io.github.darkkronicle.advancedchathud.HudChatMessageHolder;
@@ -634,14 +628,13 @@ public class ChatWindow {
         // Get line
         Text render = line.getText();
         if (line.getParent().getStacks() > 0 && lineIndex == 0) {
-            FluidText toPrint = new FluidText(render);
+            TextBuilder toPrint = new TextBuilder().append(render);
             Style style = Style.EMPTY;
             TextColor color =
                     TextColor.fromRgb(Colors.getInstance().getColorOrWhite("gray").color());
             style = style.withColor(color);
-            toPrint.getRawTexts()
-                    .add(new RawText(" (" + (line.getParent().getStacks() + 1) + ")", style));
-            render = toPrint;
+            toPrint.append(new RawText(" (" + (line.getParent().getStacks() + 1) + ")", style));
+            render = toPrint.build();
         }
 
         int backgroundWidth;
