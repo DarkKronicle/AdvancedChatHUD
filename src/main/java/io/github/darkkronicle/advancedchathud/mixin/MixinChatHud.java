@@ -40,8 +40,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinChatHud implements IChatHud {
 
     @Shadow @Final private MinecraftClient client;
-    @Shadow @Final private List<ChatHudLine<Text>> messages;
-    @Shadow @Final private List<ChatHudLine<OrderedText>> visibleMessages;
+    @Shadow @Final private List<ChatHudLine> messages;
+    @Shadow @Final private List<ChatHudLine.Visible> visibleMessages;
 
     @Shadow private int scrolledLines;
     @Shadow private boolean hasUnreadNewMessages;
@@ -136,8 +136,7 @@ public abstract class MixinChatHud implements IChatHud {
         OrderedText orderedText;
         for (Iterator<OrderedText> text = list.iterator();
                 text.hasNext();
-                this.visibleMessages.add(
-                        0, new ChatHudLine<>(msg.getCreationTick(), orderedText, msg.getId()))) {
+                this.visibleMessages.add(0, new ChatHudLine.Visible(msg.getCreationTick(), orderedText, msg.getIndicator(), !text.hasNext()))) {
             orderedText = text.next();
             if (this.isChatFocused() && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
@@ -150,8 +149,7 @@ public abstract class MixinChatHud implements IChatHud {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
 
-        this.messages.add(
-                0, new ChatHudLine<>(msg.getCreationTick(), msg.getDisplayText(), msg.getId()));
+        this.messages.add(0, new ChatHudLine(msg.getCreationTick(), msg.getDisplayText(), msg.getSignature(), msg.getIndicator()));
         while (this.messages.size()
                 > HudConfigStorage.General.STORED_LINES.config.getIntegerValue()) {
             this.messages.remove(this.messages.size() - 1);
