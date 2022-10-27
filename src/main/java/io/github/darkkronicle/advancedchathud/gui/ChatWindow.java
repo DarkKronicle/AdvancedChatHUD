@@ -128,6 +128,7 @@ public class ChatWindow {
         for (int i = messages.size() - 1; i >= 0; i--) {
             addMessage(messages.get(i), false, false);
         }
+        WindowManager.getInstance().setSelected(this);
     }
 
     public void addMessage(HudChatMessage message) {

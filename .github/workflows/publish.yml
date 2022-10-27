@@ -8,7 +8,7 @@ on:
         description: 'Version (Do not include v prefix! Example: 1.4.2)'
         required: true
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
       - name: Upload to websites
         run: ./gradlew publishThirdParty --stacktrace -PlastTag="v${{ github.event.inputs.previousVersion }}" -PcurrentTag="v${{ github.event.inputs.version }}"
         if: |
