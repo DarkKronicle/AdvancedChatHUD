@@ -24,7 +24,11 @@ import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
 import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
 import io.github.darkkronicle.advancedchathud.tabs.MainChatTab;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +42,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
 
     private static final WindowManager INSTANCE = new WindowManager();
     private final MinecraftClient client;
-    private LinkedList<ChatWindow> windows = new LinkedList<>();
+    private final List<ChatWindow> windows = new ArrayList<>(8);
     private int dragX = 0;
     private int dragY = 0;
     private ChatWindow drag = null;
@@ -56,13 +60,19 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         windows.clear();
     }
 
+    private void addWindow(ChatWindow window) {
+        // Remove duplicates being spawned from somewhere
+        windows.removeIf(w -> w == window);
+        windows.add(window);
+    }
+
     public void loadFromJson(JsonArray array) {
         reset();
         if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
             if (array == null || array.size() == 0) {
                 ChatWindow base = new ChatWindow(AdvancedChatHud.MAIN_CHAT_TAB);
                 base.setSelected(true);
-                windows.add(base);
+                addWindow(base);
                 return;
             }
         } else {
@@ -85,7 +95,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
                 AdvancedChatHud.LOGGER.error("Error while loading in ChatWindow ", err);
                 continue;
             }
-            windows.add(w);
+            addWindow(w);
         }
     }
 
@@ -174,8 +184,8 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         for (ChatWindow w : windows) {
             w.setSelected(window.equals(w));
         }
-        windows.remove(window);
-        windows.addFirst(window);
+        windows.removeIf(w -> w == window);
+        windows.add(0, window);
 
         if (!HudConfigStorage.General.CHANGE_START_MESSAGE.config.getBooleanValue() || !(client.currentScreen instanceof AdvancedChatScreen screen)) {
             return;
@@ -297,7 +307,7 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
             sel = window;
         }
         window.setPosition(sel.getConvertedX() + 15, sel.getConvertedY() + 15);
-        windows.add(window);
+//        windows.add(window);
         setSelected(window);
     }
 
@@ -353,7 +363,6 @@ public class WindowManager implements IRenderer, ResolutionEventHandler {
         window.setRelativeDimensions(hovered.getWidthPercent(), hovered.getHeightPercent());
         window.setVisibility(hovered.getVisibility());
         window.setPosition(x, y);
-        windows.add(window);
         setSelected(window);
     }
 
