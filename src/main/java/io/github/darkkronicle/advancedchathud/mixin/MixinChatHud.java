@@ -72,7 +72,7 @@ public abstract class MixinChatHud implements IChatHud {
     }
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void render(MatrixStack stack, int delta, CallbackInfo ci) {
+    private void render(MatrixStack stack, int delta, int mouseX, int mouseY, CallbackInfo ci) {
         // Ignore rendering vanilla chat if disabled
         if (!HudConfigStorage.General.VANILLA_HUD.config.getBooleanValue()) {
             ci.cancel();
