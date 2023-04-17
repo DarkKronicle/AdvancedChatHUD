@@ -431,7 +431,7 @@ public class ChatWindow {
                     labelWidth,
                     scaledBar,
                     tab.getBorderColor().color());
-            DrawableHelper.drawCenteredText(
+            DrawableHelper.drawCenteredTextWithShadow(
                     matrixStack,
                     MinecraftClient.getInstance().textRenderer,
                     tab.getAbbreviation(),
@@ -525,7 +525,7 @@ public class ChatWindow {
             double mouseX = client.mouse.getX() / 2;
             double mouseY = client.mouse.getY() / 2;
             if (isMouseOverVisibility(mouseX, mouseY)) {
-                DrawableHelper.drawStringWithShadow(
+                DrawableHelper.drawCenteredTextWithShadow(
                         matrixStack,
                         client.textRenderer,
                         visibility.getDisplayName(),

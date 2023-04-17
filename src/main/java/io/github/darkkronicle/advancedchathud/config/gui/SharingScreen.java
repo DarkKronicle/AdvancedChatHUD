@@ -49,13 +49,14 @@ public class SharingScreen extends GuiBase {
         text.setMaxLength(12800);
         if (starting != null) {
             text.setText(starting);
-            text.setTextFieldFocused(true);
+            text.setFocused(true);
         }
 
-        text.changeFocus(true);
+        text.setFocused(true);
         text.setDrawsBackground(true);
         text.setEditable(true);
-        text.changeFocus(true);
+        text.setFocused(true);
+
         this.addTextField(text, null);
 
         this.addButton(

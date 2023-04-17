@@ -24,11 +24,11 @@
     "advancedchathud.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.8.9+build.204",
+    "fabricloader": ">=0.14.18",
     "fabric": "*",
-    "minecraft": ">=1.19.3",
-    "malilib": ">=0.13.0",
-    "advancedchatcore": ">=1.5.2-1.19"
+    "minecraft": ">=1.19.4",
+    "malilib": ">=0.15.2",
+    "advancedchatcore": ">=1.5.10-1.19"
   },
   "custom": {
     "acmodule": true,
