@@ -20,6 +20,7 @@ if (file("extra.properties").exists()) {
 
 repositories {
 	mavenCentral()
+	mavenLocal() // only used to build the mod locally
 	maven { url 'https://masa.dy.fi/maven' }
 	maven { url 'https://jitpack.io' }
 }
@@ -29,8 +30,10 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.19.4:${project.malilib_version}"
-	modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
+	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.20.1:${project.malilib_version}"
+	//modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
+	modImplementation "io.github.darkkronicle:AdvancedChatCore:1.20.1-1.5.10" // only used to build the mod locally
+
 }
 
 processResources {

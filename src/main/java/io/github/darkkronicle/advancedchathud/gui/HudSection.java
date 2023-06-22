@@ -27,6 +27,7 @@ import io.github.darkkronicle.advancedchathud.tabs.CustomChatTab;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -107,9 +108,9 @@ public class HudSection extends AdvancedChatScreenSection {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         if (menu != null) {
-            menu.render(mouseX, mouseY, true, matrixStack);
+            menu.render(mouseX, mouseY, true, context);
         }
     }
 

@@ -25,6 +25,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
@@ -95,7 +96,7 @@ public class WidgetMatchEntry extends WidgetConfigListEntry<Match> {
     }
 
     @Override
-    public void renderEntry(int mouseX, int mouseY, boolean selected, MatrixStack matrixStack) {}
+    public void renderEntry(int mouseX, int mouseY, boolean selected, DrawContext context) {}
 
     @Override
     public String getName() {
