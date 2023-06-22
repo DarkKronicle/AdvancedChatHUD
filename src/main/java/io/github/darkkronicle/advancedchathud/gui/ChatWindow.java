@@ -494,7 +494,7 @@ public class ChatWindow {
             RenderUtils.color(1, 1, 1, 1);
             RenderUtils.bindTexture(RESIZE_ICON);
             context.drawTexture(
-                    X_ICON,
+                    RESIZE_ICON,
                     rightX - scaledBar * 2 + 2,
                     getActualY(newY - 1),
                     scaledBar - 2,
