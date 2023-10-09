@@ -1,7 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.0-SNAPSHOT'
-	id 'maven-publish'
-	id "io.freefair.lombok" version "6.0.0-m2"
+    id 'fabric-loom' version '1.4-SNAPSHOT'
+    id 'maven-publish'
+    id "io.freefair.lombok" version "8.4"
 }
 
 apply from: 'https://raw.githubusercontent.com/DarkKronicle/GradleScripts/main/gradle/publish.gradle'
@@ -20,20 +20,20 @@ if (file("extra.properties").exists()) {
 
 repositories {
 	mavenCentral()
-	mavenLocal() // only used to build the mod locally
 	maven { url 'https://masa.dy.fi/maven' }
 	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.20.1:${project.malilib_version}"
-	//modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
-	modImplementation "io.github.darkkronicle:AdvancedChatCore:1.20.1-1.5.10" // only used to build the mod locally
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation "fi.dy.masa.malilib:malilib-fabric-${project.minecraft_version}:${project.malilib_version}"
+    modImplementation "io.github.darkkronicle:AdvancedChatCore:${project.minecraft_version}-${project.advancedchat_version}"
 
+	modCompileOnly "com.github.DarkKronicle.Konstruct:core:${project.konstruct_version}"
+	modCompileOnly "com.github.DarkKronicle.Konstruct:addons:${project.konstruct_version}"
 }
 
 processResources {
@@ -49,12 +49,15 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = 17
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
+tasks.register('sourcesJar', Jar) {
+	dependsOn classes
+	archiveClassifier = "sources"
 	from sourceSets.main.allSource
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {

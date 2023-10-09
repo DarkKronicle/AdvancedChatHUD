@@ -9,3 +9,4 @@ build/
 .gradle/
 classes/
 lombok.config
+/src/main/resources/swear_words.csv
