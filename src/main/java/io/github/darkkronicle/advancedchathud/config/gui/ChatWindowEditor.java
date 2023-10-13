@@ -138,7 +138,7 @@ public class ChatWindowEditor extends GuiConfigsBase implements IClosable {
             }
 
             if (keyCode == KeyCodes.KEY_ESCAPE
-                    && this.parentScreen != GuiUtils.getCurrentScreen()) {
+                    && this.getParent() != GuiUtils.getCurrentScreen()) {
                 // Make sure to save
                 closeGui(true);
                 return true;

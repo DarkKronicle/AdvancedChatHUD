@@ -16,6 +16,7 @@ import io.github.darkkronicle.advancedchatcore.util.TextUtil;
 import io.github.darkkronicle.advancedchathud.config.HudConfigStorage;
 import io.github.darkkronicle.advancedchathud.itf.IChatHud;
 import io.github.darkkronicle.advancedchathud.tabs.AbstractChatTab;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
@@ -36,7 +37,7 @@ public class TabButton extends CleanButton {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean unused, MatrixStack matrixStack) {
+    public void render(int mouseX, int mouseY, boolean unused, DrawContext context) {
         int relMX = mouseX - x;
         int relMY = mouseY - y;
         hovered = relMX >= 0 && relMX <= width && relMY >= 0 && relMY <= height;
@@ -61,7 +62,7 @@ public class TabButton extends CleanButton {
         RenderUtils.drawRect(x, y, width, height, color.color());
 
         drawStringWithShadow(
-                x + PADDING, y + PADDING, selected ? WHITE : GRAY, displayString, matrixStack);
+                x + PADDING, y + PADDING, selected ? WHITE : GRAY, displayString, context);
         if (tab.isShowUnread() && tab.getUnread() > 0) {
             String unread = TextUtil.toSuperscript(Math.min(tab.getUnread(), 99));
             drawCenteredString(
@@ -69,7 +70,7 @@ public class TabButton extends CleanButton {
                     y + PADDING,
                     RED,
                     unread,
-                    matrixStack);
+                    context);
         }
     }
 
