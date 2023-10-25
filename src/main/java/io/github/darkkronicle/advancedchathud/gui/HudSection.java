@@ -102,7 +102,7 @@ public class HudSection extends AdvancedChatScreenSection {
             AbstractChatTab tab = chatWindow.getTab();
             if (tab instanceof CustomChatTab custom) {
                 getScreen().getChatField().setText(custom.getStartingMessage());
-                getScreen().getChatField().setCursor(custom.getStartingMessage().length());
+                getScreen().getChatField().setCursor(custom.getStartingMessage().length(), false);
             }
         }
     }
