@@ -32,7 +32,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	modImplementation "fi.dy.masa.malilib:malilib-fabric-1.20.2:${project.malilib_version}"
 	//modImplementation "com.github.DarkKronicle:AdvancedChatCore:${project.advancedchat_version}"
-	modImplementation "io.github.darkkronicle:AdvancedChatCore:1.20.2-1.5.10" // only used to build the mod locally
+	modImplementation "io.github.darkkronicle:AdvancedChatCore:1.20.4-1.5.10" // only used to build the mod locally
 
 }
 
